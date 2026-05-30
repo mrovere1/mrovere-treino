@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-05-29T08:00:00-03:00",
+  "source": "slack-bot",
+  "channels": [
+    {
+      "channelName": "partners",
+      "importantMessages": [
+        {
+          "id": "slack-1",
+          "author": "User Name",
+          "text": "Please review the partner update",
+          "priority": "medium",
+          "suggestedAction": "Reply in thread"
+        }
+      ]
+    }
+  ],
+  "todos": []
+}

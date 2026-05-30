@@ -1,0 +1,36 @@
+{
+  "captured_at": "2026-05-29T11:10:00Z",
+  "total": 3,
+  "accounts": [
+    {
+      "id": "001xx000003ABCD",
+      "name": "Acme Brazil",
+      "billingCountry": "Brazil",
+      "billingCity": "Sao Paulo",
+      "type": "Customer",
+      "industry": "Technology",
+      "accountOwnerName": "Alex Owner",
+      "renewalOwnerName": "Riley Renewals",
+      "resourceManagerName": "Taylor RM",
+      "containerIds": ["container-001"]
+    },
+    {
+      "id": "001xx000003EFGH",
+      "name": "Northwind",
+      "billingCountry": "United States",
+      "billingCity": "Miami",
+      "type": "Customer",
+      "industry": "Finance",
+      "containerIds": ["container-002"]
+    },
+    {
+      "id": "001xx000003IJKL",
+      "name": "Contoso",
+      "billingCountry": "Germany",
+      "billingCity": "Berlin",
+      "type": "Prospect",
+      "industry": "Manufacturing",
+      "containerIds": ["container-003"]
+    }
+  ]
+}
