@@ -8,6 +8,33 @@
   padding: 1rem;
 }
 
+.important-email-table th:first-child,
+.important-email-table td:first-child {
+  width: 280px;
+}
+
+.important-email-table td {
+  padding-block: 0.55rem;
+}
+
+.important-email-title {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.important-email-title strong {
+  line-height: 1.2;
+}
+
+.important-email-title span:not(.pill) {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.important-email-table p {
+  margin: 0 0 0.25rem;
+}
+
 .todo-list {
   display: grid;
   gap: 0.8rem;
@@ -19,7 +46,7 @@
   padding: 1rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-muted);
 }
 
 .todo-item header,

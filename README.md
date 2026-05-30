@@ -128,6 +128,7 @@ Partner templates are versioned locally in IndexedDB and can be backed up under 
 - The Email Templates view lets users choose a partner before previewing or copying a template.
 - Partner-specific variables fill completed courses, missing courses, maturity summary, contact name, and next steps.
 - To promote browser-edited templates into the repository, export JSON from the app and save the file under `data/partner/templates/`.
+- Automatic repository copies require an automation layer such as a backend, GitHub App, or GitHub Actions. See `docs/automation-options.md`.
 
 ## IRIS Dashboard
 
@@ -188,6 +189,8 @@ If those files do not exist, the app shows a friendly message and still lets adm
 3. Open MROVERE Tasks.
 4. Manage editable todos locally in the browser.
 
+The app always tries to load `data/tasks/claude_tasks.json` and `data/tasks/slack_tasks.json` first. If those files are unavailable, it falls back to the last browser-local imported copy.
+
 ### Can Slack or Claude write directly to GitHub?
 
 Yes, but do not put a long-lived GitHub token in a browser or Slack bot without guardrails.
@@ -200,6 +203,8 @@ Recommended options:
 - Local scheduled routine: Claude Code can generate `data/tasks/claude_tasks.json` in the local checkout, then you review and push.
 
 For this static v1, the app itself does not write directly to GitHub. It reads local/static JSON files and browser imports.
+
+See `docs/automation-options.md` for the recommended GitHub Actions and Google Drive sync patterns.
 
 ## Deployment
 

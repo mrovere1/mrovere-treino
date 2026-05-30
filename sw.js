@@ -1,4 +1,4 @@
-const CACHE_NAME = "mrovere-apps-cache-v1";
+const CACHE_NAME = "mrovere-apps-cache-v2";
 
 const APP_ASSETS = [
   "./",
@@ -41,6 +41,10 @@ function isSensitiveRequest(requestUrl) {
     requestUrl.includes("firestore.googleapis.com") ||
     requestUrl.includes("/data/iris/latest.json") ||
     requestUrl.includes("/data/iris/accounts_latest.json") ||
+    requestUrl.includes("/data/tasks/claude_tasks.json") ||
+    requestUrl.includes("/data/tasks/slack_tasks.json") ||
+    requestUrl.includes("/data/partner/Focus%20Partner%20Tracking%20BR.xlsx") ||
+    requestUrl.includes("/data/partner/EM%20Service%20Delivery%20Accreditation%20Track.docx") ||
     requestUrl.includes("iris.tenablesecurity.com")
   );
 }

@@ -161,9 +161,10 @@ tbody tr:hover {
 }
 
 .button.danger {
-  background: rgba(255, 107, 120, 0.12);
-  border-color: rgba(255, 107, 120, 0.2);
-  color: #ffdbe0;
+  background: #fce8e8;
+  border-color: #ffb6b6;
+  color: #7a1414;
+  font-weight: 600;
 }
 
 .button:disabled {

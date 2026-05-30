@@ -18,12 +18,25 @@
 }
 
 .template-item {
-  padding: 1rem;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 34px;
+  padding: 0.35rem 0.6rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   color: var(--text);
   background: var(--surface-muted);
   text-align: left;
+  line-height: 1.2;
+}
+
+.template-item strong {
+  font-size: 0.86rem;
+}
+
+.template-item .muted {
+  margin-top: 0.12rem;
+  font-size: 0.72rem;
 }
 
 .template-item.active {

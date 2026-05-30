@@ -30,6 +30,11 @@ export const TEMPLATE_VARIABLES = [
     variable: "{{next_steps}}",
     description: "Recommended actions for the follow-up email.",
     example: "Complete the remaining specialist track and confirm the theory course schedule."
+  },
+  {
+    variable: "{{course_prerequisites}}",
+    description: "Full accreditation prerequisite list for a new partner orientation.",
+    example: "Introduction track, specialist track, and EM Business Theory prerequisites."
   }
 ];
 
@@ -82,6 +87,30 @@ const DEFAULT_TEMPLATES = [
       "{{next_steps}}",
       "",
       "Regards,",
+      "MROVERE"
+    ].join("\n"),
+    updatedAt: null,
+    updatedBy: "system",
+    versions: []
+  },
+  {
+    id: "new-partner-orientation",
+    name: "New Partner Orientation",
+    version: 1,
+    subject: "Getting started with Tenable accreditation for {{partner_name}}",
+    body: [
+      "Hello {{contact_name}},",
+      "",
+      "Welcome to the Tenable partner accreditation journey.",
+      "",
+      "Below is the initial prerequisite checklist for {{partner_name}}:",
+      "",
+      "{{course_prerequisites}}",
+      "",
+      "Suggested next steps:",
+      "{{next_steps}}",
+      "",
+      "Best regards,",
       "MROVERE"
     ].join("\n"),
     updatedAt: null,

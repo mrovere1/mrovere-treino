@@ -26,43 +26,39 @@ export async function renderTasksDashboard(container, userContext) {
 }
 
 export async function loadClaudeTasks() {
-  const stored = await getRecord("tasksState", "claudeFeed");
-  if (stored?.value) {
-    return stored.value;
-  }
-
   try {
-    const response = await fetch("./data/tasks/claude_tasks.json", { cache: "no-store" });
-    if (!response.ok) {
-      return null;
+    const response = await fetch(`./data/tasks/claude_tasks.json?v=${Date.now()}`, {
+      cache: "no-store"
+    });
+    if (response.ok) {
+      const data = await response.json();
+      await putRecord("tasksState", { key: "claudeFeed", value: data });
+      return data;
     }
-
-    const data = await response.json();
-    await putRecord("tasksState", { key: "claudeFeed", value: data });
-    return data;
   } catch {
-    return null;
+    // Fall back to the last imported/saved feed when the static file is unavailable.
   }
+
+  const stored = await getRecord("tasksState", "claudeFeed");
+  return stored?.value || null;
 }
 
 export async function loadSlackTasks() {
-  const stored = await getRecord("tasksState", "slackFeed");
-  if (stored?.value) {
-    return stored.value;
-  }
-
   try {
-    const response = await fetch("./data/tasks/slack_tasks.json", { cache: "no-store" });
-    if (!response.ok) {
-      return null;
+    const response = await fetch(`./data/tasks/slack_tasks.json?v=${Date.now()}`, {
+      cache: "no-store"
+    });
+    if (response.ok) {
+      const data = await response.json();
+      await putRecord("tasksState", { key: "slackFeed", value: data });
+      return data;
     }
-
-    const data = await response.json();
-    await putRecord("tasksState", { key: "slackFeed", value: data });
-    return data;
   } catch {
-    return null;
+    // Fall back to the last imported/saved feed when the static file is unavailable.
   }
+
+  const stored = await getRecord("tasksState", "slackFeed");
+  return stored?.value || null;
 }
 
 export async function importTasksJson(source, file) {
@@ -104,21 +100,35 @@ export function renderImportantEmails() {
   }
 
   return `
-    <section class="tasks-feed-grid">
-      ${tasksState.claudeFeed.importantEmails
-        .map(
-          (item) => `
-            <article class="panel task-card">
-              <span class="pill ${item.priority === "high" ? "warning" : ""}">${escapeHtml(item.priority || "normal")}</span>
-              <h3>${escapeHtml(item.subject)}</h3>
-              <p class="muted">From ${escapeHtml(item.from)}</p>
-              <p>${escapeHtml(item.reason || "")}</p>
-              <p class="muted">Suggested action: ${escapeHtml(item.suggestedAction || "None")}</p>
-            </article>
-          `
-        )
-        .join("")}
-    </section>
+    <div class="table-wrap">
+      <table class="important-email-table">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Summary</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tasksState.claudeFeed.importantEmails
+            .map(
+              (item) => `
+                <tr>
+                  <td class="important-email-title">
+                    <strong>${escapeHtml(item.subject)}</strong>
+                    <span>${escapeHtml(item.from || "Unknown sender")}</span>
+                    <span class="pill ${item.priority === "high" ? "warning" : ""}">${escapeHtml(item.priority || "normal")}</span>
+                  </td>
+                  <td>
+                    <p>${escapeHtml(item.summary || item.reason || "")}</p>
+                    <p class="muted">Suggested action: ${escapeHtml(item.suggestedAction || "None")}</p>
+                  </td>
+                </tr>
+              `
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>
   `;
 }
 

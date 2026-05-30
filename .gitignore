@@ -19,6 +19,12 @@ data/iris/accounts_diff/
 !data/iris/latest.sample.json
 !data/iris/accounts_latest.sample.json
 
+# Generated task feeds
+data/tasks/claude_tasks.json
+data/tasks/slack_tasks.json
+!data/tasks/claude_tasks.sample.json
+!data/tasks/slack_tasks.sample.json
+
 # Partner temporary files
 ~$*.xlsx
 ~$*.docx

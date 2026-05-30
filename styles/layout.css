@@ -6,7 +6,7 @@
 }
 
 .shell.sidebar-collapsed {
-  grid-template-columns: 78px minmax(0, 1fr);
+  grid-template-columns: 0 minmax(0, 1fr);
 }
 
 .sidebar {
@@ -86,6 +86,14 @@
 .shell.sidebar-collapsed .nav-label,
 .shell.sidebar-collapsed .sidebar-footer-copy {
   display: none;
+}
+
+.shell.sidebar-collapsed .sidebar {
+  width: 0;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border-right: 0;
 }
 
 .sidebar-footer {

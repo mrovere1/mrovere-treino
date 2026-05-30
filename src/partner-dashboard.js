@@ -518,8 +518,47 @@ function buildTemplateSampleData(partner) {
     next_steps:
       partner?.computed.missingCourses.length
         ? `Focus on ${partner.computed.missingCourses[0]} and schedule the next accreditation review.`
-        : "Keep the certification evidence updated and confirm the next maturity milestone."
+        : "Keep the certification evidence updated and confirm the next maturity milestone.",
+    course_prerequisites: buildPrerequisiteList()
   };
+}
+
+function buildPrerequisiteList() {
+  const requirements = partnerState.requirements;
+  if (!requirements) {
+    return "Accreditation prerequisites are loaded from accreditation-requirements.json.";
+  }
+
+  const lines = [];
+  lines.push("Introduction track:");
+  (requirements.introduction?.requiredAll || []).forEach((course) => {
+    lines.push(`- ${course}`);
+  });
+  (requirements.introduction?.oneOfGroups || []).forEach((group) => {
+    lines.push(`- Complete at least one of: ${group.join(" | ")}`);
+  });
+
+  lines.push("");
+  lines.push("Specialist track:");
+  (requirements.specialist?.requiredAll || []).forEach((course) => {
+    lines.push(`- ${course}`);
+  });
+  (requirements.specialist?.oneOfGroups || []).forEach((group) => {
+    lines.push(`- Complete at least one of: ${group.join(" | ")}`);
+  });
+  (requirements.specialist?.minimumGroups || []).forEach((group) => {
+    lines.push(`- Complete at least ${group.count} of: ${group.courses.join(" | ")}`);
+  });
+
+  if (requirements.theory?.length) {
+    lines.push("");
+    lines.push("Business theory:");
+    requirements.theory.forEach((course) => {
+      lines.push(`- ${course}`);
+    });
+  }
+
+  return lines.join("\n");
 }
 
 function renderSubjectPreview(template, sampleData) {
