@@ -126,7 +126,9 @@ export function parsePartnerWorkbook(workbook, requirements) {
         specialistCertified: specialistResult.passed,
         accreditationReady: introResult.passed && specialistResult.passed && theoryCompleted,
         completedCourses,
-        missingCourses
+        missingCourses,
+        missingIntroCourses: introResult.missingCourses,
+        missingSpecialistCourses: specialistResult.missingCourses
       }
     };
   });

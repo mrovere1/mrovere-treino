@@ -16,16 +16,33 @@ const irisState = {
   filteredContainers: [],
   filteredAccounts: [],
   selectedContainerId: null,
+  selectedAccountId: null,
   page: 1,
   pageSize: 25,
   search: "",
+  filterLogic: "AND",
+  filterRules: [],
   statusFilter: "all",
   regionFilter: "all",
   accountCountryFilter: "all",
+  visibleContainerColumns: ["name", "account", "region", "status", "usage"],
   metadata: null,
   debounceTimer: null,
   userContext: null
 };
+
+const CONTAINER_COLUMNS = [
+  { key: "name", label: "Container", getValue: (item) => item.name || item.id },
+  { key: "account", label: "Account", getValue: (item) => item.account || "-" },
+  { key: "region", label: "Region", getValue: (item) => item.region || "-" },
+  { key: "status", label: "Status", getValue: (item) => item.status || "-" },
+  { key: "usage", label: "Usage", getValue: (item) => formatUsage(item) },
+  { key: "products", label: "Products", getValue: (item) => (item.products || []).join(", ") || "-" },
+  { key: "license_used", label: "License used", getValue: (item) => item.usage?.license_used ?? "-" },
+  { key: "license_limit", label: "License limit", getValue: (item) => item.usage?.license_limit ?? "-" },
+  { key: "expires_at", label: "Expiration", getValue: (item) => item.expires_at || "-" },
+  { key: "updated_at", label: "Last updated", getValue: (item) => item.updated_at || "-" }
+];
 
 export async function renderIrisDashboard(container, userContext) {
   irisState.userContext = userContext;
@@ -62,8 +79,6 @@ async function refreshStoredState() {
   irisState.metadata = metadata;
   irisState.filteredContainers = applyIrisFilters(containers);
   irisState.filteredAccounts = applyAccountFilters(accounts);
-  irisState.selectedContainerId =
-    irisState.selectedContainerId || irisState.filteredContainers[0]?.id || null;
 }
 
 function renderIrisScaffold(container, userContext) {
@@ -208,39 +223,37 @@ function drawIrisContent(container, userContext) {
             </select>
           </div>
         </div>
+        ${renderIrisAdvancedFilters()}
+        ${renderColumnConfigurator()}
       </section>
-      <section class="split-layout">
-        <article class="panel card-table">
-          <header>
-            <div>
-              <h3>Containers</h3>
-              <p class="muted">Only the current page is rendered into the DOM.</p>
-            </div>
-          </header>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Container</th>
-                  <th>Account</th>
-                  <th>Region</th>
-                  <th>Status</th>
-                  <th>Usage</th>
-                </tr>
-              </thead>
-              <tbody id="iris-container-table-body"></tbody>
-            </table>
+      <section class="panel card-table">
+        <header>
+          <div>
+            <h3>Containers</h3>
+            <p class="muted">Click a row to inspect details. Only the current page is rendered into the DOM.</p>
           </div>
-          <div class="pagination">
-            <span class="muted">${irisState.filteredContainers.length} results</span>
-            <div class="pagination-controls">
-              <button id="iris-prev-page" class="button secondary" type="button">Previous</button>
-              <button id="iris-next-page" class="button secondary" type="button">Next</button>
-            </div>
+        </header>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                ${getVisibleColumns()
+                  .map((column) => `<th>${escapeHtml(column.label)}</th>`)
+                  .join("")}
+              </tr>
+            </thead>
+            <tbody id="iris-container-table-body"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span class="muted">${irisState.filteredContainers.length} results</span>
+          <div class="pagination-controls">
+            <button id="iris-prev-page" class="button secondary" type="button">Previous</button>
+            <button id="iris-next-page" class="button secondary" type="button">Next</button>
           </div>
-        </article>
-        <aside class="panel side-panel" id="iris-detail-panel"></aside>
+        </div>
       </section>
+      <section id="iris-detail-panel"></section>
     </div>
   `;
 
@@ -354,20 +367,15 @@ export function renderIrisMetrics() {
 export function renderIrisTable(tbody) {
   const fragment = document.createDocumentFragment();
   const currentPageItems = paginateIrisResults(irisState.filteredContainers);
+  const columns = getVisibleColumns();
 
   currentPageItems.forEach((container) => {
     const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>
-        <button class="button secondary" data-container-select="${escapeHtml(container.id)}" type="button">
-          ${escapeHtml(container.name || container.id)}
-        </button>
-      </td>
-      <td>${escapeHtml(container.account || "-")}</td>
-      <td>${escapeHtml(container.region || "-")}</td>
-      <td>${escapeHtml(container.status || "-")}</td>
-      <td>${escapeHtml(formatUsage(container))}</td>
-    `;
+    row.className = "iris-clickable-row";
+    row.dataset.containerSelect = container.id;
+    row.innerHTML = columns
+      .map((column) => `<td>${escapeHtml(String(column.getValue(container)))}</td>`)
+      .join("");
     fragment.appendChild(row);
   });
 
@@ -387,8 +395,9 @@ export function applyIrisFilters(containers) {
       irisState.statusFilter === "all" || container.status === irisState.statusFilter;
     const matchesRegion =
       irisState.regionFilter === "all" || container.region === irisState.regionFilter;
+    const matchesRules = evaluateFilterRules(container);
 
-    return matchesSearch && matchesStatus && matchesRegion;
+    return matchesSearch && matchesStatus && matchesRegion && matchesRules;
   });
 }
 
@@ -405,18 +414,18 @@ export function paginateIrisResults(results) {
 }
 
 export function renderIrisContainerDetails(panel) {
-  const selected =
-    irisState.filteredContainers.find((container) => container.id === irisState.selectedContainerId) ||
-    irisState.filteredContainers[0];
+  const selected = irisState.filteredContainers.find(
+    (container) => container.id === irisState.selectedContainerId
+  );
 
   if (!selected) {
-    panel.innerHTML = `<div class="empty-state">Select a container to inspect its details.</div>`;
+    panel.innerHTML = "";
     return;
   }
 
   irisState.selectedContainerId = selected.id;
   panel.innerHTML = `
-    <div class="content-stack">
+    <article class="panel iris-details-panel">
       <div class="section-heading">
         <h3>${escapeHtml(selected.name || selected.id)}</h3>
         <span class="pill">${escapeHtml(selected.status || "Unknown")}</span>
@@ -433,10 +442,10 @@ export function renderIrisContainerDetails(panel) {
       <div>
         <strong class="muted">Raw usage payload</strong>
         <div class="code-block iris-details-code">${escapeHtml(
-          JSON.stringify(selected.usage || {}, null, 2)
+          JSON.stringify(selected.raw || selected.usage || {}, null, 2)
         )}</div>
       </div>
-    </div>
+    </article>
   `;
 }
 
@@ -543,7 +552,7 @@ function renderAccountsView() {
                 .slice(0, 250)
                 .map(
                   (account) => `
-                    <tr>
+                    <tr class="iris-clickable-row" data-account-select="${escapeHtml(account.id)}">
                       <td>${escapeHtml(account.name || account.id)}</td>
                       <td>${escapeHtml(account.billingCountry || "-")}</td>
                       <td>${escapeHtml(account.type || "-")}</td>
@@ -558,6 +567,7 @@ function renderAccountsView() {
         </div>
         <div class="table-note">For performance, the account tab renders a maximum of 250 rows at once in this view.</div>
       </section>
+      <section id="iris-account-detail-panel"></section>
     </div>
   `;
 }
@@ -605,10 +615,54 @@ function wireContainerView(content) {
     drawIrisContent(content.closest("#app-content"), irisState.userContext);
   });
 
-  content.querySelectorAll("[data-container-select]").forEach((button) => {
-    button.addEventListener("click", () => {
-      irisState.selectedContainerId = button.dataset.containerSelect;
+  content.querySelectorAll("[data-container-select]").forEach((row) => {
+    row.addEventListener("click", () => {
+      irisState.selectedContainerId = row.dataset.containerSelect;
       renderIrisContainerDetails(content.querySelector("#iris-detail-panel"));
+    });
+  });
+
+  content.querySelector("#iris-filter-logic")?.addEventListener("change", (event) => {
+    irisState.filterLogic = event.target.value;
+    irisState.page = 1;
+    irisState.filteredContainers = applyIrisFilters(irisState.containers);
+    drawIrisContent(content.closest("#app-content"), irisState.userContext);
+  });
+
+  content.querySelectorAll("[data-filter-field], [data-filter-operator], [data-filter-value]").forEach((input) => {
+    input.addEventListener("change", () => {
+      irisState.filterRules = readFilterRules(content);
+      irisState.page = 1;
+      irisState.filteredContainers = applyIrisFilters(irisState.containers);
+      drawIrisContent(content.closest("#app-content"), irisState.userContext);
+    });
+    input.addEventListener("input", () => {
+      clearTimeout(irisState.debounceTimer);
+      irisState.debounceTimer = setTimeout(() => {
+        irisState.filterRules = readFilterRules(content);
+        irisState.page = 1;
+        irisState.filteredContainers = applyIrisFilters(irisState.containers);
+        drawIrisContent(content.closest("#app-content"), irisState.userContext);
+      }, 250);
+    });
+  });
+
+  content.querySelectorAll("[data-column-toggle]").forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      const key = checkbox.dataset.columnToggle;
+      if (checkbox.checked) {
+        irisState.visibleContainerColumns = [...new Set([...irisState.visibleContainerColumns, key])];
+      } else {
+        irisState.visibleContainerColumns = irisState.visibleContainerColumns.filter((item) => item !== key);
+      }
+      drawIrisContent(content.closest("#app-content"), irisState.userContext);
+    });
+  });
+
+  content.querySelectorAll("[data-column-move]").forEach((button) => {
+    button.addEventListener("click", () => {
+      moveColumn(button.dataset.columnKey, Number(button.dataset.columnMove));
+      drawIrisContent(content.closest("#app-content"), irisState.userContext);
     });
   });
 }
@@ -618,6 +672,13 @@ function wireAccountsView(content) {
     irisState.accountCountryFilter = event.target.value;
     irisState.filteredAccounts = applyAccountFilters(irisState.accounts);
     drawIrisContent(content.closest("#app-content"), irisState.userContext);
+  });
+
+  content.querySelectorAll("[data-account-select]").forEach((row) => {
+    row.addEventListener("click", () => {
+      irisState.selectedAccountId = row.dataset.accountSelect;
+      renderIrisAccountDetails(content.querySelector("#iris-account-detail-panel"));
+    });
   });
 }
 
@@ -637,7 +698,8 @@ function normalizeContainerPayload(payload) {
     features: normalizeArray(item.features || item.capabilities || item.modules),
     usage: normalizeUsage(item.usage || item.metrics || item.consumption || {}),
     expires_at: item.expires_at || item.expiresAt || item.expiration_date || "",
-    updated_at: item.updated_at || item.updatedAt || item.last_updated || ""
+    updated_at: item.updated_at || item.updatedAt || item.last_updated || "",
+    raw: item
   }));
 }
 
@@ -653,8 +715,163 @@ function normalizeAccountPayload(payload) {
     accountOwnerName: item.accountOwnerName || item.ownerName || "",
     renewalOwnerName: item.renewalOwnerName || "",
     resourceManagerName: item.resourceManagerName || "",
-    containerIds: item.containerIds || item.container_ids || []
+    containerIds: item.containerIds || item.container_ids || [],
+    raw: item
   }));
+}
+
+function renderIrisAdvancedFilters() {
+  const rules = irisState.filterRules.length
+    ? irisState.filterRules
+    : [
+        { field: "name", operator: "contains", value: "" },
+        { field: "account", operator: "contains", value: "" },
+        { field: "products", operator: "contains", value: "" }
+      ];
+
+  return `
+    <div class="iris-filter-builder">
+      <div class="section-heading">
+        <h4>Advanced search</h4>
+        <select id="iris-filter-logic">
+          <option value="AND" ${irisState.filterLogic === "AND" ? "selected" : ""}>AND</option>
+          <option value="OR" ${irisState.filterLogic === "OR" ? "selected" : ""}>OR</option>
+        </select>
+      </div>
+      ${rules
+        .map(
+          (rule, index) => `
+            <div class="iris-filter-row">
+              <select data-filter-field="${index}">
+                ${CONTAINER_COLUMNS.map(
+                  (column) => `<option value="${column.key}" ${rule.field === column.key ? "selected" : ""}>${column.label}</option>`
+                ).join("")}
+              </select>
+              <select data-filter-operator="${index}">
+                ${["contains", "equals", "starts with", "is empty"].map(
+                  (operator) => `<option value="${operator}" ${rule.operator === operator ? "selected" : ""}>${operator}</option>`
+                ).join("")}
+              </select>
+              <input data-filter-value="${index}" value="${escapeHtml(rule.value || "")}" placeholder="Filter value" />
+            </div>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function renderColumnConfigurator() {
+  return `
+    <div class="iris-column-config">
+      <div class="section-heading">
+        <h4>Table columns</h4>
+        <span class="muted">Show, hide, and reorder columns</span>
+      </div>
+      <div class="iris-column-list">
+        ${CONTAINER_COLUMNS.map(
+          (column) => `
+            <label class="iris-column-option">
+              <input type="checkbox" data-column-toggle="${column.key}" ${irisState.visibleContainerColumns.includes(column.key) ? "checked" : ""} />
+              <span>${column.label}</span>
+              <button class="button secondary" type="button" data-column-key="${column.key}" data-column-move="-1">Up</button>
+              <button class="button secondary" type="button" data-column-key="${column.key}" data-column-move="1">Down</button>
+            </label>
+          `
+        ).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function readFilterRules(content) {
+  return [0, 1, 2].map((index) => ({
+    field: content.querySelector(`[data-filter-field="${index}"]`)?.value || "name",
+    operator: content.querySelector(`[data-filter-operator="${index}"]`)?.value || "contains",
+    value: content.querySelector(`[data-filter-value="${index}"]`)?.value.trim() || ""
+  }));
+}
+
+function evaluateFilterRules(container) {
+  const activeRules = irisState.filterRules.filter(
+    (rule) => rule.operator === "is empty" || rule.value
+  );
+
+  if (!activeRules.length) {
+    return true;
+  }
+
+  const results = activeRules.map((rule) => {
+    const column = CONTAINER_COLUMNS.find((item) => item.key === rule.field);
+    const rawValue = String(column?.getValue(container) ?? "").toLowerCase();
+    const needle = String(rule.value || "").toLowerCase();
+
+    if (rule.operator === "equals") {
+      return rawValue === needle;
+    }
+    if (rule.operator === "starts with") {
+      return rawValue.startsWith(needle);
+    }
+    if (rule.operator === "is empty") {
+      return !rawValue || rawValue === "-";
+    }
+    return rawValue.includes(needle);
+  });
+
+  return irisState.filterLogic === "OR" ? results.some(Boolean) : results.every(Boolean);
+}
+
+function getVisibleColumns() {
+  const selected = irisState.visibleContainerColumns
+    .map((key) => CONTAINER_COLUMNS.find((column) => column.key === key))
+    .filter(Boolean);
+  return selected.length ? selected : [CONTAINER_COLUMNS[0]];
+}
+
+function moveColumn(key, direction) {
+  const current = [...irisState.visibleContainerColumns];
+  const index = current.indexOf(key);
+  const nextIndex = index + direction;
+  if (index < 0 || nextIndex < 0 || nextIndex >= current.length) {
+    return;
+  }
+  const [item] = current.splice(index, 1);
+  current.splice(nextIndex, 0, item);
+  irisState.visibleContainerColumns = current;
+}
+
+function renderIrisAccountDetails(panel) {
+  const selected = irisState.filteredAccounts.find(
+    (account) => account.id === irisState.selectedAccountId
+  );
+
+  if (!selected) {
+    panel.innerHTML = "";
+    return;
+  }
+
+  panel.innerHTML = `
+    <article class="panel iris-details-panel">
+      <div class="section-heading">
+        <h3>${escapeHtml(selected.name || selected.id)}</h3>
+        <span class="pill">${escapeHtml(selected.type || "Account")}</span>
+      </div>
+      <div class="detail-grid">
+        <article><strong>Account ID</strong>${escapeHtml(selected.id)}</article>
+        <article><strong>Country</strong>${escapeHtml(selected.billingCountry || "-")}</article>
+        <article><strong>City</strong>${escapeHtml(selected.billingCity || "-")}</article>
+        <article><strong>Industry</strong>${escapeHtml(selected.industry || "-")}</article>
+        <article><strong>Account owner</strong>${escapeHtml(selected.accountOwnerName || "-")}</article>
+        <article><strong>Containers</strong>${escapeHtml(String((selected.containerIds || []).length))}</article>
+      </div>
+      <div>
+        <strong class="muted">Raw account payload</strong>
+        <div class="code-block iris-details-code">${escapeHtml(
+          JSON.stringify(selected.raw || selected, null, 2)
+        )}</div>
+      </div>
+    </article>
+  `;
 }
 
 function normalizeArray(value) {

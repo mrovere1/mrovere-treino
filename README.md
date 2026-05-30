@@ -97,6 +97,18 @@ Expected source files:
 2. Reload the portal in the browser.
 3. Open Partner Dashboard again to parse the updated workbook.
 
+### Google Drive source files
+
+The current static app reads files from the same static origin as the app, so the reliable v1 flow is to place approved copies in the repository paths above.
+
+Direct browser reads from a shared Google Drive folder are not enabled in this version because they would require one of these additional patterns:
+
+- A public/export URL with CORS-compatible access, which is usually not appropriate for internal files.
+- Google Drive API OAuth in the frontend, which adds user consent, scopes, token handling, and more security review.
+- A backend or scheduled job that downloads from Drive and publishes sanitized files into `data/partner/`.
+
+Recommended v1 flow: keep the Drive folder as the source of truth, download the latest Excel/Word files, place them under `data/partner/`, test locally, then commit only approved non-sensitive files.
+
 ### Update accreditation requirements
 
 The runtime rule source is `data/partner/accreditation-requirements.json`.
@@ -109,10 +121,13 @@ When the Word document changes:
 
 ### Email templates
 
-Partner templates are versioned locally in IndexedDB.
+Partner templates are versioned locally in IndexedDB and can be backed up under `data/partner/templates/`.
 
 - Admin users can create templates, edit templates, save changes, save new versions, and export JSON.
 - Readonly users can view templates and copy content.
+- The Email Templates view lets users choose a partner before previewing or copying a template.
+- Partner-specific variables fill completed courses, missing courses, maturity summary, contact name, and next steps.
+- To promote browser-edited templates into the repository, export JSON from the app and save the file under `data/partner/templates/`.
 
 ## IRIS Dashboard
 
@@ -135,6 +150,9 @@ Admins can also import JSON files through the UI:
 - Import accounts JSON
 - Reload latest files
 - Clear local IRIS data
+- Advanced search supports multiple filter rows with `AND` or `OR` logic.
+- Container table columns can be shown, hidden, and reordered in the browser.
+- Container/account details open only after clicking a row.
 
 ### Update IRIS snapshots
 
@@ -169,6 +187,19 @@ If those files do not exist, the app shows a friendly message and still lets adm
 2. Copy them into `data/tasks/`, or use the import buttons in the portal.
 3. Open MROVERE Tasks.
 4. Manage editable todos locally in the browser.
+
+### Can Slack or Claude write directly to GitHub?
+
+Yes, but do not put a long-lived GitHub token in a browser or Slack bot without guardrails.
+
+Recommended options:
+
+- GitHub Actions workflow: Slack/Claude writes or uploads an artifact, then a GitHub Action commits `data/tasks/claude_tasks.json` or `data/tasks/slack_tasks.json` into a branch or directly into a controlled data branch.
+- GitHub App: best long-term option for a Slack bot because permissions can be scoped to one repository and specific contents access.
+- Manual import: safest first phase. Export JSON from Claude or Slack and import it in the Tasks UI.
+- Local scheduled routine: Claude Code can generate `data/tasks/claude_tasks.json` in the local checkout, then you review and push.
+
+For this static v1, the app itself does not write directly to GitHub. It reads local/static JSON files and browser imports.
 
 ## Deployment
 

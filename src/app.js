@@ -132,9 +132,15 @@ function renderShell() {
     <div class="shell ${appState.sidebarCollapsed ? "sidebar-collapsed" : ""}">
       <aside class="sidebar">
         <div class="sidebar-brand">
-          <div class="sidebar-brand-mark"></div>
+          <div class="sidebar-brand-mark" aria-hidden="true">
+            <svg width="34" height="34" viewBox="0 0 28 28" fill="none">
+              <polygon points="14,2 24,7.5 24,20.5 14,26 4,20.5 4,7.5" stroke="currentColor" stroke-width="1.5" />
+              <polygon points="14,6 21,10 21,18 14,22 7,18 7,10" stroke="currentColor" stroke-width="1" />
+              <polygon points="14,10 18,12.5 18,17.5 14,20 10,17.5 10,12.5" stroke="currentColor" stroke-width=".8" />
+            </svg>
+          </div>
           <div class="sidebar-brand-copy">
-            <h1>Apps MROVERE</h1>
+            <h1>Apps Mrovere</h1>
             <div class="muted">Internal operations portal</div>
           </div>
         </div>
@@ -161,7 +167,8 @@ function renderShell() {
         <header class="topbar">
           <div class="topbar-left">
             <button id="sidebar-toggle" class="button secondary" type="button">
-              ${appState.sidebarCollapsed ? "Open menu" : "Hide menu"}
+              <span aria-hidden="true">${appState.sidebarCollapsed ? ">" : "<"}</span>
+              <span class="toggle-label">${appState.sidebarCollapsed ? "Menu" : "Hide"}</span>
             </button>
             <div class="topbar-title">
               <h2>${routeMeta.title}</h2>

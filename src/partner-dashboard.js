@@ -17,6 +17,7 @@ import {
 const partnerState = {
   activeTab: "overview",
   selectedTemplateId: null,
+  selectedPartnerId: null,
   partners: [],
   requirements: null,
   templates: []
@@ -36,6 +37,8 @@ export async function renderPartnerDashboard(container, userContext) {
     partnerState.requirements = requirements;
     partnerState.templates = templates;
     partnerState.selectedTemplateId = partnerState.selectedTemplateId || templates[0]?.id || null;
+    partnerState.selectedPartnerId =
+      partnerState.selectedPartnerId || partnerState.partners[0]?.partnerId || null;
 
     drawPartnerModule(container, userContext);
   } catch (error) {
@@ -45,44 +48,74 @@ export async function renderPartnerDashboard(container, userContext) {
 
 export function renderPartnerOverview(partners) {
   const readyCount = partners.filter((partner) => partner.computed.accreditationReady).length;
-  const theoryPending = partners.filter((partner) => !partner.theoryCompleted).length;
-  const followUpPartners = partners
-    .filter((partner) => partner.computed.missingCourses.length)
-    .slice(0, 8);
+  const introReady = partners.filter((partner) => partner.computed.introCertified).length;
+  const theoryDone = partners.filter((partner) => partner.theoryCompleted).length;
+  const inProgress = partners.filter((partner) => partner.computed.missingCourses.length).length;
 
   return `
-    <section class="grid-cards">
+    <section class="partner-grid4">
       <article class="stat-card panel">
-        <h3>Total partners</h3>
+        <h3>Tracked partners</h3>
         <div class="stat-value">${partners.length}</div>
+        <p class="muted">Focus partners BR</p>
       </article>
       <article class="stat-card panel">
-        <h3>Accreditation ready</h3>
-        <div class="stat-value">${readyCount}</div>
+        <h3>Intro CERT complete</h3>
+        <div class="stat-value">${introReady}</div>
+        <p class="muted">Accredited in this stage</p>
       </article>
       <article class="stat-card panel">
-        <h3>Theory pending</h3>
-        <div class="stat-value">${theoryPending}</div>
+        <h3>EM theory done</h3>
+        <div class="stat-value">${theoryDone}</div>
+        <p class="muted">Theory course completed</p>
+      </article>
+      <article class="stat-card panel">
+        <h3>In progress</h3>
+        <div class="stat-value">${inProgress}</div>
+        <p class="muted">Need follow-up</p>
       </article>
     </section>
-    <section class="panel partner-overview-list" style="padding: 1rem;">
-      <div class="section-heading">
-        <h3>Partners that need follow-up</h3>
-        <span class="muted">${followUpPartners.length} shown</span>
+    <section class="panel card-table">
+      <header>
+        <div>
+          <h3>Partner status</h3>
+          <p class="muted">Live status computed from the current workbook and accreditation rules.</p>
+        </div>
+      </header>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Partner</th>
+              <th>Tier</th>
+              <th>Contact</th>
+              <th>Intro CERT</th>
+              <th>SP CERT</th>
+              <th>EM theory</th>
+              <th>Accreditation</th>
+              <th>Overall progress</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${partners
+              .map(
+                (partner) => `
+                  <tr>
+                    <td><strong>${escapeHtml(partner.partnerName)}</strong></td>
+                    <td>${renderTierBadge(partner.status)}</td>
+                    <td class="muted">${escapeHtml(partner.primaryContact || "-")}</td>
+                    <td>${renderProgressPill(partner.computed.introCertified, partner.computed.missingIntroCourses)}</td>
+                    <td>${renderProgressPill(partner.computed.specialistCertified, partner.computed.missingSpecialistCourses)}</td>
+                    <td>${renderStatusPill(partner.theoryCompleted)}</td>
+                    <td>${renderProgressPill(partner.computed.accreditationReady, partner.computed.missingCourses)}</td>
+                    <td>${renderProgressBar(getPartnerProgress(partner))}</td>
+                  </tr>
+                `
+              )
+              .join("")}
+          </tbody>
+        </table>
       </div>
-      ${followUpPartners
-        .map(
-          (partner) => `
-            <article class="partner-overview-row">
-              <div>
-                <strong>${escapeHtml(partner.partnerName)}</strong>
-                <div class="muted">${escapeHtml(partner.primaryContact || "No primary contact")}</div>
-              </div>
-              <div class="muted">${escapeHtml(partner.computed.missingCourses.join(" | "))}</div>
-            </article>
-          `
-        )
-        .join("")}
     </section>
   `;
 }
@@ -92,8 +125,8 @@ export function renderPartnerCerts(partners) {
     <section class="panel card-table">
       <header>
         <div>
-          <h3>Certification status</h3>
-          <p class="muted">Computed from the live workbook and accreditation rule set.</p>
+          <h3>Course detail by partner</h3>
+          <p class="muted">Rules: Intro = required courses plus grouped choices. Specialist = required courses plus 1-of-2 and 2-of-3 rules.</p>
         </div>
       </header>
       <div class="table-wrap">
@@ -101,11 +134,13 @@ export function renderPartnerCerts(partners) {
           <thead>
             <tr>
               <th>Partner</th>
-              <th>Intro</th>
-              <th>Specialist</th>
+              <th>Tier</th>
+              <th>Intro courses</th>
+              <th>Intro CERT</th>
+              <th>Specialist courses</th>
+              <th>SP CERT</th>
               <th>Theory</th>
               <th>Accreditation</th>
-              <th>Missing items</th>
             </tr>
           </thead>
           <tbody>
@@ -117,11 +152,13 @@ export function renderPartnerCerts(partners) {
                       <strong>${escapeHtml(partner.partnerName)}</strong>
                       <div class="muted">${escapeHtml(partner.primaryContact || "")}</div>
                     </td>
-                    <td>${renderStatusPill(partner.computed.introCertified)}</td>
-                    <td>${renderStatusPill(partner.computed.specialistCertified)}</td>
+                    <td>${renderTierBadge(partner.status)}</td>
+                    <td>${renderCourseList(partner.introCourses)}</td>
+                    <td>${renderProgressPill(partner.computed.introCertified, partner.computed.missingIntroCourses)}</td>
+                    <td>${renderCourseList(partner.specialistCourses)}</td>
+                    <td>${renderProgressPill(partner.computed.specialistCertified, partner.computed.missingSpecialistCourses)}</td>
                     <td>${renderStatusPill(partner.theoryCompleted)}</td>
-                    <td>${renderStatusPill(partner.computed.accreditationReady)}</td>
-                    <td>${escapeHtml(partner.computed.missingCourses.join(" | ") || "None")}</td>
+                    <td>${renderProgressPill(partner.computed.accreditationReady, partner.computed.missingCourses)}</td>
                   </tr>
                 `
               )
@@ -186,7 +223,9 @@ export function renderEmailTemplates(userContext) {
   const selectedTemplate =
     partnerState.templates.find((template) => template.id === partnerState.selectedTemplateId) ||
     partnerState.templates[0];
-  const samplePartner = partnerState.partners[0];
+  const samplePartner =
+    partnerState.partners.find((partner) => partner.partnerId === partnerState.selectedPartnerId) ||
+    partnerState.partners[0];
   const sampleData = buildTemplateSampleData(samplePartner);
 
   return `
@@ -214,8 +253,41 @@ export function renderEmailTemplates(userContext) {
             `
           )
           .join("")}
+        <div class="template-repository-note">
+          Seed templates live under <code>data/partner/templates</code>. Browser edits are saved locally until exported.
+        </div>
       </article>
       <div class="template-stack">
+        <article class="panel template-partner-picker">
+          <div class="section-heading">
+            <h3>Partner context</h3>
+            <span class="pill">${escapeHtml(samplePartner?.status || "No tier")}</span>
+          </div>
+          <div class="field">
+            <label for="template-partner">Compose using partner data</label>
+            <select id="template-partner">
+              ${partnerState.partners
+                .map(
+                  (partner) => `
+                    <option value="${escapeHtml(partner.partnerId)}" ${partner.partnerId === samplePartner?.partnerId ? "selected" : ""}>
+                      ${escapeHtml(partner.partnerName)} (${escapeHtml(partner.status || "No tier")})
+                    </option>
+                  `
+                )
+                .join("")}
+            </select>
+          </div>
+          <div class="template-context-grid">
+            <article>
+              <strong>Completed courses</strong>
+              <p>${escapeHtml(sampleData.completed_courses || "None")}</p>
+            </article>
+            <article>
+              <strong>Missing courses</strong>
+              <p>${escapeHtml(sampleData.missing_courses || "None")}</p>
+            </article>
+          </div>
+        </article>
         <article class="panel template-editor">
           <div class="section-heading">
             <h3>${escapeHtml(selectedTemplate.name)}</h3>
@@ -255,7 +327,12 @@ export function renderEmailTemplates(userContext) {
             <h3>Preview</h3>
             <span class="pill">${escapeHtml(samplePartner?.partnerName || "Sample partner")}</span>
           </div>
+          <div class="field">
+            <label>Subject preview</label>
+            <input disabled value="${escapeHtml(renderSubjectPreview(selectedTemplate, sampleData))}" />
+          </div>
           <div class="code-block">${escapeHtml(renderTemplatePreview(selectedTemplate, sampleData))}</div>
+          <button id="copy-template-preview" class="button secondary" type="button">Copy preview</button>
         </article>
         <article class="panel template-variables">
           <div class="section-heading">
@@ -347,6 +424,11 @@ function renderPartnerTabContent(tabContent, userContext) {
 }
 
 function wireTemplateActions(container, userContext) {
+  container.querySelector("#template-partner")?.addEventListener("change", (event) => {
+    partnerState.selectedPartnerId = event.target.value;
+    drawPartnerModule(container.closest("#app-content"), userContext);
+  });
+
   container.querySelectorAll("[data-template-select]").forEach((button) => {
     button.addEventListener("click", () => {
       partnerState.selectedTemplateId = button.dataset.templateSelect;
@@ -391,6 +473,22 @@ function wireTemplateActions(container, userContext) {
       URL.revokeObjectURL(url);
     });
   }
+
+  container.querySelector("#copy-template-preview")?.addEventListener("click", async () => {
+    const selectedTemplate = partnerState.templates.find(
+      (template) => template.id === partnerState.selectedTemplateId
+    );
+    const selectedPartner = partnerState.partners.find(
+      (partner) => partner.partnerId === partnerState.selectedPartnerId
+    );
+    const sampleData = buildTemplateSampleData(selectedPartner);
+    const text = [
+      `Subject: ${renderSubjectPreview(selectedTemplate, sampleData)}`,
+      "",
+      renderTemplatePreview(selectedTemplate, sampleData)
+    ].join("\n");
+    await navigator.clipboard?.writeText(text);
+  });
 }
 
 function readTemplateForm(container) {
@@ -412,8 +510,8 @@ function buildTemplateSampleData(partner) {
   return {
     partner_name: partner?.partnerName || "Sample Partner",
     contact_name: partner?.primaryContact || "Sample Contact",
-    completed_courses: partner?.computed.completedCourses.join(", ") || "No completed courses yet",
-    missing_courses: partner?.computed.missingCourses.join(", ") || "No missing courses",
+    completed_courses: formatList(partner?.computed.completedCourses, "No completed courses yet"),
+    missing_courses: formatList(partner?.computed.missingCourses, "No missing courses"),
     maturity_level: partner
       ? `EM: ${partner.maturity.current.EM || "-"} | VM/WAS: ${partner.maturity.current["VM/WAS"] || "-"} | CS: ${partner.maturity.current.CS || "-"} | TPM: ${partner.maturity.current.TPM || "-"}`
       : "EM: Planned | VM/WAS: Planned | CS: Planned | TPM: Planned",
@@ -424,6 +522,19 @@ function buildTemplateSampleData(partner) {
   };
 }
 
+function renderSubjectPreview(template, sampleData) {
+  if (!template) {
+    return "";
+  }
+
+  let output = template.subject || "";
+  TEMPLATE_VARIABLES.forEach((variable) => {
+    const key = variable.variable.replaceAll("{", "").replaceAll("}", "");
+    output = output.replaceAll(variable.variable, sampleData[key] || "");
+  });
+  return output;
+}
+
 function renderTabButton(tab, label) {
   return `<button class="tab-button ${partnerState.activeTab === tab ? "active" : ""}" data-tab="${tab}" type="button">${label}</button>`;
 }
@@ -432,6 +543,64 @@ function renderStatusPill(value) {
   return value
     ? '<span class="pill success">Complete</span>'
     : '<span class="pill warning">Pending</span>';
+}
+
+function renderProgressPill(isComplete, missingItems = []) {
+  if (isComplete) {
+    return '<span class="pill success">Accredited</span>';
+  }
+
+  const tooltip = missingItems.length ? ` title="${escapeHtml(missingItems.join(" | "))}"` : "";
+  return `<span class="pill warning"${tooltip}>In progress</span>`;
+}
+
+function renderTierBadge(tier) {
+  const normalized = String(tier || "Unknown").toLowerCase();
+  const className = ["platinum", "gold", "silver", "bronze"].includes(normalized)
+    ? normalized
+    : "neutral";
+  return `<span class="partner-tier ${className}">${escapeHtml(tier || "Unknown")}</span>`;
+}
+
+function renderCourseList(courses) {
+  return `
+    <div class="partner-course-list">
+      ${Object.entries(courses)
+        .map(
+          ([key, complete]) => `
+            <span class="partner-course ${complete ? "done" : "pending"}">
+              ${escapeHtml(key.toUpperCase())}
+            </span>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function getPartnerProgress(partner) {
+  const values = [
+    ...Object.values(partner.introCourses),
+    ...Object.values(partner.specialistCourses),
+    partner.theoryCompleted
+  ];
+  const done = values.filter(Boolean).length;
+  return Math.round((done / Math.max(values.length, 1)) * 100);
+}
+
+function renderProgressBar(value) {
+  return `
+    <div class="partner-progress">
+      <span class="partner-progress-track">
+        <span class="partner-progress-fill" style="width: ${value}%"></span>
+      </span>
+      <span>${value}%</span>
+    </div>
+  `;
+}
+
+function formatList(items = [], fallback) {
+  return items.length ? items.map((item) => `- ${item}`).join("\n") : fallback;
 }
 
 function escapeHtml(value) {
