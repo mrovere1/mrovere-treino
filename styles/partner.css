@@ -18,10 +18,13 @@
 }
 
 .template-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
   width: fit-content;
   max-width: 100%;
-  min-height: 34px;
-  padding: 0.35rem 0.6rem;
+  min-height: auto;
+  padding: 0.45rem 0.7rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   color: var(--text);
@@ -31,12 +34,8 @@
 }
 
 .template-item strong {
-  font-size: 0.86rem;
-}
-
-.template-item .muted {
-  margin-top: 0.12rem;
-  font-size: 0.72rem;
+  font-size: inherit;
+  font-weight: 600;
 }
 
 .template-item.active {

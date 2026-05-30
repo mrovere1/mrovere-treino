@@ -248,7 +248,6 @@ export function renderEmailTemplates(userContext) {
                 type="button"
               >
                 <strong>${escapeHtml(template.name)}</strong>
-                <div class="muted">Version ${template.version}</div>
               </button>
             `
           )
