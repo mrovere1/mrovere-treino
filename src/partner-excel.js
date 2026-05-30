@@ -54,11 +54,12 @@ export function parsePartnerWorkbook(workbook, requirements) {
     throw new Error("The workbook does not contain the expected structure.");
   }
 
-  const groups = propagateGroups(rows[0] || []);
-  const headers = rows[1] || [];
+  const headerRowIndex = findHeaderRowIndex(rows);
+  const groupRows = rows.slice(0, headerRowIndex).map((row) => propagateGroups(row || []));
+  const headers = rows[headerRowIndex] || [];
   const allColumns = headers.map((header, index) => ({
     index,
-    group: groups[index] || "",
+    group: groupRows.map((row) => row[index]).filter(Boolean).join(" > "),
     header: String(header || "").trim()
   }));
 
@@ -66,7 +67,9 @@ export function parsePartnerWorkbook(workbook, requirements) {
     ["EM", "VM/WAS", "CS", "TPM"].includes(column.header)
   );
 
-  const dataRows = rows.slice(3).filter((row) => String(row[1] || "").trim());
+  const dataRows = rows
+    .slice(headerRowIndex + 1)
+    .filter((row) => String(row[1] || "").trim() && String(row[0] || "").trim());
 
   return dataRows.map((row) => {
     const introCourses = {
@@ -80,12 +83,12 @@ export function parsePartnerWorkbook(workbook, requirements) {
     };
 
     const specialistCourses = {
-      one: readCompletion(row, findColumn(allColumns, "ONE", "special", 1)),
-      vm: readCompletion(row, findColumn(allColumns, "VM", "special", 1)),
-      sc: readCompletion(row, findColumn(allColumns, "SC", "special", 1)),
-      ie: readCompletion(row, findColumn(allColumns, "IE", "special", 1)),
-      ot: readCompletion(row, findColumn(allColumns, "OT", "special", 1)),
-      cs: readCompletion(row, findColumn(allColumns, "CS", "special", 1))
+      one: readCompletion(row, findColumn(allColumns, "ONE", "special", 0)),
+      vm: readCompletion(row, findColumn(allColumns, "VM", "special", 0)),
+      sc: readCompletion(row, findColumn(allColumns, "SC", "special", 0)),
+      ie: readCompletion(row, findColumn(allColumns, "IE", "special", 0)),
+      ot: readCompletion(row, findColumn(allColumns, "OT", "special", 0)),
+      cs: readCompletion(row, findColumn(allColumns, "CS", "special", 0))
     };
 
     const theoryCompleted = readCompletion(row, findColumn(allColumns, "Theory"));
@@ -134,6 +137,19 @@ export function parsePartnerWorkbook(workbook, requirements) {
   });
 }
 
+function findHeaderRowIndex(rows) {
+  const index = rows.findIndex((row) => {
+    const values = row.map((cell) => String(cell || "").trim().toLowerCase());
+    return values.includes("id reseller") && values.includes("partner");
+  });
+
+  if (index < 0) {
+    throw new Error("The partner workbook header row was not found.");
+  }
+
+  return index;
+}
+
 function propagateGroups(groupRow) {
   let current = "";
   return groupRow.map((cell) => {
@@ -172,7 +188,7 @@ function readValue(row, column) {
 
 function readCompletion(row, column) {
   const value = String(readValue(row, column) || "").trim().toLowerCase();
-  return ["yes", "y", "done", "completed", "complete", "x", "1", "true"].includes(value);
+  return ["ok", "yes", "y", "done", "completed", "complete", "x", "1", "true"].includes(value);
 }
 
 function buildMaturitySnapshot(row, columns) {
