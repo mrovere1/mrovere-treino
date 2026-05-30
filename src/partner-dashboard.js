@@ -180,18 +180,23 @@ export function renderPartnerMaturity(partners) {
         </div>
       </header>
       <div class="table-wrap">
-        <table>
+        <table class="maturity-table">
           <thead>
             <tr>
-              <th>Partner</th>
-              <th>Current EM</th>
-              <th>Current VM/WAS</th>
-              <th>Current CS</th>
-              <th>Current TPM</th>
-              <th>Target EM</th>
-              <th>Target VM/WAS</th>
-              <th>Target CS</th>
-              <th>Target TPM</th>
+              <th rowspan="2">Partner</th>
+              <th rowspan="2">Tier</th>
+              <th class="maturity-group maturity-group-delivery" colspan="4">EM Delivery (Deployment)</th>
+              <th class="maturity-group maturity-group-presales" colspan="4">Pre-Sales Delivery (PoV)</th>
+            </tr>
+            <tr>
+              <th class="maturity-delivery maturity-delivery-start">EM</th>
+              <th class="maturity-delivery">VM/WAS</th>
+              <th class="maturity-delivery">CS</th>
+              <th class="maturity-delivery maturity-delivery-end">TPM</th>
+              <th class="maturity-presales maturity-presales-start">EM</th>
+              <th class="maturity-presales">VM/WAS</th>
+              <th class="maturity-presales">CS</th>
+              <th class="maturity-presales">TPM</th>
             </tr>
           </thead>
           <tbody>
@@ -199,12 +204,13 @@ export function renderPartnerMaturity(partners) {
               .map(
                 (partner) => `
                   <tr>
-                    <td>${escapeHtml(partner.partnerName)}</td>
-                    <td>${renderMaturityValue(partner.maturity.current.EM)}</td>
+                    <td><strong>${escapeHtml(partner.partnerName)}</strong></td>
+                    <td>${renderTierBadge(partner.status)}</td>
+                    <td class="maturity-delivery-start">${renderMaturityValue(partner.maturity.current.EM)}</td>
                     <td>${renderMaturityValue(partner.maturity.current["VM/WAS"])}</td>
                     <td>${renderMaturityValue(partner.maturity.current.CS)}</td>
-                    <td>${renderMaturityValue(partner.maturity.current.TPM)}</td>
-                    <td>${renderMaturityValue(partner.maturity.target.EM)}</td>
+                    <td class="maturity-delivery-end">${renderMaturityValue(partner.maturity.current.TPM)}</td>
+                    <td class="maturity-presales-start">${renderMaturityValue(partner.maturity.target.EM)}</td>
                     <td>${renderMaturityValue(partner.maturity.target["VM/WAS"])}</td>
                     <td>${renderMaturityValue(partner.maturity.target.CS)}</td>
                     <td>${renderMaturityValue(partner.maturity.target.TPM)}</td>
@@ -630,14 +636,30 @@ function getPartnerProgress(partner) {
 }
 
 function renderProgressBar(value) {
+  const className = getProgressTone(value);
+
   return `
     <div class="partner-progress">
       <span class="partner-progress-track">
-        <span class="partner-progress-fill" style="width: ${value}%"></span>
+        <span class="partner-progress-fill ${className}" style="width: ${value}%"></span>
       </span>
       <span>${value}%</span>
     </div>
   `;
+}
+
+function getProgressTone(value) {
+  const numericValue = Number(value) || 0;
+  if (numericValue >= 100) {
+    return "complete";
+  }
+  if (numericValue >= 61) {
+    return "good";
+  }
+  if (numericValue >= 16) {
+    return "warning";
+  }
+  return "danger";
 }
 
 function renderProgramProgress(partner) {

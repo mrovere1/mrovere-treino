@@ -185,11 +185,72 @@
   background: var(--accent);
 }
 
+.partner-progress-fill.danger {
+  background: #dc2626;
+}
+
+.partner-progress-fill.warning {
+  background: #f97316;
+}
+
+.partner-progress-fill.good {
+  background: #16a34a;
+}
+
+.partner-progress-fill.complete {
+  background: linear-gradient(90deg, #16a34a, #84cc16);
+}
+
 .partner-program-progress {
   display: flex;
   align-items: center;
   gap: 0.45rem;
   min-width: 170px;
+}
+
+.maturity-table thead th {
+  vertical-align: middle;
+}
+
+.maturity-table .maturity-group {
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.maturity-table .maturity-group-delivery,
+.maturity-table .maturity-delivery,
+.maturity-table .maturity-delivery-start,
+.maturity-table .maturity-delivery-end {
+  background: #fff7ed;
+}
+
+.maturity-table .maturity-group-delivery {
+  color: #c2410c;
+}
+
+.maturity-table .maturity-group-presales,
+.maturity-table .maturity-presales,
+.maturity-table .maturity-presales-start {
+  background: #eff6ff;
+}
+
+.maturity-table .maturity-group-presales {
+  color: #1d4ed8;
+}
+
+.maturity-table .maturity-delivery-start,
+.maturity-table .maturity-group-delivery {
+  border-left: 2px solid var(--line);
+}
+
+.maturity-table .maturity-delivery-end {
+  border-right: 2px solid var(--line);
+}
+
+.maturity-table .maturity-presales-start,
+.maturity-table .maturity-group-presales {
+  border-left: 2px solid var(--line);
 }
 
 .maturity-pill {
