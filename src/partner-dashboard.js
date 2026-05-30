@@ -93,7 +93,7 @@ export function renderPartnerOverview(partners) {
               <th>SP CERT</th>
               <th>EM theory</th>
               <th>Accreditation</th>
-              <th>Overall progress</th>
+              <th>Program progress</th>
             </tr>
           </thead>
           <tbody>
@@ -108,7 +108,7 @@ export function renderPartnerOverview(partners) {
                     <td>${renderProgressPill(partner.computed.specialistCertified, partner.computed.missingSpecialistCourses)}</td>
                     <td>${renderStatusPill(partner.theoryCompleted)}</td>
                     <td>${renderProgressPill(partner.computed.accreditationReady, partner.computed.missingCourses)}</td>
-                    <td>${renderProgressBar(getPartnerProgress(partner))}</td>
+                    <td>${renderProgramProgress(partner)}</td>
                   </tr>
                 `
               )
@@ -140,7 +140,7 @@ export function renderPartnerCerts(partners) {
               <th>Specialist courses</th>
               <th>SP CERT</th>
               <th>Theory</th>
-              <th>Accreditation</th>
+              <th>Program progress</th>
             </tr>
           </thead>
           <tbody>
@@ -153,12 +153,12 @@ export function renderPartnerCerts(partners) {
                       <div class="muted">${escapeHtml(partner.primaryContact || "")}</div>
                     </td>
                     <td>${renderTierBadge(partner.status)}</td>
-                    <td>${renderCourseList(partner.introCourses)}</td>
+                    <td>${renderCourseList("intro", partner.introCourses)}</td>
                     <td>${renderProgressPill(partner.computed.introCertified, partner.computed.missingIntroCourses)}</td>
-                    <td>${renderCourseList(partner.specialistCourses)}</td>
+                    <td>${renderCourseList("specialist", partner.specialistCourses)}</td>
                     <td>${renderProgressPill(partner.computed.specialistCertified, partner.computed.missingSpecialistCourses)}</td>
                     <td>${renderStatusPill(partner.theoryCompleted)}</td>
-                    <td>${renderProgressPill(partner.computed.accreditationReady, partner.computed.missingCourses)}</td>
+                    <td>${renderProgramProgress(partner)}</td>
                   </tr>
                 `
               )
@@ -200,14 +200,14 @@ export function renderPartnerMaturity(partners) {
                 (partner) => `
                   <tr>
                     <td>${escapeHtml(partner.partnerName)}</td>
-                    <td>${escapeHtml(partner.maturity.current.EM || "-")}</td>
-                    <td>${escapeHtml(partner.maturity.current["VM/WAS"] || "-")}</td>
-                    <td>${escapeHtml(partner.maturity.current.CS || "-")}</td>
-                    <td>${escapeHtml(partner.maturity.current.TPM || "-")}</td>
-                    <td>${escapeHtml(partner.maturity.target.EM || "-")}</td>
-                    <td>${escapeHtml(partner.maturity.target["VM/WAS"] || "-")}</td>
-                    <td>${escapeHtml(partner.maturity.target.CS || "-")}</td>
-                    <td>${escapeHtml(partner.maturity.target.TPM || "-")}</td>
+                    <td>${renderMaturityValue(partner.maturity.current.EM)}</td>
+                    <td>${renderMaturityValue(partner.maturity.current["VM/WAS"])}</td>
+                    <td>${renderMaturityValue(partner.maturity.current.CS)}</td>
+                    <td>${renderMaturityValue(partner.maturity.current.TPM)}</td>
+                    <td>${renderMaturityValue(partner.maturity.target.EM)}</td>
+                    <td>${renderMaturityValue(partner.maturity.target["VM/WAS"])}</td>
+                    <td>${renderMaturityValue(partner.maturity.target.CS)}</td>
+                    <td>${renderMaturityValue(partner.maturity.target.TPM)}</td>
                   </tr>
                 `
               )
@@ -383,7 +383,7 @@ function drawPartnerModule(container, userContext) {
       </section>
       <section class="tab-strip">
         ${renderTabButton("overview", "Overview")}
-        ${renderTabButton("certifications", "Certifications")}
+        ${renderTabButton("certifications", "Courses")}
         ${renderTabButton("maturity", "Maturity")}
         ${renderTabButton("email", "Email Templates")}
       </section>
@@ -600,30 +600,33 @@ function renderTierBadge(tier) {
   return `<span class="partner-tier ${className}">${escapeHtml(tier || "Unknown")}</span>`;
 }
 
-function renderCourseList(courses) {
+function renderCourseList(type, courses) {
+  const introGroups = [
+    { courses: [["ONE", courses.one]] },
+    { label: "1 of 2", grouped: true, courses: [["VM", courses.vm], ["SC", courses.sc]] },
+    { courses: [["WAS", courses.was], ["IE", courses.ie], ["OT", courses.ot], ["CS", courses.cs]] }
+  ];
+  const specialistGroups = [
+    { courses: [["ONE SP", courses.one]] },
+    { label: "1 of 2", grouped: true, courses: [["VM SP", courses.vm], ["SC SP", courses.sc]] },
+    {
+      label: "2 of 3",
+      grouped: true,
+      strong: true,
+      courses: [["IE SP", courses.ie], ["OT SP", courses.ot], ["CS SP", courses.cs]]
+    }
+  ];
+  const groups = type === "intro" ? introGroups : specialistGroups;
+
   return `
     <div class="partner-course-list">
-      ${Object.entries(courses)
-        .map(
-          ([key, complete]) => `
-            <span class="partner-course ${complete ? "done" : "pending"}">
-              ${escapeHtml(key.toUpperCase())}
-            </span>
-          `
-        )
-        .join("")}
+      ${groups.map(renderCourseGroup).join("")}
     </div>
   `;
 }
 
 function getPartnerProgress(partner) {
-  const values = [
-    ...Object.values(partner.introCourses),
-    ...Object.values(partner.specialistCourses),
-    partner.theoryCompleted
-  ];
-  const done = values.filter(Boolean).length;
-  return Math.round((done / Math.max(values.length, 1)) * 100);
+  return partner.computed.programProgress?.percentage || 0;
 }
 
 function renderProgressBar(value) {
@@ -635,6 +638,54 @@ function renderProgressBar(value) {
       <span>${value}%</span>
     </div>
   `;
+}
+
+function renderProgramProgress(partner) {
+  const progress = partner.computed.programProgress || {
+    totalDone: 0,
+    totalCriteria: 11,
+    percentage: 0
+  };
+
+  return `
+    <div class="partner-program-progress" title="Intro ${progress.introDone || 0}/6 | Specialist ${progress.specialistDone || 0}/4 | Theory ${progress.theoryDone || 0}/1">
+      ${renderProgressBar(progress.percentage)}
+      <span class="muted">${progress.totalDone}/${progress.totalCriteria}</span>
+    </div>
+  `;
+}
+
+function renderCourseGroup(group) {
+  const className = [
+    "partner-course-group",
+    group.grouped ? "grouped" : "",
+    group.strong ? "strong" : ""
+  ].filter(Boolean).join(" ");
+
+  return `
+    <span class="${className}">
+      <span class="partner-course-items">
+        ${group.courses
+          .map(
+            ([label, complete]) => `
+              <span class="partner-course ${complete ? "done" : "pending"}">${escapeHtml(label)}</span>
+            `
+          )
+          .join("")}
+      </span>
+      ${group.label ? `<span class="partner-course-rule">${escapeHtml(group.label)}</span>` : ""}
+    </span>
+  `;
+}
+
+function renderMaturityValue(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  if (!normalized) {
+    return '<span class="maturity-pill empty">-</span>';
+  }
+
+  const className = ["high", "medium", "low"].includes(normalized) ? normalized : "neutral";
+  return `<span class="maturity-pill ${className}">${escapeHtml(normalized.toUpperCase())}</span>`;
 }
 
 function formatList(items = [], fallback) {

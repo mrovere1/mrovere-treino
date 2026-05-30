@@ -63,9 +63,7 @@ export function parsePartnerWorkbook(workbook, requirements) {
     header: String(header || "").trim()
   }));
 
-  const maturityColumns = allColumns.filter((column) =>
-    ["EM", "VM/WAS", "CS", "TPM"].includes(column.header)
-  );
+  const maturityColumnSets = buildMaturityColumnSets(allColumns);
 
   const dataRows = rows
     .slice(headerRowIndex + 1)
@@ -94,15 +92,32 @@ export function parsePartnerWorkbook(workbook, requirements) {
     const theoryCompleted = readCompletion(row, findColumn(allColumns, "Theory"));
     const introResult = evaluateIntro(introCourses, requirements);
     const specialistResult = evaluateSpecialist(specialistCourses, requirements);
+    const workbookFlags = {
+      intro: String(readValue(row, findColumn(allColumns, "Intro CERT")) || ""),
+      specialist: String(readValue(row, findColumn(allColumns, "SP CERT")) || ""),
+      theory: String(readValue(row, findColumn(allColumns, "Theory")) || ""),
+      accreditation: String(readValue(row, findColumn(allColumns, "Accreditation")) || "")
+    };
+    const introCertified = introResult.passed || isAccreditedValue(workbookFlags.intro);
+    const specialistCertified =
+      specialistResult.passed || isAccreditedValue(workbookFlags.specialist);
+    const programProgress = calculateProgramProgress(
+      introCourses,
+      specialistCourses,
+      theoryCompleted,
+      workbookFlags
+    );
 
     const completedCourses = [
       ...introResult.completedCourses,
       ...specialistResult.completedCourses,
       ...(theoryCompleted ? requirements.theory : [])
     ];
+    const missingIntroCourses = introCertified ? [] : introResult.missingCourses;
+    const missingSpecialistCourses = specialistCertified ? [] : specialistResult.missingCourses;
     const missingCourses = [
-      ...introResult.missingCourses,
-      ...specialistResult.missingCourses,
+      ...missingIntroCourses,
+      ...missingSpecialistCourses,
       ...(theoryCompleted ? [] : requirements.theory)
     ];
 
@@ -114,24 +129,20 @@ export function parsePartnerWorkbook(workbook, requirements) {
       introCourses,
       specialistCourses,
       theoryCompleted,
-      workbookFlags: {
-        intro: String(readValue(row, findColumn(allColumns, "Intro CERT")) || ""),
-        specialist: String(readValue(row, findColumn(allColumns, "SP CERT")) || ""),
-        theory: String(readValue(row, findColumn(allColumns, "Theory")) || ""),
-        accreditation: String(readValue(row, findColumn(allColumns, "Accreditation")) || "")
-      },
+      workbookFlags,
       maturity: {
-        current: buildMaturitySnapshot(row, maturityColumns.slice(0, 4)),
-        target: buildMaturitySnapshot(row, maturityColumns.slice(4, 8))
+        current: buildMaturitySnapshot(row, maturityColumnSets.current),
+        target: buildMaturitySnapshot(row, maturityColumnSets.target)
       },
       computed: {
-        introCertified: introResult.passed,
-        specialistCertified: specialistResult.passed,
-        accreditationReady: introResult.passed && specialistResult.passed && theoryCompleted,
+        introCertified,
+        specialistCertified,
+        accreditationReady: introCertified && specialistCertified && theoryCompleted,
+        programProgress,
         completedCourses,
         missingCourses,
-        missingIntroCourses: introResult.missingCourses,
-        missingSpecialistCourses: specialistResult.missingCourses
+        missingIntroCourses,
+        missingSpecialistCourses
       }
     };
   });
@@ -148,6 +159,23 @@ function findHeaderRowIndex(rows) {
   }
 
   return index;
+}
+
+function buildMaturityColumnSets(columns) {
+  const accreditationColumn = findColumn(columns, "Accreditation");
+  const startIndex = accreditationColumn ? accreditationColumn.index + 1 : 0;
+  const maturityColumns = columns
+    .filter(
+      (column) =>
+        column.index > startIndex &&
+        ["EM", "VM/WAS", "CS", "TPM"].includes(column.header)
+    )
+    .sort((left, right) => left.index - right.index);
+
+  return {
+    current: maturityColumns.slice(0, 4),
+    target: maturityColumns.slice(4, 8)
+  };
 }
 
 function propagateGroups(groupRow) {
@@ -197,6 +225,50 @@ function buildMaturitySnapshot(row, columns) {
     output[column.header] = String(readValue(row, column) || "").trim();
   });
   return output;
+}
+
+function calculateProgramProgress(
+  introCourses,
+  specialistCourses,
+  theoryCompleted,
+  workbookFlags
+) {
+  const introDone = isAccreditedValue(workbookFlags.intro)
+    ? 6
+    : [
+        introCourses.one,
+        introCourses.vm || introCourses.sc,
+        introCourses.was,
+        introCourses.ie,
+        introCourses.ot,
+        introCourses.cs
+      ].filter(Boolean).length;
+
+  const specialistDone = isAccreditedValue(workbookFlags.specialist)
+    ? 4
+    : (specialistCourses.one ? 1 : 0) +
+      (specialistCourses.vm || specialistCourses.sc ? 1 : 0) +
+      Math.min(
+        [specialistCourses.ie, specialistCourses.ot, specialistCourses.cs].filter(Boolean).length,
+        2
+      );
+
+  const theoryDone = theoryCompleted ? 1 : 0;
+  const totalDone = introDone + specialistDone + theoryDone;
+  const totalCriteria = 11;
+
+  return {
+    introDone,
+    specialistDone,
+    theoryDone,
+    totalDone,
+    totalCriteria,
+    percentage: Math.round((totalDone / totalCriteria) * 100)
+  };
+}
+
+function isAccreditedValue(value) {
+  return String(value || "").trim().toLowerCase() === "accredited";
 }
 
 function evaluateIntro(courses, requirements) {
