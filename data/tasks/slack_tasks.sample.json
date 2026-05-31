@@ -15,5 +15,19 @@
       ]
     }
   ],
-  "todos": []
+  "todos": [
+    {
+      "id": "slack-todo-1",
+      "title": "Reply to partner Slack thread",
+      "description": "Review the partner update and reply in thread with next steps.",
+      "priority": "medium",
+      "dueDate": "2026-05-29",
+      "status": "open",
+      "source": "slack-bot",
+      "partnerName": "Example Partner",
+      "activityType": "partner-follow-up",
+      "period": "2026-Q2",
+      "tags": ["slack", "partner", "follow-up"]
+    }
+  ]
 }

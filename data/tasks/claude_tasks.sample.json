@@ -31,7 +31,11 @@
       "priority": "high",
       "dueDate": "2026-05-29",
       "status": "open",
-      "source": "claude-routine"
+      "source": "claude-routine",
+      "partnerName": "Example Partner",
+      "activityType": "enablement",
+      "period": "2026-Q2",
+      "tags": ["partner", "enablement", "follow-up"]
     }
   ]
 }

@@ -7,9 +7,12 @@ const tasksState = {
   todos: [],
   deletedTodoIds: [],
   filters: {
-    status: "all",
+    status: "open",
     priority: "all",
-    source: "all"
+    source: "all",
+    partner: "",
+    activityType: "all",
+    period: "all"
   },
   editingTodoId: null
 };
@@ -21,6 +24,10 @@ export async function renderTasksDashboard(container, userContext) {
   tasksState.slackFeed = await loadSlackTasks();
   tasksState.todos = await loadSavedTodos();
   tasksState.deletedTodoIds = await loadDeletedTodoIds();
+  const changed = syncFeedTodosToLocalHistory();
+  if (changed) {
+    await saveTasksState();
+  }
 
   drawTasksModule(container, userContext);
 }
@@ -70,25 +77,30 @@ export async function importTasksJson(source, file) {
 
 export function renderTaskSummary() {
   const allTodos = getMergedTodos();
+  const open = allTodos.filter((todo) => todo.status !== "done").length;
   const completed = allTodos.filter((todo) => todo.status === "done").length;
+  const currentPeriod = getCurrentQuarter();
+  const quarterCompleted = allTodos.filter(
+    (todo) => todo.status === "done" && getTodoPeriod(todo) === currentPeriod
+  ).length;
 
   return `
     <section class="grid-cards">
       <article class="stat-card panel">
-        <h3>Todos</h3>
-        <div class="stat-value">${allTodos.length}</div>
+        <h3>Open todos</h3>
+        <div class="stat-value">${open}</div>
       </article>
       <article class="stat-card panel">
-        <h3>Completed</h3>
+        <h3>Completed history</h3>
         <div class="stat-value">${completed}</div>
+      </article>
+      <article class="stat-card panel">
+        <h3>${currentPeriod} completed</h3>
+        <div class="stat-value">${quarterCompleted}</div>
       </article>
       <article class="stat-card panel">
         <h3>Important emails</h3>
         <div class="stat-value">${tasksState.claudeFeed?.importantEmails?.length || 0}</div>
-      </article>
-      <article class="stat-card panel">
-        <h3>Slack channels</h3>
-        <div class="stat-value">${tasksState.slackFeed?.channels?.length || 0}</div>
       </article>
     </section>
   `;
@@ -161,17 +173,24 @@ export function renderTodoList() {
       ${todos
         .map(
           (todo) => `
-            <article class="todo-item">
+            <article class="todo-item ${todo.status === "done" ? "done" : ""}">
               <header>
-                <label>
-                  <input class="todo-checkbox" type="checkbox" data-todo-toggle="${todo.id}" ${todo.status === "done" ? "checked" : ""} />
+                <div>
                   <strong>${escapeHtml(todo.title)}</strong>
-                </label>
-                <span class="pill ${todo.priority === "high" ? "warning" : ""}">${escapeHtml(todo.priority || "normal")}</span>
+                  <div class="todo-meta">
+                    ${renderTodoMeta(todo)}
+                  </div>
+                </div>
+                <div class="toolbar">
+                  <span class="pill ${todo.priority === "high" ? "warning" : ""}">${escapeHtml(todo.priority || "normal")}</span>
+                  <button class="button ${todo.status === "done" ? "secondary" : "primary"} todo-done-button" data-todo-toggle="${todo.id}" type="button">
+                    ${todo.status === "done" ? "Reopen" : "Done"}
+                  </button>
+                </div>
               </header>
               <div>${escapeHtml(todo.description || "")}</div>
               <footer>
-                <div class="muted">Source: ${escapeHtml(todo.source || "manual")} | Due: ${escapeHtml(todo.dueDate || "-")}</div>
+                <div class="muted">${renderTodoFooter(todo)}</div>
                 <div class="toolbar">
                   <button class="button secondary" data-todo-edit="${todo.id}" type="button">Edit</button>
                   <button class="button danger" data-todo-delete="${todo.id}" type="button">Delete</button>
@@ -194,6 +213,12 @@ export function createTodoItem(formData) {
     dueDate: formData.dueDate,
     status: formData.status,
     source: formData.source,
+    partnerName: formData.partnerName,
+    activityType: formData.activityType,
+    period: formData.period || getCurrentQuarter(),
+    tags: normalizeTags(formData.tags),
+    completedAt: formData.status === "done" ? new Date().toISOString() : "",
+    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
 
@@ -207,6 +232,13 @@ export function editTodoItem(todoId, updates) {
     ...(existing || {}),
     ...updates,
     id: todoId,
+    tags: normalizeTags(updates.tags),
+    completedAt:
+      updates.status === "done" && existing?.status !== "done"
+        ? new Date().toISOString()
+        : updates.status === "open"
+          ? ""
+          : existing?.completedAt || "",
     updatedAt: new Date().toISOString()
   };
   upsertLocalTodo(nextTodo);
@@ -221,6 +253,7 @@ export function toggleTodoStatus(todoId) {
   upsertLocalTodo({
     ...existing,
     status: existing.status === "done" ? "open" : "done",
+    completedAt: existing.status === "done" ? "" : new Date().toISOString(),
     updatedAt: new Date().toISOString()
   });
 }
@@ -291,6 +324,9 @@ function drawTasksModule(container, userContext) {
     }
 
     tasksState.claudeFeed = await importTasksJson("claude", file);
+    if (syncFeedTodosToLocalHistory()) {
+      await saveTasksState();
+    }
     drawTasksModule(container, userContext);
   });
 
@@ -301,6 +337,9 @@ function drawTasksModule(container, userContext) {
     }
 
     tasksState.slackFeed = await importTasksJson("slack", file);
+    if (syncFeedTodosToLocalHistory()) {
+      await saveTasksState();
+    }
     drawTasksModule(container, userContext);
   });
 
@@ -348,6 +387,16 @@ function renderTasksTabContent(tabContent, container, userContext) {
             <input id="todo-description" name="description" />
           </div>
           <div class="field">
+            <label for="todo-partner">Partner or customer</label>
+            <input id="todo-partner" name="partnerName" placeholder="Partner, customer, or account" />
+          </div>
+          <div class="field">
+            <label for="todo-activity-type">Activity type</label>
+            <select id="todo-activity-type" name="activityType">
+              ${renderTodoOptions(getActivityTypes(), "partner-follow-up")}
+            </select>
+          </div>
+          <div class="field">
             <label for="todo-priority">Priority</label>
             <select id="todo-priority" name="priority">
               <option value="low">Low</option>
@@ -373,6 +422,14 @@ function renderTasksTabContent(tabContent, container, userContext) {
               <option value="claude-routine">Claude</option>
               <option value="slack-bot">Slack</option>
             </select>
+          </div>
+          <div class="field">
+            <label for="todo-period">Reporting period</label>
+            <input id="todo-period" name="period" placeholder="${getCurrentQuarter()}" />
+          </div>
+          <div class="field">
+            <label for="todo-tags">Flags / tags</label>
+            <input id="todo-tags" name="tags" placeholder="renewal, enablement, follow-up" />
           </div>
           <div class="field" style="align-self: end;">
             <button class="button primary" type="submit">${tasksState.editingTodoId ? "Save todo" : "Create todo"}</button>
@@ -401,6 +458,22 @@ function renderTasksTabContent(tabContent, container, userContext) {
             <select id="todo-filter-source">
               ${renderTodoOptions(["all", "manual", "claude-routine", "slack-bot"], tasksState.filters.source)}
             </select>
+          </div>
+          <div class="field">
+            <label for="todo-filter-activity-type">Activity type</label>
+            <select id="todo-filter-activity-type">
+              ${renderTodoOptions(["all", ...getActivityTypes()], tasksState.filters.activityType)}
+            </select>
+          </div>
+          <div class="field">
+            <label for="todo-filter-period">Period</label>
+            <select id="todo-filter-period">
+              ${renderTodoOptions(getAvailablePeriods(), tasksState.filters.period)}
+            </select>
+          </div>
+          <div class="field">
+            <label for="todo-filter-partner">Partner or customer</label>
+            <input id="todo-filter-partner" value="${escapeHtml(tasksState.filters.partner)}" placeholder="Search partner/customer" />
           </div>
         </div>
       </section>
@@ -474,7 +547,11 @@ function wireTodoEvents(tabContent, container, userContext) {
       priority: String(data.get("priority") || "medium"),
       dueDate: String(data.get("dueDate") || ""),
       status: String(data.get("status") || "open"),
-      source: String(data.get("source") || "manual")
+      source: String(data.get("source") || "manual"),
+      partnerName: String(data.get("partnerName") || "").trim(),
+      activityType: String(data.get("activityType") || "partner-follow-up"),
+      period: String(data.get("period") || getCurrentQuarter()).trim(),
+      tags: String(data.get("tags") || "").trim()
     };
 
     if (tasksState.editingTodoId) {
@@ -503,9 +580,24 @@ function wireTodoEvents(tabContent, container, userContext) {
     drawTasksModule(container, userContext);
   });
 
-  tabContent.querySelectorAll("[data-todo-toggle]").forEach((checkbox) => {
-    checkbox.addEventListener("change", async () => {
-      toggleTodoStatus(checkbox.dataset.todoToggle);
+  tabContent.querySelector("#todo-filter-activity-type")?.addEventListener("change", (event) => {
+    tasksState.filters.activityType = event.target.value;
+    drawTasksModule(container, userContext);
+  });
+
+  tabContent.querySelector("#todo-filter-period")?.addEventListener("change", (event) => {
+    tasksState.filters.period = event.target.value;
+    drawTasksModule(container, userContext);
+  });
+
+  tabContent.querySelector("#todo-filter-partner")?.addEventListener("input", (event) => {
+    tasksState.filters.partner = event.target.value;
+    drawTasksModule(container, userContext);
+  });
+
+  tabContent.querySelectorAll("[data-todo-toggle]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      toggleTodoStatus(button.dataset.todoToggle);
       await saveTasksState();
       drawTasksModule(container, userContext);
     });
@@ -543,8 +635,12 @@ async function loadDeletedTodoIds() {
 
 function getMergedTodos() {
   const feedTodos = [
-    ...(tasksState.claudeFeed?.todos || []),
-    ...(tasksState.slackFeed?.todos || [])
+    ...(tasksState.claudeFeed?.todos || []).map((todo) =>
+      normalizeTodo(todo, "claude-routine", tasksState.claudeFeed?.generatedAt)
+    ),
+    ...(tasksState.slackFeed?.todos || []).map((todo) =>
+      normalizeTodo(todo, "slack-bot", tasksState.slackFeed?.generatedAt)
+    )
   ];
   const localById = new Map(tasksState.todos.map((todo) => [todo.id, todo]));
   const merged = feedTodos.map((todo) => localById.get(todo.id) || todo);
@@ -568,9 +664,16 @@ function getFilteredTodos() {
       tasksState.filters.priority === "all" || todo.priority === tasksState.filters.priority;
     const matchesSource =
       tasksState.filters.source === "all" || todo.source === tasksState.filters.source;
+    const matchesActivityType =
+      tasksState.filters.activityType === "all" || getTodoActivityType(todo) === tasksState.filters.activityType;
+    const matchesPeriod =
+      tasksState.filters.period === "all" || getTodoPeriod(todo) === tasksState.filters.period;
+    const partnerNeedle = tasksState.filters.partner.trim().toLowerCase();
+    const matchesPartner =
+      !partnerNeedle || getTodoPartner(todo).toLowerCase().includes(partnerNeedle);
 
-    return matchesStatus && matchesPriority && matchesSource;
-  });
+    return matchesStatus && matchesPriority && matchesSource && matchesActivityType && matchesPeriod && matchesPartner;
+  }).sort(sortTodos);
 }
 
 function renderMeetingCards(meetings) {
@@ -594,10 +697,14 @@ function renderMeetingCards(meetings) {
 function fillTodoForm(tabContent, todo) {
   tabContent.querySelector("#todo-title").value = todo.title || "";
   tabContent.querySelector("#todo-description").value = todo.description || "";
+  tabContent.querySelector("#todo-partner").value = getTodoPartner(todo);
+  tabContent.querySelector("#todo-activity-type").value = getTodoActivityType(todo);
   tabContent.querySelector("#todo-priority").value = todo.priority || "medium";
   tabContent.querySelector("#todo-due-date").value = todo.dueDate || "";
   tabContent.querySelector("#todo-status").value = todo.status || "open";
   tabContent.querySelector("#todo-source").value = todo.source || "manual";
+  tabContent.querySelector("#todo-period").value = getTodoPeriod(todo);
+  tabContent.querySelector("#todo-tags").value = (todo.tags || []).join(", ");
 }
 
 function renderTaskTab(tab, label) {
@@ -608,9 +715,210 @@ function renderTodoOptions(values, selected) {
   return values
     .map(
       (value) =>
-        `<option value="${escapeHtml(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(value === "all" ? "All" : value)}</option>`
+        `<option value="${escapeHtml(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(formatOptionLabel(value))}</option>`
     )
     .join("");
+}
+
+function syncFeedTodosToLocalHistory() {
+  const feedTodos = [
+    ...(tasksState.claudeFeed?.todos || []).map((todo) =>
+      normalizeTodo(todo, "claude-routine", tasksState.claudeFeed?.generatedAt)
+    ),
+    ...(tasksState.slackFeed?.todos || []).map((todo) =>
+      normalizeTodo(todo, "slack-bot", tasksState.slackFeed?.generatedAt)
+    )
+  ];
+
+  if (!feedTodos.length) {
+    return false;
+  }
+
+  let changed = false;
+  const localById = new Map(tasksState.todos.map((todo) => [todo.id, todo]));
+
+  feedTodos.forEach((feedTodo) => {
+    const existing = localById.get(feedTodo.id);
+    if (!existing) {
+      tasksState.todos = [...tasksState.todos, feedTodo];
+      localById.set(feedTodo.id, feedTodo);
+      changed = true;
+      return;
+    }
+
+    const nextTodo = mergeFeedTodo(existing, feedTodo);
+    if (JSON.stringify(existing) !== JSON.stringify(nextTodo)) {
+      tasksState.todos = tasksState.todos.map((todo) => (todo.id === nextTodo.id ? nextTodo : todo));
+      localById.set(nextTodo.id, nextTodo);
+      changed = true;
+    }
+  });
+
+  return changed;
+}
+
+function mergeFeedTodo(existing, feedTodo) {
+  return {
+    ...feedTodo,
+    ...existing,
+    title: existing.title || feedTodo.title,
+    description: existing.description || feedTodo.description,
+    priority: existing.priority || feedTodo.priority,
+    dueDate: existing.dueDate || feedTodo.dueDate,
+    source: existing.source || feedTodo.source,
+    partnerName: existing.partnerName || feedTodo.partnerName,
+    activityType: existing.activityType || feedTodo.activityType,
+    period: existing.period || feedTodo.period,
+    tags: existing.tags?.length ? existing.tags : feedTodo.tags,
+    sourceUpdatedAt: feedTodo.sourceUpdatedAt,
+    updatedAt: existing.updatedAt || feedTodo.updatedAt
+  };
+}
+
+function normalizeTodo(todo, source = "manual", generatedAt = "") {
+  const dueDate = todo.dueDate || todo.date || "";
+  const period = todo.period || getQuarterFromDate(dueDate || generatedAt || new Date().toISOString());
+  const activityType = todo.activityType || inferActivityType(todo);
+  const partnerName = todo.partnerName || todo.partner || todo.customer || todo.account || "";
+  const status = todo.status || "open";
+
+  return {
+    id: todo.id || `${source}-${simpleHash([todo.title, todo.description, dueDate, generatedAt].join("|"))}`,
+    title: todo.title || todo.subject || "Untitled task",
+    description: todo.description || todo.summary || todo.reason || "",
+    priority: todo.priority || "medium",
+    dueDate,
+    status,
+    source: todo.source || source,
+    partnerName,
+    activityType,
+    period,
+    tags: normalizeTags(todo.tags || todo.flags || []),
+    completedAt: status === "done" ? todo.completedAt || new Date().toISOString() : todo.completedAt || "",
+    createdAt: todo.createdAt || generatedAt || new Date().toISOString(),
+    updatedAt: todo.updatedAt || generatedAt || new Date().toISOString(),
+    sourceUpdatedAt: generatedAt || todo.updatedAt || ""
+  };
+}
+
+function renderTodoMeta(todo) {
+  const tags = normalizeTags(todo.tags);
+  return [
+    `<span class="todo-chip">${escapeHtml(todo.status === "done" ? "Done" : "Open")}</span>`,
+    getTodoPartner(todo) ? `<span class="todo-chip">${escapeHtml(getTodoPartner(todo))}</span>` : "",
+    `<span class="todo-chip">${escapeHtml(formatOptionLabel(getTodoActivityType(todo)))}</span>`,
+    `<span class="todo-chip">${escapeHtml(getTodoPeriod(todo))}</span>`,
+    ...tags.map((tag) => `<span class="todo-chip flag">${escapeHtml(tag)}</span>`)
+  ]
+    .filter(Boolean)
+    .join("");
+}
+
+function renderTodoFooter(todo) {
+  const completed = todo.completedAt ? ` | Completed: ${formatDate(todo.completedAt)}` : "";
+  return `Source: ${escapeHtml(todo.source || "manual")} | Due: ${escapeHtml(todo.dueDate || "-")}${completed}`;
+}
+
+function getActivityTypes() {
+  return [
+    "partner-follow-up",
+    "customer-meeting",
+    "email",
+    "enablement",
+    "renewal",
+    "escalation",
+    "internal",
+    "admin",
+    "other"
+  ];
+}
+
+function getAvailablePeriods() {
+  const periods = new Set(["all", getCurrentQuarter()]);
+  getMergedTodos().forEach((todo) => periods.add(getTodoPeriod(todo)));
+  return Array.from(periods).filter(Boolean);
+}
+
+function getTodoPartner(todo) {
+  return todo.partnerName || todo.partner || todo.customer || todo.account || "";
+}
+
+function getTodoActivityType(todo) {
+  return todo.activityType || inferActivityType(todo);
+}
+
+function getTodoPeriod(todo) {
+  return todo.period || getQuarterFromDate(todo.dueDate || todo.completedAt || todo.createdAt || new Date().toISOString());
+}
+
+function inferActivityType(todo) {
+  const text = `${todo.title || ""} ${todo.description || ""} ${todo.subject || ""}`.toLowerCase();
+  if (text.includes("renewal")) return "renewal";
+  if (text.includes("meeting") || text.includes("sync")) return "customer-meeting";
+  if (text.includes("email") || text.includes("reply")) return "email";
+  if (text.includes("enablement") || text.includes("training") || text.includes("course")) return "enablement";
+  if (text.includes("escalation") || text.includes("urgent")) return "escalation";
+  if (text.includes("partner")) return "partner-follow-up";
+  return "other";
+}
+
+function getCurrentQuarter() {
+  return getQuarterFromDate(new Date().toISOString());
+}
+
+function getQuarterFromDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    const now = new Date();
+    return `${now.getFullYear()}-Q${Math.floor(now.getMonth() / 3) + 1}`;
+  }
+  const quarter = Math.floor(date.getMonth() / 3) + 1;
+  return `${date.getFullYear()}-Q${quarter}`;
+}
+
+function normalizeTags(value) {
+  if (Array.isArray(value)) {
+    return value.map((tag) => String(tag).trim()).filter(Boolean);
+  }
+  return String(value || "")
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function sortTodos(a, b) {
+  if (a.status !== b.status) {
+    return a.status === "done" ? 1 : -1;
+  }
+  const dateA = a.dueDate || "9999-12-31";
+  const dateB = b.dueDate || "9999-12-31";
+  return dateA.localeCompare(dateB);
+}
+
+function formatOptionLabel(value) {
+  if (value === "all") {
+    return "All";
+  }
+  return String(value || "")
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function formatDate(value) {
+  if (!value) {
+    return "-";
+  }
+  return String(value).slice(0, 10);
+}
+
+function simpleHash(value) {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash << 5) - hash + value.charCodeAt(index);
+    hash |= 0;
+  }
+  return Math.abs(hash).toString(36);
 }
 
 function escapeHtml(value) {
