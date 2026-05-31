@@ -2,6 +2,8 @@
   "generatedAt": "2026-05-29T08:00:00-03:00",
   "source": "claude-routine",
   "summary": "Daily executive summary",
+  "importantEmailHistorySummary": "Summary of important email threads from the previous session.",
+  "meetingsWeekHistorySummary": "Summary of relevant meetings already reviewed this week.",
   "importantEmails": [
     {
       "id": "email-1",
@@ -35,7 +37,8 @@
       "partnerName": "Example Partner",
       "activityType": "enablement",
       "period": "2026-Q2",
-      "tags": ["partner", "enablement", "follow-up"]
+      "tags": ["partner", "enablement", "follow-up"],
+      "completionComment": ""
     }
   ]
 }

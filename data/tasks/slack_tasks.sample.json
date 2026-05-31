@@ -27,7 +27,8 @@
       "partnerName": "Example Partner",
       "activityType": "partner-follow-up",
       "period": "2026-Q2",
-      "tags": ["slack", "partner", "follow-up"]
+      "tags": ["slack", "partner", "follow-up"],
+      "completionComment": ""
     }
   ]
 }

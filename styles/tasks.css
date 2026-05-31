@@ -62,6 +62,13 @@
   gap: 0.75rem;
 }
 
+.todo-comment-field textarea,
+.meeting-note-field textarea,
+.task-modal textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+
 .todo-meta {
   display: flex;
   flex-wrap: wrap;
@@ -91,4 +98,47 @@
 .todo-done-button {
   min-height: 34px;
   padding-inline: 0.85rem;
+}
+
+.compact-button {
+  min-height: 32px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.82rem;
+}
+
+.form-grid-wide {
+  grid-column: 1 / -1;
+}
+
+.task-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(30, 36, 38, 0.62);
+}
+
+.task-modal {
+  display: grid;
+  gap: 1rem;
+  width: min(760px, 100%);
+  max-height: min(780px, 92vh);
+  padding: 1rem;
+  overflow: auto;
+}
+
+.task-modal header,
+.task-modal footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.task-modal textarea {
+  width: 100%;
+  font-family: inherit;
+  line-height: 1.45;
 }

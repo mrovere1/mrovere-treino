@@ -14,6 +14,10 @@ const tasksState = {
     activityType: "all",
     period: "all"
   },
+  notes: {
+    detailNotes: {},
+    meetingNotes: {}
+  },
   editingTodoId: null
 };
 
@@ -24,6 +28,7 @@ export async function renderTasksDashboard(container, userContext) {
   tasksState.slackFeed = await loadSlackTasks();
   tasksState.todos = await loadSavedTodos();
   tasksState.deletedTodoIds = await loadDeletedTodoIds();
+  tasksState.notes = await loadTaskNotes();
   const changed = syncFeedTodosToLocalHistory();
   if (changed) {
     await saveTasksState();
@@ -133,6 +138,15 @@ export function renderImportantEmails() {
                   <td>
                     <p>${escapeHtml(item.summary || item.reason || "")}</p>
                     <p class="muted">Suggested action: ${escapeHtml(item.suggestedAction || "None")}</p>
+                    <button
+                      class="button secondary compact-button"
+                      data-detail-open="${escapeHtml(getEmailKey(item))}"
+                      data-detail-title="${escapeHtml(item.subject || "Important email")}"
+                      data-detail-content="${escapeHtml(formatEmailDetails(item))}"
+                      type="button"
+                    >
+                      Read / edit details
+                    </button>
                   </td>
                 </tr>
               `
@@ -150,7 +164,7 @@ export function renderMeetingsToday() {
     return '<div class="empty-state">No meetings were provided for today.</div>';
   }
 
-  return renderMeetingCards(meetings);
+  return renderMeetingCards(meetings, "today");
 }
 
 export function renderMeetingsThisWeek() {
@@ -159,7 +173,7 @@ export function renderMeetingsThisWeek() {
     return '<div class="empty-state">No meetings were provided for this week.</div>';
   }
 
-  return renderMeetingCards(meetings);
+  return renderMeetingCards(meetings, "week");
 }
 
 export function renderTodoList() {
@@ -189,6 +203,10 @@ export function renderTodoList() {
                 </div>
               </header>
               <div>${escapeHtml(todo.description || "")}</div>
+              <div class="field todo-comment-field">
+                <label for="todo-comment-${escapeHtml(todo.id)}">Completion comment</label>
+                <textarea id="todo-comment-${escapeHtml(todo.id)}" data-todo-comment="${escapeHtml(todo.id)}" rows="2" placeholder="Write what was done before clicking Done.">${escapeHtml(todo.completionComment || "")}</textarea>
+              </div>
               <footer>
                 <div class="muted">${renderTodoFooter(todo)}</div>
                 <div class="toolbar">
@@ -217,6 +235,7 @@ export function createTodoItem(formData) {
     activityType: formData.activityType,
     period: formData.period || getCurrentQuarter(),
     tags: normalizeTags(formData.tags),
+    completionComment: formData.completionComment,
     completedAt: formData.status === "done" ? new Date().toISOString() : "",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
@@ -258,9 +277,23 @@ export function toggleTodoStatus(todoId) {
   });
 }
 
+export function updateTodoComment(todoId, completionComment) {
+  const existing = getMergedTodos().find((todo) => todo.id === todoId);
+  if (!existing) {
+    return;
+  }
+
+  upsertLocalTodo({
+    ...existing,
+    completionComment,
+    updatedAt: new Date().toISOString()
+  });
+}
+
 export async function saveTasksState() {
   await putRecord("tasksState", { key: "todos", items: tasksState.todos });
   await putRecord("tasksState", { key: "deletedTodoIds", items: tasksState.deletedTodoIds });
+  await putRecord("tasksState", { key: "notes", value: tasksState.notes });
 }
 
 export function exportTasksJson() {
@@ -269,7 +302,8 @@ export function exportTasksJson() {
       exportedAt: new Date().toISOString(),
       claudeFeed: tasksState.claudeFeed,
       slackFeed: tasksState.slackFeed,
-      todos: tasksState.todos
+      todos: tasksState.todos,
+      notes: tasksState.notes
     },
     null,
     2
@@ -359,6 +393,10 @@ function drawTasksModule(container, userContext) {
     tasksState.slackFeed = null;
     tasksState.todos = [];
     tasksState.deletedTodoIds = [];
+    tasksState.notes = {
+      detailNotes: {},
+      meetingNotes: {}
+    };
     drawTasksModule(container, userContext);
   });
 
@@ -431,6 +469,10 @@ function renderTasksTabContent(tabContent, container, userContext) {
             <label for="todo-tags">Flags / tags</label>
             <input id="todo-tags" name="tags" placeholder="renewal, enablement, follow-up" />
           </div>
+          <div class="field form-grid-wide">
+            <label for="todo-completion-comment">Completion comment</label>
+            <textarea id="todo-completion-comment" name="completionComment" rows="2" placeholder="What was done? This is saved in the activity history."></textarea>
+          </div>
           <div class="field" style="align-self: end;">
             <button class="button primary" type="submit">${tasksState.editingTodoId ? "Save todo" : "Create todo"}</button>
           </div>
@@ -486,6 +528,7 @@ function renderTasksTabContent(tabContent, container, userContext) {
 
   tabContent.innerHTML = `
     <section class="content-stack">
+      ${renderClaudeHistorySummaries()}
       <section class="panel" style="padding: 1rem;">
         <div class="section-heading"><h3>Important emails</h3></div>
         ${renderImportantEmails()}
@@ -498,6 +541,63 @@ function renderTasksTabContent(tabContent, container, userContext) {
         <div class="section-heading"><h3>Meetings this week</h3></div>
         ${renderMeetingsThisWeek()}
       </section>
+    </section>
+  `;
+
+  wireClaudeTaskEvents(tabContent, container, userContext);
+}
+
+function renderClaudeHistorySummaries() {
+  const summaries = [
+    {
+      key: "claude-email-history-summary",
+      title: "Important email history summary",
+      content:
+        tasksState.claudeFeed?.importantEmailHistorySummary ||
+        tasksState.claudeFeed?.emailHistorySummary ||
+        tasksState.claudeFeed?.importantEmailsHistory ||
+        ""
+    },
+    {
+      key: "claude-meeting-history-summary",
+      title: "Weekly meeting history summary",
+      content:
+        tasksState.claudeFeed?.meetingsWeekHistorySummary ||
+        tasksState.claudeFeed?.weeklyMeetingsSummary ||
+        tasksState.claudeFeed?.meetingsHistorySummary ||
+        ""
+    }
+  ].filter((summary) => hasSummaryContent(summary.content) || tasksState.notes.detailNotes[summary.key]);
+
+  if (!summaries.length) {
+    return "";
+  }
+
+  return `
+    <section class="tasks-feed-grid">
+      ${summaries
+        .map((summary) => {
+          const content = stringifySummary(summary.content);
+          const saved = tasksState.notes.detailNotes[summary.key];
+          const preview = saved || content;
+
+          return `
+            <article class="panel task-card">
+              <h3>${escapeHtml(summary.title)}</h3>
+              <p>${escapeHtml(truncateText(preview, 220))}</p>
+              <button
+                class="button secondary compact-button"
+                data-detail-open="${escapeHtml(summary.key)}"
+                data-detail-title="${escapeHtml(summary.title)}"
+                data-detail-content="${escapeHtml(content)}"
+                type="button"
+              >
+                Read / edit details
+              </button>
+            </article>
+          `;
+        })
+        .join("")}
     </section>
   `;
 }
@@ -551,7 +651,8 @@ function wireTodoEvents(tabContent, container, userContext) {
       partnerName: String(data.get("partnerName") || "").trim(),
       activityType: String(data.get("activityType") || "partner-follow-up"),
       period: String(data.get("period") || getCurrentQuarter()).trim(),
-      tags: String(data.get("tags") || "").trim()
+      tags: String(data.get("tags") || "").trim(),
+      completionComment: String(data.get("completionComment") || "").trim()
     };
 
     if (tasksState.editingTodoId) {
@@ -597,6 +698,8 @@ function wireTodoEvents(tabContent, container, userContext) {
 
   tabContent.querySelectorAll("[data-todo-toggle]").forEach((button) => {
     button.addEventListener("click", async () => {
+      const comment = tabContent.querySelector(`[data-todo-comment="${cssEscape(button.dataset.todoToggle)}"]`)?.value || "";
+      updateTodoComment(button.dataset.todoToggle, comment.trim());
       toggleTodoStatus(button.dataset.todoToggle);
       await saveTasksState();
       drawTasksModule(container, userContext);
@@ -623,6 +726,78 @@ function wireTodoEvents(tabContent, container, userContext) {
   });
 }
 
+function wireClaudeTaskEvents(tabContent, container, userContext) {
+  tabContent.querySelectorAll("[data-meeting-note-save]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const key = button.dataset.meetingNoteSave;
+      const note = tabContent.querySelector(`[data-meeting-note="${cssEscape(key)}"]`)?.value || "";
+      tasksState.notes.meetingNotes = {
+        ...tasksState.notes.meetingNotes,
+        [key]: note.trim()
+      };
+      await saveTasksState();
+      drawTasksModule(container, userContext);
+    });
+  });
+
+  tabContent.querySelectorAll("[data-detail-open]").forEach((button) => {
+    button.addEventListener("click", () => {
+      openEditableDetailModal({
+        key: button.dataset.detailOpen,
+        title: button.dataset.detailTitle || "Details",
+        content: button.dataset.detailContent || "",
+        container,
+        userContext
+      });
+    });
+  });
+}
+
+function openEditableDetailModal({ key, title, content, container, userContext }) {
+  const existingModal = document.querySelector(".task-modal-backdrop");
+  existingModal?.remove();
+
+  const savedContent = tasksState.notes.detailNotes[key];
+  const modal = document.createElement("div");
+  modal.className = "task-modal-backdrop";
+  modal.innerHTML = `
+    <section class="task-modal panel" role="dialog" aria-modal="true" aria-label="${escapeHtml(title)}">
+      <header>
+        <h3>${escapeHtml(title)}</h3>
+        <button class="button secondary compact-button" data-modal-close type="button">Close</button>
+      </header>
+      <textarea data-modal-detail rows="14">${escapeHtml(savedContent || content)}</textarea>
+      <footer>
+        <p class="muted">Saved locally in this browser for your working notes and reporting history.</p>
+        <button class="button primary" data-modal-save type="button">Save details</button>
+      </footer>
+    </section>
+  `;
+
+  modal.querySelector("[data-modal-close]").addEventListener("click", () => {
+    modal.remove();
+  });
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.remove();
+    }
+  });
+
+  modal.querySelector("[data-modal-save]").addEventListener("click", async () => {
+    const detail = modal.querySelector("[data-modal-detail]").value.trim();
+    tasksState.notes.detailNotes = {
+      ...tasksState.notes.detailNotes,
+      [key]: detail
+    };
+    await saveTasksState();
+    modal.remove();
+    drawTasksModule(container, userContext);
+  });
+
+  document.body.append(modal);
+}
+
 async function loadSavedTodos() {
   const stored = await getRecord("tasksState", "todos");
   return stored?.items || [];
@@ -631,6 +806,14 @@ async function loadSavedTodos() {
 async function loadDeletedTodoIds() {
   const stored = await getRecord("tasksState", "deletedTodoIds");
   return stored?.items || [];
+}
+
+async function loadTaskNotes() {
+  const stored = await getRecord("tasksState", "notes");
+  return {
+    detailNotes: stored?.value?.detailNotes || {},
+    meetingNotes: stored?.value?.meetingNotes || {}
+  };
 }
 
 function getMergedTodos() {
@@ -676,19 +859,37 @@ function getFilteredTodos() {
   }).sort(sortTodos);
 }
 
-function renderMeetingCards(meetings) {
+function renderMeetingCards(meetings, scope) {
   return `
     <section class="tasks-feed-grid">
       ${meetings
-        .map(
-          (meeting) => `
+        .map((meeting) => {
+          const key = getMeetingKey(meeting, scope);
+          const note = tasksState.notes.meetingNotes[key] ?? meeting.preparationNotes ?? "";
+
+          return `
             <article class="panel task-card">
               <h3>${escapeHtml(meeting.title)}</h3>
               <p class="muted">${escapeHtml(meeting.start || "")} to ${escapeHtml(meeting.end || "")}</p>
-              <p>${escapeHtml(meeting.preparationNotes || "No preparation notes provided.")}</p>
+              <div class="field meeting-note-field">
+                <label for="meeting-note-${escapeHtml(key)}">Preparation notes</label>
+                <textarea id="meeting-note-${escapeHtml(key)}" data-meeting-note="${escapeHtml(key)}" rows="4">${escapeHtml(note)}</textarea>
+              </div>
+              <div class="toolbar">
+                <button class="button secondary compact-button" data-meeting-note-save="${escapeHtml(key)}" type="button">Save note</button>
+                <button
+                  class="button secondary compact-button"
+                  data-detail-open="${escapeHtml(key)}"
+                  data-detail-title="${escapeHtml(meeting.title || "Meeting details")}"
+                  data-detail-content="${escapeHtml(formatMeetingDetails(meeting, note))}"
+                  type="button"
+                >
+                  Read / edit details
+                </button>
+              </div>
             </article>
-          `
-        )
+          `;
+        })
         .join("")}
     </section>
   `;
@@ -705,6 +906,7 @@ function fillTodoForm(tabContent, todo) {
   tabContent.querySelector("#todo-source").value = todo.source || "manual";
   tabContent.querySelector("#todo-period").value = getTodoPeriod(todo);
   tabContent.querySelector("#todo-tags").value = (todo.tags || []).join(", ");
+  tabContent.querySelector("#todo-completion-comment").value = todo.completionComment || "";
 }
 
 function renderTaskTab(tab, label) {
@@ -770,6 +972,7 @@ function mergeFeedTodo(existing, feedTodo) {
     activityType: existing.activityType || feedTodo.activityType,
     period: existing.period || feedTodo.period,
     tags: existing.tags?.length ? existing.tags : feedTodo.tags,
+    completionComment: existing.completionComment || feedTodo.completionComment,
     sourceUpdatedAt: feedTodo.sourceUpdatedAt,
     updatedAt: existing.updatedAt || feedTodo.updatedAt
   };
@@ -794,6 +997,7 @@ function normalizeTodo(todo, source = "manual", generatedAt = "") {
     activityType,
     period,
     tags: normalizeTags(todo.tags || todo.flags || []),
+    completionComment: todo.completionComment || todo.comment || "",
     completedAt: status === "done" ? todo.completedAt || new Date().toISOString() : todo.completedAt || "",
     createdAt: todo.createdAt || generatedAt || new Date().toISOString(),
     updatedAt: todo.updatedAt || generatedAt || new Date().toISOString(),
@@ -816,7 +1020,8 @@ function renderTodoMeta(todo) {
 
 function renderTodoFooter(todo) {
   const completed = todo.completedAt ? ` | Completed: ${formatDate(todo.completedAt)}` : "";
-  return `Source: ${escapeHtml(todo.source || "manual")} | Due: ${escapeHtml(todo.dueDate || "-")}${completed}`;
+  const comment = todo.completionComment ? ` | Comment: ${escapeHtml(todo.completionComment)}` : "";
+  return `Source: ${escapeHtml(todo.source || "manual")} | Due: ${escapeHtml(todo.dueDate || "-")}${completed}${comment}`;
 }
 
 function getActivityTypes() {
@@ -919,6 +1124,83 @@ function simpleHash(value) {
     hash |= 0;
   }
   return Math.abs(hash).toString(36);
+}
+
+function getEmailKey(item) {
+  return `email-${item.id || simpleHash([item.subject, item.from, item.summary, item.reason].join("|"))}`;
+}
+
+function getMeetingKey(meeting, scope) {
+  return `meeting-${scope}-${meeting.id || simpleHash([meeting.title, meeting.start, meeting.end].join("|"))}`;
+}
+
+function formatEmailDetails(item) {
+  return [
+    `Subject: ${item.subject || "Untitled email"}`,
+    `From: ${item.from || "Unknown sender"}`,
+    `Priority: ${item.priority || "normal"}`,
+    "",
+    "Summary:",
+    item.summary || item.reason || "",
+    "",
+    "Suggested action:",
+    item.suggestedAction || "None",
+    item.historySummary ? `\nHistory:\n${stringifySummary(item.historySummary)}` : ""
+  ]
+    .filter((line) => line !== null && line !== undefined)
+    .join("\n");
+}
+
+function formatMeetingDetails(meeting, note) {
+  return [
+    `Title: ${meeting.title || "Untitled meeting"}`,
+    `Start: ${meeting.start || "-"}`,
+    `End: ${meeting.end || "-"}`,
+    meeting.attendees?.length ? `Attendees: ${meeting.attendees.join(", ")}` : "",
+    "",
+    "Preparation notes:",
+    note || meeting.preparationNotes || "",
+    meeting.historySummary ? `\nHistory:\n${stringifySummary(meeting.historySummary)}` : ""
+  ]
+    .filter((line) => line !== null && line !== undefined)
+    .join("\n");
+}
+
+function hasSummaryContent(value) {
+  if (Array.isArray(value)) {
+    return value.length > 0;
+  }
+  if (value && typeof value === "object") {
+    return Object.keys(value).length > 0;
+  }
+  return Boolean(String(value || "").trim());
+}
+
+function stringifySummary(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => (typeof item === "object" ? JSON.stringify(item, null, 2) : String(item)))
+      .join("\n\n");
+  }
+  if (value && typeof value === "object") {
+    return JSON.stringify(value, null, 2);
+  }
+  return String(value || "");
+}
+
+function truncateText(value, maxLength) {
+  const text = String(value || "").trim();
+  if (text.length <= maxLength) {
+    return text;
+  }
+  return `${text.slice(0, maxLength).trim()}...`;
+}
+
+function cssEscape(value) {
+  if (window.CSS?.escape) {
+    return window.CSS.escape(value);
+  }
+  return String(value).replaceAll('"', '\\"');
 }
 
 function escapeHtml(value) {

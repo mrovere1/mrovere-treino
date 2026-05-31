@@ -99,6 +99,9 @@ Recommended fields for future reporting:
 - `activityType`: examples include `partner-follow-up`, `customer-meeting`, `email`, `enablement`, `renewal`, `escalation`, `internal`, `admin`, or `other`.
 - `period`: quarter label such as `2026-Q2`.
 - `tags`: short flags such as `["renewal", "enablement", "follow-up"]`.
+- `completionComment`: optional comment field used when closing work.
+
+Claude can also send `importantEmailHistorySummary` and `meetingsWeekHistorySummary`. The app shows those in editable detail pop-ups and saves edits locally.
 
 Recommended automation options:
 
