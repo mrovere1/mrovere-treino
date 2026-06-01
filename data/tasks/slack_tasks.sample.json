@@ -21,6 +21,7 @@
       "title": "Reply to partner Slack thread",
       "description": "Review the partner update and reply in thread with next steps.",
       "priority": "medium",
+      "eventDate": "2026-05-29",
       "dueDate": "2026-05-29",
       "status": "open",
       "source": "slack-bot",

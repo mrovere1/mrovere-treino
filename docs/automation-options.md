@@ -91,11 +91,12 @@ The static app now always tries to load these files first:
 
 If the files exist, they are loaded and saved into IndexedDB. If they do not exist, the app falls back to the last imported local browser copy.
 
-Todo handling is incremental inside the browser. Each todo from Claude or Slack should have a stable `id`; after the app sees it once, it keeps a local history record with status, completion date, partner/customer, activity type, reporting period, and tags. Daily JSON files can be replaced, but stable ids are required to preserve status cleanly.
+Todo handling is incremental inside the browser. Each todo from Claude or Slack should have a stable `id`; after the app sees it once, it keeps a local history record with event date, status, completion date, partner/customer, activity type, reporting period, and tags. Daily JSON files can be replaced, but stable ids are required to preserve status cleanly.
 
 Recommended fields for future reporting:
 
 - `partnerName`: partner, customer, or account name.
+- `eventDate`: date when the email, meeting, Slack message, or demand happened, formatted as `YYYY-MM-DD`.
 - `activityType`: examples include `partner-follow-up`, `customer-meeting`, `email`, `enablement`, `renewal`, `escalation`, `internal`, `admin`, or `other`.
 - `period`: quarter label such as `2026-Q2`.
 - `tags`: short flags such as `["renewal", "enablement", "follow-up"]`.

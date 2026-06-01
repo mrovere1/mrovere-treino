@@ -31,6 +31,7 @@
       "title": "Send partner enablement deck",
       "description": "Send the updated deck to the partner contact.",
       "priority": "high",
+      "eventDate": "2026-05-29",
       "dueDate": "2026-05-29",
       "status": "open",
       "source": "claude-routine",

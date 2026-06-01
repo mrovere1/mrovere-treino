@@ -193,7 +193,7 @@ If those files do not exist, the app shows a friendly message and still lets adm
 
 The app always tries to load `data/tasks/claude_tasks.json` and `data/tasks/slack_tasks.json` first. If those files are unavailable, it falls back to the last browser-local imported copy.
 
-Feed uploads are incremental from the app perspective: the latest JSON file can be replaced daily, but every todo seen by the browser is saved into IndexedDB. Local status, completion date, completion comment, partner/customer flag, activity type, period, and tags are preserved for quarterly reporting as long as the todo keeps the same `id`.
+Feed uploads are incremental from the app perspective: the latest JSON file can be replaced daily, but every todo seen by the browser is saved into IndexedDB. Local event date, status, completion date, completion comment, partner/customer flag, activity type, period, and tags are preserved for quarterly reporting as long as the todo keeps the same `id`.
 
 Claude meeting preparation notes and long-form email/meeting summaries can also be edited in the app. Those edits are saved locally in IndexedDB so they are not lost when the daily JSON feed is refreshed.
 
@@ -205,6 +205,7 @@ Recommended todo fields:
   "title": "Follow up with partner",
   "description": "Send next steps and confirm owner.",
   "priority": "high",
+  "eventDate": "2026-05-29",
   "dueDate": "2026-05-29",
   "status": "open",
   "source": "claude-routine",

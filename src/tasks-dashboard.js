@@ -228,6 +228,7 @@ export function createTodoItem(formData) {
     title: formData.title,
     description: formData.description,
     priority: formData.priority,
+    eventDate: formData.eventDate,
     dueDate: formData.dueDate,
     status: formData.status,
     source: formData.source,
@@ -443,6 +444,10 @@ function renderTasksTabContent(tabContent, container, userContext) {
             </select>
           </div>
           <div class="field">
+            <label for="todo-event-date">Event date</label>
+            <input id="todo-event-date" name="eventDate" type="date" />
+          </div>
+          <div class="field">
             <label for="todo-due-date">Due date</label>
             <input id="todo-due-date" name="dueDate" type="date" />
           </div>
@@ -645,6 +650,7 @@ function wireTodoEvents(tabContent, container, userContext) {
       title: String(data.get("title") || "").trim(),
       description: String(data.get("description") || "").trim(),
       priority: String(data.get("priority") || "medium"),
+      eventDate: String(data.get("eventDate") || ""),
       dueDate: String(data.get("dueDate") || ""),
       status: String(data.get("status") || "open"),
       source: String(data.get("source") || "manual"),
@@ -901,6 +907,7 @@ function fillTodoForm(tabContent, todo) {
   tabContent.querySelector("#todo-partner").value = getTodoPartner(todo);
   tabContent.querySelector("#todo-activity-type").value = getTodoActivityType(todo);
   tabContent.querySelector("#todo-priority").value = todo.priority || "medium";
+  tabContent.querySelector("#todo-event-date").value = todo.eventDate || "";
   tabContent.querySelector("#todo-due-date").value = todo.dueDate || "";
   tabContent.querySelector("#todo-status").value = todo.status || "open";
   tabContent.querySelector("#todo-source").value = todo.source || "manual";
@@ -966,6 +973,7 @@ function mergeFeedTodo(existing, feedTodo) {
     title: existing.title || feedTodo.title,
     description: existing.description || feedTodo.description,
     priority: existing.priority || feedTodo.priority,
+    eventDate: existing.eventDate || feedTodo.eventDate,
     dueDate: existing.dueDate || feedTodo.dueDate,
     source: existing.source || feedTodo.source,
     partnerName: existing.partnerName || feedTodo.partnerName,
@@ -980,7 +988,8 @@ function mergeFeedTodo(existing, feedTodo) {
 
 function normalizeTodo(todo, source = "manual", generatedAt = "") {
   const dueDate = todo.dueDate || todo.date || "";
-  const period = todo.period || getQuarterFromDate(dueDate || generatedAt || new Date().toISOString());
+  const eventDate = normalizeDateOnly(todo.eventDate || todo.receivedAt || todo.timestamp || generatedAt);
+  const period = todo.period || getQuarterFromDate(dueDate || eventDate || generatedAt || new Date().toISOString());
   const activityType = todo.activityType || inferActivityType(todo);
   const partnerName = todo.partnerName || todo.partner || todo.customer || todo.account || "";
   const status = todo.status || "open";
@@ -990,6 +999,7 @@ function normalizeTodo(todo, source = "manual", generatedAt = "") {
     title: todo.title || todo.subject || "Untitled task",
     description: todo.description || todo.summary || todo.reason || "",
     priority: todo.priority || "medium",
+    eventDate,
     dueDate,
     status,
     source: todo.source || source,
@@ -1010,6 +1020,7 @@ function renderTodoMeta(todo) {
   return [
     `<span class="todo-chip">${escapeHtml(todo.status === "done" ? "Done" : "Open")}</span>`,
     getTodoPartner(todo) ? `<span class="todo-chip">${escapeHtml(getTodoPartner(todo))}</span>` : "",
+    todo.eventDate ? `<span class="todo-chip">Event ${escapeHtml(todo.eventDate)}</span>` : "",
     `<span class="todo-chip">${escapeHtml(formatOptionLabel(getTodoActivityType(todo)))}</span>`,
     `<span class="todo-chip">${escapeHtml(getTodoPeriod(todo))}</span>`,
     ...tags.map((tag) => `<span class="todo-chip flag">${escapeHtml(tag)}</span>`)
@@ -1021,7 +1032,7 @@ function renderTodoMeta(todo) {
 function renderTodoFooter(todo) {
   const completed = todo.completedAt ? ` | Completed: ${formatDate(todo.completedAt)}` : "";
   const comment = todo.completionComment ? ` | Comment: ${escapeHtml(todo.completionComment)}` : "";
-  return `Source: ${escapeHtml(todo.source || "manual")} | Due: ${escapeHtml(todo.dueDate || "-")}${completed}${comment}`;
+  return `Source: ${escapeHtml(todo.source || "manual")} | Event: ${escapeHtml(todo.eventDate || "-")} | Due: ${escapeHtml(todo.dueDate || "-")}${completed}${comment}`;
 }
 
 function getActivityTypes() {
@@ -1053,7 +1064,7 @@ function getTodoActivityType(todo) {
 }
 
 function getTodoPeriod(todo) {
-  return todo.period || getQuarterFromDate(todo.dueDate || todo.completedAt || todo.createdAt || new Date().toISOString());
+  return todo.period || getQuarterFromDate(todo.dueDate || todo.eventDate || todo.completedAt || todo.createdAt || new Date().toISOString());
 }
 
 function inferActivityType(todo) {
@@ -1115,6 +1126,22 @@ function formatDate(value) {
     return "-";
   }
   return String(value).slice(0, 10);
+}
+
+function normalizeDateOnly(value) {
+  if (!value) {
+    return "";
+  }
+  const text = String(value);
+  const dateMatch = text.match(/^\d{4}-\d{2}-\d{2}/);
+  if (dateMatch) {
+    return dateMatch[0];
+  }
+  const date = new Date(value);
+  if (!Number.isNaN(date.getTime())) {
+    return date.toISOString().slice(0, 10);
+  }
+  return "";
 }
 
 function simpleHash(value) {
