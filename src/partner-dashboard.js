@@ -512,11 +512,23 @@ function readTemplateForm(container) {
 }
 
 function buildTemplateSampleData(partner) {
+  const courseGroups = buildTemplateCourseGroups(partner);
+  const progress = partner?.computed.programProgress?.percentage || 0;
+
   return {
     partner_name: partner?.partnerName || "Sample Partner",
     contact_name: partner?.primaryContact || "Sample Contact",
-    completed_courses: formatList(partner?.computed.completedCourses, "No completed courses yet"),
-    missing_courses: formatList(partner?.computed.missingCourses, "No missing courses"),
+    completed_courses: courseGroups.allCompletedFlat,
+    missing_courses: courseGroups.allMissingFlat,
+    intro_completed_courses: courseGroups.intro.completed,
+    intro_missing_courses: courseGroups.intro.missing,
+    specialist_completed_courses: courseGroups.specialist.completed,
+    specialist_missing_courses: courseGroups.specialist.missing,
+    em_theory_completed_courses: courseGroups.theory.completed,
+    em_theory_missing_courses: courseGroups.theory.missing,
+    all_completed_courses: courseGroups.allCompletedGrouped,
+    all_missing_courses: courseGroups.allMissingGrouped,
+    program_progress_percentage: `${progress}%`,
     maturity_level: partner
       ? `EM: ${partner.maturity.current.EM || "-"} | VM/WAS: ${partner.maturity.current["VM/WAS"] || "-"} | CS: ${partner.maturity.current.CS || "-"} | TPM: ${partner.maturity.current.TPM || "-"}`
       : "EM: Planned | VM/WAS: Planned | CS: Planned | TPM: Planned",
@@ -526,6 +538,161 @@ function buildTemplateSampleData(partner) {
         : "Keep the certification evidence updated and confirm the next maturity milestone.",
     course_prerequisites: buildPrerequisiteList()
   };
+}
+
+function buildTemplateCourseGroups(partner) {
+  const requirements = partnerState.requirements;
+  if (!partner || !requirements) {
+    const fallback = "Partner course data is not available.";
+    return {
+      intro: { completed: fallback, missing: fallback },
+      specialist: { completed: fallback, missing: fallback },
+      theory: { completed: fallback, missing: fallback },
+      allCompletedFlat: fallback,
+      allMissingFlat: fallback,
+      allCompletedGrouped: fallback,
+      allMissingGrouped: fallback
+    };
+  }
+
+  const intro = evaluateTemplateRuleGroup(
+    buildIntroCourseMap(partner.introCourses),
+    requirements.introduction,
+    "Intro Courses",
+    partner.computed.introCertified
+  );
+  const specialist = evaluateTemplateRuleGroup(
+    buildSpecialistCourseMap(partner.specialistCourses),
+    requirements.specialist,
+    "Specialist Courses",
+    partner.computed.specialistCertified
+  );
+  const theoryCourses = requirements.theory || [];
+  const theoryCompleted = partner.theoryCompleted ? theoryCourses : [];
+  const theoryMissing = partner.theoryCompleted ? [] : theoryCourses;
+  const theory = {
+    completed: formatList(theoryCompleted, "No EM Theory courses completed yet"),
+    missing: formatList(theoryMissing, "No EM Theory courses missing")
+  };
+
+  const completedGroups = [
+    ["Intro Courses", intro.completed],
+    ["Specialist Courses", specialist.completed],
+    ["EM Theory", theory.completed]
+  ];
+  const missingGroups = [
+    ["Intro Courses", intro.missing],
+    ["Specialist Courses", specialist.missing],
+    ["EM Theory", theory.missing]
+  ];
+  const allCompleted = [
+    ...intro.completedItems,
+    ...specialist.completedItems,
+    ...theoryCompleted
+  ];
+  const allMissing = [
+    ...intro.missingItems,
+    ...specialist.missingItems,
+    ...theoryMissing
+  ];
+
+  return {
+    intro,
+    specialist,
+    theory,
+    allCompletedFlat: formatList(allCompleted, "No completed courses yet"),
+    allMissingFlat: formatList(allMissing, "No missing courses"),
+    allCompletedGrouped: formatGroupedList(completedGroups),
+    allMissingGrouped: formatGroupedList(missingGroups)
+  };
+}
+
+function buildIntroCourseMap(courses) {
+  return {
+    "Introduction to Tenable One": courses.one,
+    "Introduction to Tenable Vulnerability Management": courses.vm,
+    "Introduction to Tenable Security Center": courses.sc,
+    "Introduction to Tenable Web Application Security": courses.was,
+    "Introduction to Tenable Identity Exposure": courses.ie,
+    "Introduction to Tenable OT Security": courses.ot,
+    "Introduction to Tenable Cloud Security": courses.cs
+  };
+}
+
+function buildSpecialistCourseMap(courses) {
+  return {
+    "Tenable One Specialist": courses.one,
+    "Tenable Vulnerability Management Specialist": courses.vm,
+    "Tenable Security Center Specialist": courses.sc,
+    "Tenable Identity Exposure Specialist": courses.ie,
+    "Tenable OT Security Specialist": courses.ot,
+    "Tenable Cloud Security Specialist": courses.cs
+  };
+}
+
+function evaluateTemplateRuleGroup(courseMap, ruleSet, label, certified) {
+  if (certified) {
+    const completedItems = getRuleSetCourses(ruleSet).filter((course) => courseMap[course]);
+    return {
+      completed: formatList(completedItems, `${label} is certified`),
+      missing: `No ${label.toLowerCase()} requirements missing`,
+      completedItems,
+      missingItems: []
+    };
+  }
+
+  const completedItems = [];
+  const missingItems = [];
+
+  (ruleSet.requiredAll || []).forEach((course) => {
+    if (courseMap[course]) {
+      completedItems.push(course);
+    } else {
+      missingItems.push(course);
+    }
+  });
+
+  (ruleSet.oneOfGroups || []).forEach((group) => {
+    const completed = group.filter((course) => courseMap[course]);
+    if (completed.length) {
+      completedItems.push(...completed);
+      return;
+    }
+
+    missingItems.push(`Complete at least one of: ${group.join(" | ")}`);
+  });
+
+  (ruleSet.minimumGroups || []).forEach((group) => {
+    const completed = group.courses.filter((course) => courseMap[course]);
+    const missing = group.courses.filter((course) => !courseMap[course]);
+    completedItems.push(...completed);
+
+    const remainingCount = Math.max(group.count - completed.length, 0);
+    if (remainingCount > 0) {
+      missingItems.push(`Complete ${remainingCount} more of: ${missing.join(" | ")}`);
+    }
+  });
+
+  return {
+    completed: formatList(completedItems, `No ${label.toLowerCase()} completed yet`),
+    missing: formatList(missingItems, `No ${label.toLowerCase()} requirements missing`),
+    completedItems,
+    missingItems
+  };
+}
+
+function getRuleSetCourses(ruleSet) {
+  return [
+    ...(ruleSet.requiredAll || []),
+    ...(ruleSet.oneOfGroups || []).flat(),
+    ...(ruleSet.minimumGroups || []).flatMap((group) => group.courses || [])
+  ];
+}
+
+function formatGroupedList(groups) {
+  return groups
+    .map(([label, content]) => `${label}:\n${content}`)
+    .join("\n\n");
 }
 
 function buildPrerequisiteList() {

@@ -22,6 +22,51 @@ export const TEMPLATE_VARIABLES = [
     example: "Introduction to Tenable Cloud Security"
   },
   {
+    variable: "{{intro_completed_courses}}",
+    description: "Completed courses from the introduction track only.",
+    example: "Introduction to Tenable One"
+  },
+  {
+    variable: "{{intro_missing_courses}}",
+    description: "Missing introduction-track requirements, including 1-of-2 guidance.",
+    example: "Complete at least one of: Introduction to Tenable Vulnerability Management | Introduction to Tenable Security Center"
+  },
+  {
+    variable: "{{specialist_completed_courses}}",
+    description: "Completed courses from the specialist track only.",
+    example: "Tenable One Specialist, Tenable Cloud Security Specialist"
+  },
+  {
+    variable: "{{specialist_missing_courses}}",
+    description: "Missing specialist-track requirements with exact remaining options for grouped rules.",
+    example: "Complete 1 more of: Tenable Identity Exposure Specialist | Tenable OT Security Specialist"
+  },
+  {
+    variable: "{{em_theory_completed_courses}}",
+    description: "Completed EM theory requirements.",
+    example: "Exposure Management Business Theory"
+  },
+  {
+    variable: "{{em_theory_missing_courses}}",
+    description: "Missing EM theory requirements.",
+    example: "Exposure Management Business Theory"
+  },
+  {
+    variable: "{{all_completed_courses}}",
+    description: "All completed courses grouped by Intro, Specialist, and EM Theory.",
+    example: "Intro Courses: ...\nSpecialist Courses: ..."
+  },
+  {
+    variable: "{{all_missing_courses}}",
+    description: "All missing requirements grouped by Intro, Specialist, and EM Theory.",
+    example: "Intro Courses: ...\nSpecialist Courses: ..."
+  },
+  {
+    variable: "{{program_progress_percentage}}",
+    description: "Overall accreditation program progress percentage.",
+    example: "82%"
+  },
+  {
     variable: "{{maturity_level}}",
     description: "Compact maturity summary for the partner.",
     example: "EM: Advanced | VM/WAS: Developing | CS: Foundation | TPM: Planned"
@@ -49,11 +94,13 @@ const DEFAULT_TEMPLATES = [
       "",
       "Here is the latest accreditation update for {{partner_name}}.",
       "",
-      "Completed items:",
-      "{{completed_courses}}",
+      "Completed items by track:",
+      "{{all_completed_courses}}",
       "",
-      "Remaining items:",
-      "{{missing_courses}}",
+      "Remaining items by track:",
+      "{{all_missing_courses}}",
+      "",
+      "Overall program progress: {{program_progress_percentage}}",
       "",
       "Current maturity:",
       "{{maturity_level}}",
