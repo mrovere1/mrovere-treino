@@ -558,14 +558,12 @@ function buildTemplateCourseGroups(partner) {
   const intro = evaluateTemplateRuleGroup(
     buildIntroCourseMap(partner.introCourses),
     requirements.introduction,
-    "Intro Courses",
-    partner.computed.introCertified
+    "Intro Courses"
   );
   const specialist = evaluateTemplateRuleGroup(
     buildSpecialistCourseMap(partner.specialistCourses),
     requirements.specialist,
-    "Specialist Courses",
-    partner.computed.specialistCertified
+    "Specialist Courses"
   );
   const theoryCourses = requirements.theory || [];
   const theoryCompleted = partner.theoryCompleted ? theoryCourses : [];
@@ -630,17 +628,7 @@ function buildSpecialistCourseMap(courses) {
   };
 }
 
-function evaluateTemplateRuleGroup(courseMap, ruleSet, label, certified) {
-  if (certified) {
-    const completedItems = getRuleSetCourses(ruleSet).filter((course) => courseMap[course]);
-    return {
-      completed: formatList(completedItems, `${label} is certified`),
-      missing: `No ${label.toLowerCase()} requirements missing`,
-      completedItems,
-      missingItems: []
-    };
-  }
-
+function evaluateTemplateRuleGroup(courseMap, ruleSet, label) {
   const completedItems = [];
   const missingItems = [];
 
@@ -679,14 +667,6 @@ function evaluateTemplateRuleGroup(courseMap, ruleSet, label, certified) {
     completedItems,
     missingItems
   };
-}
-
-function getRuleSetCourses(ruleSet) {
-  return [
-    ...(ruleSet.requiredAll || []),
-    ...(ruleSet.oneOfGroups || []).flat(),
-    ...(ruleSet.minimumGroups || []).flatMap((group) => group.courses || [])
-  ];
 }
 
 function formatGroupedList(groups) {
