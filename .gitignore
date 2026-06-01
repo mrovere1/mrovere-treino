@@ -1,0 +1,33 @@
+.env
+.env.*
+node_modules/
+cookie.txt
+cookies.txt
+__pycache__/
+*.pyc
+.DS_Store
+
+# IRIS real data
+data/iris/latest.json
+data/iris/accounts_latest.json
+data/iris/data/
+data/iris/diff/
+data/iris/accounts_data/
+data/iris/accounts_diff/
+
+# Allow samples
+!data/iris/latest.sample.json
+!data/iris/accounts_latest.sample.json
+
+# Generated task feeds
+data/tasks/claude_tasks.json
+data/tasks/slack_tasks.json
+!data/tasks/claude_tasks.sample.json
+!data/tasks/slack_tasks.sample.json
+
+# Partner temporary files
+~$*.xlsx
+~$*.docx
+
+# Logs
+*.log

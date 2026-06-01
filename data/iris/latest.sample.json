@@ -1,0 +1,58 @@
+{
+  "captured_at": "2026-05-29T11:00:00Z",
+  "total": 3,
+  "containers": [
+    {
+      "id": "container-001",
+      "name": "Acme Brazil Production",
+      "account": "Acme Brazil",
+      "account_id": "001xx000003ABCD",
+      "region": "Brazil South",
+      "status": "active",
+      "products": ["Tenable One", "Cloud Security"],
+      "features": ["Exposure Management", "Cloud Security"],
+      "usage": {
+        "license_used": 120,
+        "license_limit": 200,
+        "usage_percent": 60,
+        "assets_monitored": 340
+      },
+      "expires_at": "2026-11-30",
+      "updated_at": "2026-05-28T22:15:00Z"
+    },
+    {
+      "id": "container-002",
+      "name": "Northwind LATAM",
+      "account": "Northwind",
+      "account_id": "001xx000003EFGH",
+      "region": "US East",
+      "status": "active",
+      "products": ["Tenable Vulnerability Management"],
+      "features": ["Tenable VM"],
+      "usage": {
+        "license_used": 85,
+        "license_limit": 100,
+        "usage_percent": 85
+      },
+      "expires_at": "2026-09-15",
+      "updated_at": "2026-05-29T05:05:00Z"
+    },
+    {
+      "id": "container-003",
+      "name": "Contoso OT Pilot",
+      "account": "Contoso",
+      "account_id": "001xx000003IJKL",
+      "region": "Europe West",
+      "status": "trial",
+      "products": ["Tenable OT Security"],
+      "features": ["OT Security"],
+      "usage": {
+        "license_used": 12,
+        "license_limit": 20,
+        "usage_percent": 60
+      },
+      "expires_at": "2026-07-01",
+      "updated_at": "2026-05-27T17:00:00Z"
+    }
+  ]
+}

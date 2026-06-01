@@ -1,0 +1,88 @@
+.iris-filters {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.iris-metrics {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.iris-details-code {
+  max-height: 260px;
+}
+
+.iris-filter-builder,
+.iris-column-config {
+  margin-top: 1rem;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+}
+
+.iris-filter-builder .section-heading,
+.iris-column-config .section-heading {
+  margin-bottom: 0.75rem;
+}
+
+.iris-filter-row {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: minmax(130px, 0.8fr) minmax(130px, 0.7fr) minmax(160px, 1.4fr);
+  margin-bottom: 0.55rem;
+}
+
+.iris-filter-row select,
+.iris-filter-row input,
+.iris-filter-builder select {
+  min-height: 34px;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  background: var(--surface);
+}
+
+.iris-column-list {
+  display: grid;
+  gap: 0.45rem;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.iris-column-option {
+  display: grid;
+  align-items: center;
+  gap: 0.4rem;
+  grid-template-columns: auto 1fr auto auto;
+  padding: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.iris-column-option .button {
+  min-height: 28px;
+  padding-inline: 0.55rem;
+  font-size: 0.74rem;
+}
+
+.iris-clickable-row {
+  cursor: pointer;
+}
+
+.iris-clickable-row:hover {
+  background: rgba(231, 255, 0, 0.08);
+}
+
+.iris-details-panel {
+  padding: 1rem;
+}
+
+@media (max-width: 780px) {
+  .iris-filter-row {
+    grid-template-columns: 1fr;
+  }
+}

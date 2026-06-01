@@ -1,0 +1,91 @@
+.dashboard-shell {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.module-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.module-header p {
+  margin: 0.45rem 0 0;
+  color: var(--text-muted);
+}
+
+.card-table {
+  overflow: hidden;
+}
+
+.card-table header,
+.panel-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1.1rem 1.2rem 0;
+}
+
+.card-table .table-wrap {
+  overflow: auto;
+  padding: 0 1rem 1rem;
+}
+
+.split-layout {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.9fr);
+}
+
+.side-panel {
+  padding: 1.2rem;
+}
+
+.meta-list {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.meta-list div {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.meta-list strong {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0 1rem 1rem;
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.table-note {
+  padding: 0 1rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 980px) {
+  .split-layout {
+    grid-template-columns: 1fr;
+  }
+}

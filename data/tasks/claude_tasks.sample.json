@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-05-29T08:00:00-03:00",
+  "source": "claude-routine",
+  "summary": "Daily executive summary",
+  "importantEmailHistorySummary": "Summary of important email threads from the previous session.",
+  "meetingsWeekHistorySummary": "Summary of relevant meetings already reviewed this week.",
+  "importantEmails": [
+    {
+      "id": "email-1",
+      "subject": "Partner follow-up",
+      "from": "person@example.com",
+      "priority": "high",
+      "reason": "Requires response today",
+      "suggestedAction": "Reply with updated timeline"
+    }
+  ],
+  "meetingsToday": [
+    {
+      "id": "meeting-1",
+      "title": "Partner sync",
+      "start": "2026-05-29T10:00:00-03:00",
+      "end": "2026-05-29T11:00:00-03:00",
+      "attendees": ["person@example.com"],
+      "preparationNotes": "Review pipeline and pending enablement"
+    }
+  ],
+  "meetingsThisWeek": [],
+  "todos": [
+    {
+      "id": "todo-1",
+      "title": "Send partner enablement deck",
+      "description": "Send the updated deck to the partner contact.",
+      "priority": "high",
+      "eventDate": "2026-05-29",
+      "dueDate": "2026-05-29",
+      "status": "open",
+      "source": "claude-routine",
+      "partnerName": "Example Partner",
+      "activityType": "enablement",
+      "period": "2026-Q2",
+      "tags": ["partner", "enablement", "follow-up"],
+      "completionComment": ""
+    }
+  ]
+}

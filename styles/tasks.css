@@ -1,0 +1,144 @@
+.tasks-feed-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.task-card {
+  padding: 1rem;
+}
+
+.important-email-table th:first-child,
+.important-email-table td:first-child {
+  width: 280px;
+}
+
+.important-email-table td {
+  padding-block: 0.55rem;
+}
+
+.important-email-title {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.important-email-title strong {
+  line-height: 1.2;
+}
+
+.important-email-title span:not(.pill) {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.important-email-table p {
+  margin: 0 0 0.25rem;
+}
+
+.todo-list {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.todo-item {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+}
+
+.todo-item.done {
+  opacity: 0.78;
+}
+
+.todo-item header,
+.todo-item footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.todo-comment-field textarea,
+.meeting-note-field textarea,
+.task-modal textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+
+.todo-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+
+.todo-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: var(--surface);
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.todo-chip.flag {
+  color: #1d4ed8;
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.todo-done-button {
+  min-height: 34px;
+  padding-inline: 0.85rem;
+}
+
+.compact-button {
+  min-height: 32px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.82rem;
+}
+
+.form-grid-wide {
+  grid-column: 1 / -1;
+}
+
+.task-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(30, 36, 38, 0.62);
+}
+
+.task-modal {
+  display: grid;
+  gap: 1rem;
+  width: min(760px, 100%);
+  max-height: min(780px, 92vh);
+  padding: 1rem;
+  overflow: auto;
+}
+
+.task-modal header,
+.task-modal footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.task-modal textarea {
+  width: 100%;
+  font-family: inherit;
+  line-height: 1.45;
+}

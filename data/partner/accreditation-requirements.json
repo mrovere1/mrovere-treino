@@ -1,0 +1,38 @@
+{
+  "source": "Derived from EM Service Delivery Accreditation Track.docx",
+  "introduction": {
+    "requiredAll": [
+      "Introduction to Tenable One",
+      "Introduction to Tenable Web Application Security",
+      "Introduction to Tenable Cloud Security",
+      "Introduction to Tenable Identity Exposure",
+      "Introduction to Tenable OT Security"
+    ],
+    "oneOfGroups": [
+      [
+        "Introduction to Tenable Vulnerability Management",
+        "Introduction to Tenable Security Center"
+      ]
+    ]
+  },
+  "specialist": {
+    "requiredAll": ["Tenable One Specialist"],
+    "oneOfGroups": [
+      [
+        "Tenable Vulnerability Management Specialist",
+        "Tenable Security Center Specialist"
+      ]
+    ],
+    "minimumGroups": [
+      {
+        "count": 2,
+        "courses": [
+          "Tenable Identity Exposure Specialist",
+          "Tenable Cloud Security Specialist",
+          "Tenable OT Security Specialist"
+        ]
+      }
+    ]
+  },
+  "theory": ["Exposure Management Business Theory Course"]
+}

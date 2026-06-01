@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Apps MROVERE icon">
+  <defs>
+    <linearGradient id="bg" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#123b5d" />
+      <stop offset="55%" stop-color="#0a1627" />
+      <stop offset="100%" stop-color="#071018" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" x2="100%" y1="0%" y2="0%">
+      <stop offset="0%" stop-color="#4ce0b3" />
+      <stop offset="100%" stop-color="#f4c15d" />
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="44" fill="url(#bg)" />
+  <path d="M56 184V72h24l48 66 48-66h24v112h-26V112l-39 53h-13l-39-53v72H56Z" fill="url(#accent)" />
+  <path d="M191 50h18v18h-18z" fill="#dffdf5" opacity="0.85" />
+  <path d="M48 50h18v18H48z" fill="#f8e8be" opacity="0.75" />
+</svg>
