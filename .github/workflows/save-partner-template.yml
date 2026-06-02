@@ -1,0 +1,86 @@
+name: Save partner email template
+
+on:
+  workflow_dispatch:
+    inputs:
+      payload_json:
+        description: "Paste the JSON payload copied from Apps MROVERE"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  save-template:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Save template and rebuild index
+        env:
+          PAYLOAD_JSON: ${{ inputs.payload_json }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          root = Path("data/partner/templates")
+          root.mkdir(parents=True, exist_ok=True)
+
+          payload = json.loads(os.environ["PAYLOAD_JSON"])
+          file_name = payload.get("fileName", "")
+          template = payload.get("template", {})
+
+          if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,79}\.json", file_name):
+              raise SystemExit("Invalid fileName. Use lowercase letters, numbers, hyphens, and .json.")
+
+          required_fields = ["id", "name", "subject", "body"]
+          missing = [field for field in required_fields if not str(template.get(field, "")).strip()]
+          if missing:
+              raise SystemExit(f"Template is missing required fields: {', '.join(missing)}")
+
+          normalized = {
+              "id": template["id"],
+              "name": template["name"],
+              "version": int(template.get("version") or 1),
+              "subject": template["subject"],
+              "body": template["body"],
+              "updatedAt": datetime.now(timezone.utc).isoformat(),
+              "updatedBy": template.get("updatedBy") or "github-actions",
+              "versions": template.get("versions") if isinstance(template.get("versions"), list) else []
+          }
+
+          target = root / file_name
+          target.write_text(json.dumps(normalized, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+          templates = []
+          for path in sorted(root.glob("*.json")):
+              if path.name == "templates.json":
+                  continue
+              with path.open(encoding="utf-8") as handle:
+                  item = json.load(handle)
+              if item.get("id") and item.get("name"):
+                  templates.append(item)
+
+          index = {
+              "updatedAt": datetime.now(timezone.utc).isoformat(),
+              "templates": templates
+          }
+          (root / "templates.json").write_text(
+              json.dumps(index, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8"
+          )
+          PY
+
+      - name: Commit template changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add data/partner/templates
+          git commit -m "Save partner email template" || exit 0
+          git push

@@ -121,14 +121,28 @@ When the Word document changes:
 
 ### Email templates
 
-Partner templates are versioned locally in IndexedDB and can be backed up under `data/partner/templates/`.
+Partner templates are versioned locally in IndexedDB and repository templates are loaded from `data/partner/templates/templates.json`.
 
-- Admin users can create templates, edit templates, save changes, save new versions, and export JSON.
+- Admin users can create templates, edit templates, save changes, save new versions, export JSON, and copy a GitHub Action payload.
 - Readonly users can view templates and copy content.
 - The Email Templates view lets users choose a partner before previewing or copying a template.
 - Partner-specific variables fill completed courses, missing courses, maturity summary, contact name, and next steps.
-- To promote browser-edited templates into the repository, export JSON from the app and save the file under `data/partner/templates/`.
-- Automatic repository copies require an automation layer such as a backend, GitHub App, or GitHub Actions. See `docs/automation-options.md`.
+- To promote browser-edited templates into the repository, use the `Save partner email template` GitHub Action.
+
+### Publish a new email template permanently
+
+1. Open `Partner Dashboard > Email Templates`.
+2. Click `New template`, then fill `Template name`, `Subject`, and `Body`.
+3. Click `Save` or `Save new version` to keep a local browser copy.
+4. Click `Copy GitHub payload`.
+5. Click `Open save workflow`.
+6. In GitHub, click `Run workflow`.
+7. Paste the copied payload into `payload_json`.
+8. Click `Run workflow`.
+9. Wait for the workflow to commit the new file under `data/partner/templates/` and update `data/partner/templates/templates.json`.
+10. Reload the portal after the GitHub Pages deploy finishes.
+
+This flow avoids storing a GitHub token in the browser. The browser only prepares the JSON payload; GitHub Actions performs the repository write securely.
 
 ## IRIS Dashboard
 

@@ -1,5 +1,6 @@
 import { canPerform } from "./roles.js";
 import {
+  createRepositoryTemplatePayload,
   createTemplateDraft,
   exportTemplatesJson,
   loadPartnerTemplates,
@@ -22,6 +23,9 @@ const partnerState = {
   requirements: null,
   templates: []
 };
+
+const TEMPLATE_WORKFLOW_URL =
+  "https://github.com/mrovere1/mrovere-treino/actions/workflows/save-partner-template.yml";
 
 export async function renderPartnerDashboard(container, userContext) {
   container.innerHTML = `<div class="loading-state">Loading partner workbook and templates...</div>`;
@@ -259,7 +263,7 @@ export function renderEmailTemplates(userContext) {
           )
           .join("")}
         <div class="template-repository-note">
-          Seed templates live under <code>data/partner/templates</code>. Browser edits are saved locally until exported.
+          Repository templates are loaded from <code>data/partner/templates/templates.json</code>. Browser edits stay local until published through GitHub Actions.
         </div>
       </article>
       <div class="template-stack">
@@ -307,7 +311,11 @@ export function renderEmailTemplates(userContext) {
               }
               ${
                 canPerform(userContext, "export-partner-templates")
-                  ? '<button id="export-template-button" class="button secondary" type="button">Export JSON</button>'
+                  ? `
+                    <button id="copy-template-payload-button" class="button secondary" type="button">Copy GitHub payload</button>
+                    <button id="open-template-workflow-button" class="button secondary" type="button">Open save workflow</button>
+                    <button id="export-template-button" class="button secondary" type="button">Export JSON</button>
+                  `
                   : ""
               }
             </div>
@@ -466,6 +474,15 @@ function wireTemplateActions(container, userContext) {
   }
 
   if (canPerform(userContext, "export-partner-templates")) {
+    container.querySelector("#copy-template-payload-button")?.addEventListener("click", async () => {
+      const template = readTemplateForm(container);
+      await navigator.clipboard?.writeText(createRepositoryTemplatePayload(template));
+    });
+
+    container.querySelector("#open-template-workflow-button")?.addEventListener("click", () => {
+      window.open(TEMPLATE_WORKFLOW_URL, "_blank", "noopener,noreferrer");
+    });
+
     container.querySelector("#export-template-button")?.addEventListener("click", () => {
       const blob = new Blob([exportTemplatesJson(partnerState.templates)], {
         type: "application/json"

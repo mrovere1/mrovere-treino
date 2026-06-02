@@ -1,5 +1,7 @@
 import { getAllRecords, putRecord } from "./storage.js";
 
+const REPOSITORY_TEMPLATES_PATH = "./data/partner/templates/templates.json";
+
 export const TEMPLATE_VARIABLES = [
   {
     variable: "{{partner_name}}",
@@ -167,15 +169,11 @@ const DEFAULT_TEMPLATES = [
 ];
 
 export async function loadPartnerTemplates() {
-  const stored = await getAllRecords("partnerTemplateVersions");
-  if (!stored.length) {
-    return structuredClone(DEFAULT_TEMPLATES);
-  }
-
-  const map = new Map(stored.map((template) => [template.id, template]));
-  return DEFAULT_TEMPLATES.map((template) => map.get(template.id) || structuredClone(template)).concat(
-    stored.filter((template) => !DEFAULT_TEMPLATES.some((defaultTemplate) => defaultTemplate.id === template.id))
-  );
+  const [stored, repositoryTemplates] = await Promise.all([
+    getAllRecords("partnerTemplateVersions"),
+    loadRepositoryTemplates()
+  ]);
+  return mergeTemplates([...structuredClone(DEFAULT_TEMPLATES), ...repositoryTemplates], stored);
 }
 
 export async function savePartnerTemplateVersion(template, updatedBy) {
@@ -229,4 +227,74 @@ export function renderTemplatePreview(template, sampleData) {
 
 export function exportTemplatesJson(templates) {
   return JSON.stringify(templates, null, 2);
+}
+
+export function createRepositoryTemplatePayload(template) {
+  const normalizedTemplate = normalizeTemplate({
+    ...template,
+    updatedAt: new Date().toISOString()
+  });
+
+  return JSON.stringify(
+    {
+      fileName: `${slugify(normalizedTemplate.name || normalizedTemplate.id)}.json`,
+      template: normalizedTemplate
+    },
+    null,
+    2
+  );
+}
+
+async function loadRepositoryTemplates() {
+  try {
+    const response = await fetch(`${REPOSITORY_TEMPLATES_PATH}?v=${Date.now()}`, {
+      cache: "no-store"
+    });
+    if (!response.ok) {
+      return [];
+    }
+
+    const payload = await response.json();
+    return normalizeRepositoryTemplates(payload);
+  } catch {
+    return [];
+  }
+}
+
+function normalizeRepositoryTemplates(payload) {
+  const templates = Array.isArray(payload) ? payload : payload.templates || [];
+  return templates.map(normalizeTemplate).filter((template) => template.id && template.name);
+}
+
+function mergeTemplates(baseTemplates, overrideTemplates) {
+  const map = new Map();
+  baseTemplates.forEach((template) => {
+    map.set(template.id, normalizeTemplate(template));
+  });
+  overrideTemplates.forEach((template) => {
+    map.set(template.id, normalizeTemplate(template));
+  });
+  return Array.from(map.values());
+}
+
+function normalizeTemplate(template) {
+  return {
+    id: template.id || `template-${crypto.randomUUID()}`,
+    name: template.name || "Untitled Template",
+    version: Number(template.version || 1),
+    subject: template.subject || "",
+    body: template.body || "",
+    updatedAt: template.updatedAt || null,
+    updatedBy: template.updatedBy || "repository",
+    versions: Array.isArray(template.versions) ? template.versions : []
+  };
+}
+
+function slugify(value) {
+  return String(value || "partner-template")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80) || "partner-template";
 }
