@@ -1,0 +1,10 @@
+{
+  "id": "partner-celebration",
+  "name": "EM03 - Accreditation Celebration",
+  "version": 1,
+  "subject": "{{partner_name}} is now Accreditation-READY",
+  "body": "Ola {{contact_name}},\n\nCongratulations! {{partner_name}} agora é Accreditation-Ready para o programa de Exposure Management Service Delivery.\n\nCursos Completos\n{{completed_courses}}\n\n\nMuito obrigado pelo comprometimento,,\nTenable Channel SE\nMarcelo Rovere",
+  "updatedAt": "2026-06-02T13:22:52.764700+00:00",
+  "updatedBy": "system",
+  "versions": []
+}
