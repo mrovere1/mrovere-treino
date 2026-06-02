@@ -1,0 +1,64 @@
+name: Sync partner workbook from Google Drive
+
+on:
+  schedule:
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force commit even if file is unchanged'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download workbook from Google Drive
+        run: |
+          FILE_ID="1hekmNC50aaZNnSS5rt5WyTGc-9V90nhQ"
+          OUTPUT="data/partner/Focus Partner Tracking BR.xlsx"
+          TMP="$(mktemp --suffix=.xlsx)"
+
+          curl -fsSL \
+            "https://drive.google.com/uc?export=download&id=${FILE_ID}" \
+            -o "${TMP}"
+
+          # Verify XLSX (PK zip magic bytes 50 4b)
+          if ! xxd -l 2 "${TMP}" | grep -qi "504b"; then
+            echo "::error::Downloaded file is not a valid XLSX. Google Drive may have returned an HTML error page."
+            echo "--- First 500 bytes of response ---"
+            head -c 500 "${TMP}"
+            exit 1
+          fi
+
+          mv "${TMP}" "${OUTPUT}"
+          echo "Downloaded $(du -h "${OUTPUT}" | cut -f1) — OK"
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add "data/partner/Focus Partner Tracking BR.xlsx"
+
+          FORCED="${{ inputs.force }}"
+
+          if git diff --cached --quiet && [ "${FORCED}" != "true" ]; then
+            echo "Workbook unchanged — nothing to commit."
+          else
+            TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+            git commit -m "sync: partner workbook from Google Drive (${TIMESTAMP})"
+            git push
+            echo "Workbook updated and pushed to main."
+          fi
