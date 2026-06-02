@@ -334,3 +334,69 @@ function evaluateCourseRules(courseMap, ruleSet) {
 
   return { passed, completedCourses, missingCourses };
 }
+
+export function parseGuardianSheet(workbook) {
+  const sheetName =
+    workbook.SheetNames.find((name) => /guardian/i.test(name.trim())) ||
+    workbook.SheetNames[1];
+
+  const sheet = sheetName ? workbook.Sheets[sheetName] : null;
+  if (!sheet) {
+    return [];
+  }
+
+  const rows = window.XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+
+  const headerIndex = rows.findIndex((row) =>
+    row.some((cell) => /guardian[\s_-]*name/i.test(String(cell || "").trim()))
+  );
+
+  const startRow = headerIndex >= 0 ? headerIndex : 0;
+  const headers = (rows[startRow] || []).map((h) => String(h || "").trim().toLowerCase());
+
+  const idx = {
+    name: headers.findIndex((h) => h.includes("guardian") || h === "name"),
+    email: headers.indexOf("email"),
+    partner: headers.indexOf("partner"),
+    specialist: headers.findIndex((h) => h.includes("specialist")),
+    tcsa: headers.indexOf("tcsa"),
+    tcse: headers.indexOf("tcse"),
+    tcde: headers.indexOf("tcde"),
+    obs: headers.indexOf("obs")
+  };
+
+  return rows
+    .slice(startRow + 1)
+    .filter((row) => String(row[idx.name] ?? "").trim())
+    .map((row) => {
+      const specialist = readGuardianBool(row[idx.specialist]);
+      const tcsa = readGuardianBool(row[idx.tcsa]);
+      const tcse = readGuardianBool(row[idx.tcse]);
+      const tcde = readGuardianBool(row[idx.tcde]);
+      const certsDone = [specialist, tcsa, tcse, tcde].filter(Boolean).length;
+
+      return {
+        name: String(row[idx.name] ?? "").trim(),
+        email: String(row[idx.email] ?? "").trim(),
+        partner: String(row[idx.partner] ?? "").trim(),
+        specialist,
+        tcsa,
+        tcse,
+        tcde,
+        obs: String(row[idx.obs] ?? "").trim(),
+        computed: {
+          allComplete: certsDone === 4,
+          certsDone,
+          percentage: Math.round((certsDone / 4) * 100)
+        }
+      };
+    });
+}
+
+function readGuardianBool(value) {
+  if (typeof value === "boolean") {
+    return value;
+  }
+  const normalized = String(value ?? "").trim().toLowerCase();
+  return ["true", "yes", "ok", "1", "x", "done", "complete"].includes(normalized);
+}
