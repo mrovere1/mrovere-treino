@@ -1,0 +1,10 @@
+{
+  "id": "template-e0db7ff3-78d7-4c39-a56e-5ffdcbf34439",
+  "name": "Guardian03 - Congratulations",
+  "version": 1,
+  "subject": "Tenable Guardian — {recurso} está pronto para indicação! | {{partner_name}}",
+  "body": "Olá, {{contact_name}}!\n\nUma ótima notícia: {{guardian_name}}concluiu as 3 certificações obrigatórias do programa Tenable Guardian! 🎉\n\n✅ Tenable Certified Sales Associate (TCSA) — Concluído\n✅ Tenable Certified Sales Engineer (TCSE) — Concluído\n✅ Tenable Certified Delivery Engineer (TCDE) — Concluído\n✅ {{partner_name}} ({tier}) — Medallion Level elegível\n\nCom todos os requisitos atendidos, estou encaminhando a indicação formal à Tenable para avaliação do convite Guardian.\n\nO QUE VEM A SEGUIR?\n\nApós a análise pela Tenable, {{guardian_name}} receberá o convite oficial e passará a ter acesso a:\n\n• Suporte direto ao Tier II da Tenable\n• Treinamentos avançados dos SEs Tenable\n• Participação em Quarterly Update Calls e SE Summit\n• Credential logo e materiais de branding\n\nParabéns pelo comprometimento — esse reconhecimento reflete o alto nível técnico da {{partner_name}}!\n\nAbs,\nMarcelo Rovere\nTenable — Channel Engineer",
+  "updatedAt": "2026-06-02T14:38:27.157949+00:00",
+  "updatedBy": "system",
+  "versions": []
+}

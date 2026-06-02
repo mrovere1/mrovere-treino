@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-02T14:35:42.970914+00:00",
+  "updatedAt": "2026-06-02T14:38:27.158667+00:00",
   "templates": [
     {
       "id": "new-partner-orientation",
@@ -80,6 +80,16 @@
       "subject": "Tenable Guardian Program — Acompanhamento de Certificações | {{partner_name}}",
       "body": "Olá, {{contact_name}}!\n\nEspero que esteja bem. Passando para compartilhar o andamento das certificações Tenable de {{guardian_name}} e alinhar os próximos passos rumo ao programa Tenable Guardian.\n\nO QUE É O TENABLE GUARDIAN?\n\nTenable Guardian é a mais alta certificação técnica disponível no programa Tenable Assure — oferecida por convite a engenheiros que demonstraram o mais alto nível de expertise em Cyber Exposure. Além de diferenciar a {{partner_name}} no mercado, o Guardian abre benefícios exclusivos:\n\n• Suporte direto com engenheiros Tier II da Tenable\n• Treinamentos avançados dos SEs Tenable\n• Reconhecimento como membro virtual do time técnico Tenable\n• Participação em Quarterly Update Calls e SE Summit\n• Uso do credential logo e materiais de branding\n\nREQUISITOS PARA INDICAÇÃO\n\nPara que {{guardian_name}} seja elegível ao convite Guardian, é necessário:\n\nEmpresa no nível Gold ou Platinum no Tenable Assure → {{partner_name}} {{tier}} ✓\n\nCertificações individuais obrigatórias:\n\n  • Tenable Certified Sales Associate (TCSA) → {{status_tcsa}}\n  • Tenable Certified Sales Engineer (TCSE) → {{status_tcse}}\n  • Tenable Certified Delivery Engineer (TCDE) → {{status_tcde}}\n\nPROGRESSO ATUAL\n\nProgresso geral: [***comentar aqui***]\n\n\nEstou acompanhando de perto a jornada e posso apoiar com materiais de estudo, acesso ao Tenable University e alinhamentos técnicos. Assim que {{guardian_name}}completar as 3 certificações, encaminho a indicação formal à Tenable para avaliação do convite Guardian.\n\nQualquer dúvida, estou à disposição!\n\nAbs,\n[Seu nome]\nTenable — Channel Engineer",
       "updatedAt": "2026-06-02T14:35:42.970234+00:00",
+      "updatedBy": "system",
+      "versions": []
+    },
+    {
+      "id": "template-e0db7ff3-78d7-4c39-a56e-5ffdcbf34439",
+      "name": "Guardian03 - Congratulations",
+      "version": 1,
+      "subject": "Tenable Guardian — {recurso} está pronto para indicação! | {{partner_name}}",
+      "body": "Olá, {{contact_name}}!\n\nUma ótima notícia: {{guardian_name}}concluiu as 3 certificações obrigatórias do programa Tenable Guardian! 🎉\n\n✅ Tenable Certified Sales Associate (TCSA) — Concluído\n✅ Tenable Certified Sales Engineer (TCSE) — Concluído\n✅ Tenable Certified Delivery Engineer (TCDE) — Concluído\n✅ {{partner_name}} ({tier}) — Medallion Level elegível\n\nCom todos os requisitos atendidos, estou encaminhando a indicação formal à Tenable para avaliação do convite Guardian.\n\nO QUE VEM A SEGUIR?\n\nApós a análise pela Tenable, {{guardian_name}} receberá o convite oficial e passará a ter acesso a:\n\n• Suporte direto ao Tier II da Tenable\n• Treinamentos avançados dos SEs Tenable\n• Participação em Quarterly Update Calls e SE Summit\n• Credential logo e materiais de branding\n\nParabéns pelo comprometimento — esse reconhecimento reflete o alto nível técnico da {{partner_name}}!\n\nAbs,\nMarcelo Rovere\nTenable — Channel Engineer",
+      "updatedAt": "2026-06-02T14:38:27.157949+00:00",
       "updatedBy": "system",
       "versions": []
     },
