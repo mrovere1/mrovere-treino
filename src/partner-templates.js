@@ -87,37 +87,6 @@ export const TEMPLATE_VARIABLES = [
 
 const DEFAULT_TEMPLATES = [
   {
-    id: "partner-follow-up",
-    name: "Partner Follow-up",
-    version: 1,
-    subject: "Partner accreditation progress update for {{partner_name}}",
-    body: [
-      "Hello {{contact_name}},",
-      "",
-      "Here is the latest accreditation update for {{partner_name}}.",
-      "",
-      "Completed items by track:",
-      "{{all_completed_courses}}",
-      "",
-      "Remaining items by track:",
-      "{{all_missing_courses}}",
-      "",
-      "Overall program progress: {{program_progress_percentage}}",
-      "",
-      "Current maturity:",
-      "{{maturity_level}}",
-      "",
-      "Recommended next steps:",
-      "{{next_steps}}",
-      "",
-      "Best regards,",
-      "MROVERE"
-    ].join("\n"),
-    updatedAt: null,
-    updatedBy: "system",
-    versions: []
-  },
-  {
     id: "partner-celebration",
     name: "Accreditation Celebration",
     version: 1,
@@ -173,7 +142,9 @@ export async function loadPartnerTemplates() {
     getAllRecords("partnerTemplateVersions"),
     loadRepositoryTemplates()
   ]);
-  return mergeTemplates([...structuredClone(DEFAULT_TEMPLATES), ...repositoryTemplates], stored);
+  return sortTemplatesByName(
+    mergeTemplates([...structuredClone(DEFAULT_TEMPLATES), ...repositoryTemplates], stored)
+  );
 }
 
 export async function savePartnerTemplateVersion(template, updatedBy) {
@@ -275,6 +246,12 @@ function mergeTemplates(baseTemplates, overrideTemplates) {
     map.set(template.id, normalizeTemplate(template));
   });
   return Array.from(map.values());
+}
+
+function sortTemplatesByName(templates) {
+  return [...templates].sort((left, right) =>
+    left.name.localeCompare(right.name, "en", { sensitivity: "base" })
+  );
 }
 
 function normalizeTemplate(template) {
