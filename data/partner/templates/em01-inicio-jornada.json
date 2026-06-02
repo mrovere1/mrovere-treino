@@ -1,0 +1,10 @@
+{
+  "id": "new-partner-orientation",
+  "name": "EM01 - Inicio Jornada",
+  "version": 1,
+  "subject": "Tenable — Início da Jornada de Accreditation EM | {{partner_name}}",
+  "body": "Olá, {{contact_name}}!\n\nEspero que esteja bem. Passando para alinhar sobre a Jornada de Accreditation EM Service Delivery da Tenable, que estamos acompanhando com os nossos parceiros foco no Brasil.\n\nA {{partner_name}}, como parceiro foco, tem acesso completo à trilha no Tenable University. Abaixo o resumo do programa com um detalhe importante, por ser um badge para o parceiro, recomendamos que os cursos sejam realizados por pelo menos 3 recursos.\n\n📚 MÓDULOS DE INTRODUÇÃO (https://university.tenable.com/learn/catalog/view/77)\n• Introduction to Tenable One (obrigatório)\n• Introduction to Tenable VM ou SC (1 de 2)\n• Introduction to Tenable Web Application Security\n• Introduction to Tenable Identity Exposure\n• Introduction to Tenable OT Security\n• Introduction to Tenable Cloud Security\n\n🎓 MÓDULOS SPECIALIST (liberados sob demanda após Intro - https://university.tenable.com/learn/catalog/view/78)\n• Tenable One Specialist (obrigatório — em construção)\n• VM ou SC Specialist (1 de 2)\n• 2 de 3: IE, CS e OT Specialist\n\n📖 EXPOSURE MANAGEMENT (https://university.tenable.com/learn/catalog/view/79)\n• Exposure Management Business Theory Course\n\nFico à disposição para alinharmos próximos passos e apoiar a equipe nessa jornada.\n\nAbs,\n[Seu nome]\nTenable — Channel Engineer",
+  "updatedAt": "2026-06-02T13:06:52.352560+00:00",
+  "updatedBy": "system",
+  "versions": []
+}
