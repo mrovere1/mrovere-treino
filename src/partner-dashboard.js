@@ -12,7 +12,8 @@ import {
 import {
   loadAccreditationRequirements,
   loadPartnerWorkbook,
-  parsePartnerWorkbook
+  parsePartnerWorkbook,
+  parseGuardianSheet
 } from "./partner-excel.js";
 
 const partnerState = {
@@ -21,7 +22,8 @@ const partnerState = {
   selectedPartnerId: null,
   partners: [],
   requirements: null,
-  templates: []
+  templates: [],
+  guardians: []
 };
 
 const TEMPLATE_WORKFLOW_URL =
@@ -38,6 +40,7 @@ export async function renderPartnerDashboard(container, userContext) {
     ]);
 
     partnerState.partners = parsePartnerWorkbook(workbook, requirements);
+    partnerState.guardians = parseGuardianSheet(workbook);
     partnerState.requirements = requirements;
     partnerState.templates = templates;
     partnerState.selectedTemplateId = partnerState.selectedTemplateId || templates[0]?.id || null;
@@ -229,6 +232,98 @@ export function renderPartnerMaturity(partners) {
   `;
 }
 
+export function renderGuardianTab(guardians, partners) {
+  const ready = guardians.filter((g) => g.computed.allComplete);
+  const inProgress = guardians.filter((g) => !g.computed.allComplete && g.computed.certsDone > 0);
+  const pending = guardians.filter((g) => g.computed.certsDone === 0);
+
+  if (guardians.length === 0) {
+    return `
+      <section class="panel">
+        <p class="muted">No Guardian candidates found in the workbook. Make sure the workbook contains a "Guardian" sheet with the expected columns.</p>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="partner-grid4">
+      <article class="stat-card panel">
+        <h3>Candidates</h3>
+        <div class="stat-value">${guardians.length}</div>
+        <p class="muted">Total in program</p>
+      </article>
+      <article class="stat-card panel">
+        <h3>Ready</h3>
+        <div class="stat-value">${ready.length}</div>
+        <p class="muted">All certifications complete</p>
+      </article>
+      <article class="stat-card panel">
+        <h3>In progress</h3>
+        <div class="stat-value">${inProgress.length}</div>
+        <p class="muted">Partial certifications</p>
+      </article>
+      <article class="stat-card panel">
+        <h3>Pending</h3>
+        <div class="stat-value">${pending.length}</div>
+        <p class="muted">Not started</p>
+      </article>
+    </section>
+    <section class="panel card-table">
+      <header>
+        <div>
+          <h3>Guardian candidates</h3>
+          <p class="muted">Required certifications: Specialist Course + TCSA + TCSE + TCDE. Offered by invitation — company must hold Gold or Platinum tier.</p>
+        </div>
+      </header>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Partner</th>
+              <th>Specialist</th>
+              <th>TCSA</th>
+              <th>TCSE</th>
+              <th>TCDE</th>
+              <th>Progress</th>
+              <th>Status</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${guardians
+              .map((g) => {
+                const partnerData = partners.find(
+                  (p) => p.partnerName.toLowerCase() === g.partner.toLowerCase()
+                );
+                return `
+                  <tr>
+                    <td>
+                      <strong>${escapeHtml(g.name)}</strong>
+                      ${g.email ? `<div class="muted">${escapeHtml(g.email)}</div>` : ""}
+                    </td>
+                    <td>
+                      ${partnerData ? renderTierBadge(partnerData.status) : ""}
+                      <span>${escapeHtml(g.partner)}</span>
+                    </td>
+                    <td>${renderGuardianCertPill(g.specialist)}</td>
+                    <td>${renderGuardianCertPill(g.tcsa)}</td>
+                    <td>${renderGuardianCertPill(g.tcse)}</td>
+                    <td>${renderGuardianCertPill(g.tcde)}</td>
+                    <td>${renderGuardianProgress(g)}</td>
+                    <td>${renderGuardianStatus(g)}</td>
+                    <td class="muted">${escapeHtml(g.obs || "")}</td>
+                  </tr>
+                `;
+              })
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  `;
+}
+
 export function renderEmailTemplates(userContext) {
   const selectedTemplate =
     partnerState.templates.find((template) => template.id === partnerState.selectedTemplateId) ||
@@ -399,6 +494,7 @@ function drawPartnerModule(container, userContext) {
         ${renderTabButton("overview", "Overview")}
         ${renderTabButton("certifications", "Courses")}
         ${renderTabButton("maturity", "Maturity")}
+        ${renderTabButton("guardian", "Guardian")}
         ${renderTabButton("email", "Email Templates")}
       </section>
       <section id="partner-tab-content"></section>
@@ -424,6 +520,11 @@ function renderPartnerTabContent(tabContent, userContext) {
 
   if (partnerState.activeTab === "maturity") {
     tabContent.innerHTML = renderPartnerMaturity(partnerState.partners);
+    return;
+  }
+
+  if (partnerState.activeTab === "guardian") {
+    tabContent.innerHTML = renderGuardianTab(partnerState.guardians, partnerState.partners);
     return;
   }
 
@@ -837,6 +938,32 @@ function renderProgramProgress(partner) {
     <div class="partner-program-progress" title="Intro ${progress.introDone || 0}/6 | Specialist ${progress.specialistDone || 0}/4 | Theory ${progress.theoryDone || 0}/1">
       ${renderProgressBar(progress.percentage)}
       <span class="muted">${progress.totalDone}/${progress.totalCriteria}</span>
+    </div>
+  `;
+}
+
+function renderGuardianCertPill(value) {
+  return value
+    ? '<span class="pill success">Done</span>'
+    : '<span class="pill warning">Pending</span>';
+}
+
+function renderGuardianStatus(guardian) {
+  if (guardian.computed.allComplete) {
+    return '<span class="pill success">Ready</span>';
+  }
+  if (guardian.computed.certsDone > 0) {
+    return '<span class="pill warning">In progress</span>';
+  }
+  return '<span class="pill">Pending</span>';
+}
+
+function renderGuardianProgress(guardian) {
+  const { certsDone, percentage } = guardian.computed;
+  return `
+    <div class="partner-program-progress">
+      ${renderProgressBar(percentage)}
+      <span class="muted">${certsDone}/4</span>
     </div>
   `;
 }
