@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-02T14:24:35.321060+00:00",
+  "updatedAt": "2026-06-02T14:29:45.686938+00:00",
   "templates": [
     {
       "id": "new-partner-orientation",
@@ -60,6 +60,16 @@
       "subject": "Tenable — Follow-up Accreditation EM | {{partner_name}}",
       "body": "Hello ,\n\nOlá, {{contact_name}}!\n\nTudo bem? Passando para acompanhar o andamento da acreditação EM da {{partner_name}}.\n\n📊 STATUS ATUAL\n\n• Módulos de Introdução concluídos:\n{{intro_completed_courses}} \n\n• Módulos Specialist concluídos: \n{{specialist_completed_courses}}\n\n• Progresso geral: \n{{program_progress_percentage}}\n\n📋 PENDÊNCIAS — INTRODUÇÃO:\n{{intro_missing_courses}}\n\n📋 PENDÊNCIAS — SPECIALIST:\n{{specialist_missing_courses}}\n\nEstou disponível para tirar dúvidas, agendar sessões de apoio ou facilitar o acesso aos materiais.\n\nAbs,\nMarcelo Rovere\nTenable — Channel Engineer",
       "updatedAt": "2026-06-02T12:02:26.427701+00:00",
+      "updatedBy": "system",
+      "versions": []
+    },
+    {
+      "id": "template-f09d3f9e-988f-428d-9254-683143e72f2d",
+      "name": "Guardian01 - Invite",
+      "version": 1,
+      "subject": "Tenable Guardian Program — A mais alta certificação técnica | {{partner_name}}",
+      "body": "Olá, {{contact_name}}!\n\nQueria apresentar uma oportunidade importante para a equipe técnica da {{partner_name}} o programa Tenable Guardian.\n\nO QUE É O TENABLE GUARDIAN?\n\nTenable Guardian é a certificação técnica mais alta disponível no programa Tenable Assure. Oferecida por convite a engenheiros que demonstram o mais alto nível de expertise em Cyber Exposure, é um diferencial competitivo significativo no mercado.\n\nComo Guardian, o profissional passa a ser reconhecido como membro virtual do time técnico Tenable, com acesso a:\n\n• Suporte direto ao Tier II da Tenable\n• Treinamentos avançados dos Sales Engineers Tenable\n• Quarterly Update Calls e SE Summit\n• Credential logo e materiais de branding exclusivos\n\nCOMO SE TORNAR GUARDIAN?\n\nO convite Guardian é emitido pela Tenable quando o profissional atende a dois critérios:\n\n1️⃣ Empresa parceira no nível Gold ou Platinum no Tenable Assure\n   → {{partner_name}} {{tier}} ✓\n\n2️⃣ Conclusão das 3 certificações técnicas obrigatórias:\n   • Tenable Certified Sales Associate (TCSA)\n   • Tenable Certified Sales Engineer (TCSE)\n   • Tenable Certified Delivery Engineer (TCDE)\n\nTodas estão disponíveis no Tenable University: https://university.tenable.com\n\nEstou à disposição para apoiar {recurso} nessa jornada — desde materiais de estudo até sessões de alinhamento técnico antes das provas.\n\nVamos começar?\n\nAbs,\nMarcelo Rovere\nTenable — Channel Engineer",
+      "updatedAt": "2026-06-02T14:29:45.686274+00:00",
       "updatedBy": "system",
       "versions": []
     },
