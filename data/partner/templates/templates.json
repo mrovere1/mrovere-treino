@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-02T13:31:12.598687+00:00",
+  "updatedAt": "2026-06-02T14:24:35.321060+00:00",
   "templates": [
     {
       "id": "new-partner-orientation",
@@ -60,6 +60,16 @@
       "subject": "Tenable — Follow-up Accreditation EM | {{partner_name}}",
       "body": "Hello ,\n\nOlá, {{contact_name}}!\n\nTudo bem? Passando para acompanhar o andamento da acreditação EM da {{partner_name}}.\n\n📊 STATUS ATUAL\n\n• Módulos de Introdução concluídos:\n{{intro_completed_courses}} \n\n• Módulos Specialist concluídos: \n{{specialist_completed_courses}}\n\n• Progresso geral: \n{{program_progress_percentage}}\n\n📋 PENDÊNCIAS — INTRODUÇÃO:\n{{intro_missing_courses}}\n\n📋 PENDÊNCIAS — SPECIALIST:\n{{specialist_missing_courses}}\n\nEstou disponível para tirar dúvidas, agendar sessões de apoio ou facilitar o acesso aos materiais.\n\nAbs,\nMarcelo Rovere\nTenable — Channel Engineer",
       "updatedAt": "2026-06-02T12:02:26.427701+00:00",
+      "updatedBy": "system",
+      "versions": []
+    },
+    {
+      "id": "template-2a88fd14-5e7b-43db-8548-cfba725b2d31",
+      "name": "University01 - First Access",
+      "version": 1,
+      "subject": "Acesso ao Tenable Partner Portal e Tenable University — Instruções",
+      "body": "Olá, {{contact_name}},\n\nTudo bem? Seguem as instruções para você criar seu acesso ao **Tenable Partner Portal** e à **Tenable University**.\n\n**1. Cadastro no Partner Portal**\n\nAcesse o link abaixo e crie seu login e senha:\n🔗 https://partners.tenable.com/#/page/register\n\nDurante o cadastro, você precisará informar o **Customer ID** da sua empresa:\n\n> **Customer ID: [INSERIR O ID AQUI]**\n\nCom esse ID, seu perfil será vinculado automaticamente à {{partner_name}}no nosso sistema.\n\n**2. Acesso aos Treinamentos (Tenable University)**\n\nApós o login no Partner Portal, acesse a área **\"Training\"** para encontrar os cursos e certificações disponíveis sem custo:\n\n- Comece pelo **Sales Associate** → evolua para **Sales Engineer**\n- Em seguida, explore os módulos por solução (VM, Identity Exposure, Cloud Security, OT, etc.)\n- As certificações contam para a definição do nível de parceria da {{partner_name}}\n\n**3. Recursos Técnicos**\n\nNo menu do portal, use a opção **\"Technical\"** para acessar conteúdo direcionado a engenheiros: demos, laboratórios e documentação técnica por produto.\n\nQualquer dúvida, pode me chamar. Estou aqui para ajudar no que precisar.\n\nAbraços,\n**Marcelo Rovere**\nChannel Systems Engineer — Tenable Brasil",
+      "updatedAt": "2026-06-02T14:24:35.320450+00:00",
       "updatedBy": "system",
       "versions": []
     }

@@ -1,0 +1,10 @@
+{
+  "id": "template-2a88fd14-5e7b-43db-8548-cfba725b2d31",
+  "name": "University01 - First Access",
+  "version": 1,
+  "subject": "Acesso ao Tenable Partner Portal e Tenable University — Instruções",
+  "body": "Olá, {{contact_name}},\n\nTudo bem? Seguem as instruções para você criar seu acesso ao **Tenable Partner Portal** e à **Tenable University**.\n\n**1. Cadastro no Partner Portal**\n\nAcesse o link abaixo e crie seu login e senha:\n🔗 https://partners.tenable.com/#/page/register\n\nDurante o cadastro, você precisará informar o **Customer ID** da sua empresa:\n\n> **Customer ID: [INSERIR O ID AQUI]**\n\nCom esse ID, seu perfil será vinculado automaticamente à {{partner_name}}no nosso sistema.\n\n**2. Acesso aos Treinamentos (Tenable University)**\n\nApós o login no Partner Portal, acesse a área **\"Training\"** para encontrar os cursos e certificações disponíveis sem custo:\n\n- Comece pelo **Sales Associate** → evolua para **Sales Engineer**\n- Em seguida, explore os módulos por solução (VM, Identity Exposure, Cloud Security, OT, etc.)\n- As certificações contam para a definição do nível de parceria da {{partner_name}}\n\n**3. Recursos Técnicos**\n\nNo menu do portal, use a opção **\"Technical\"** para acessar conteúdo direcionado a engenheiros: demos, laboratórios e documentação técnica por produto.\n\nQualquer dúvida, pode me chamar. Estou aqui para ajudar no que precisar.\n\nAbraços,\n**Marcelo Rovere**\nChannel Systems Engineer — Tenable Brasil",
+  "updatedAt": "2026-06-02T14:24:35.320450+00:00",
+  "updatedBy": "system",
+  "versions": []
+}
