@@ -1,10 +1,10 @@
 {
   "id": "template-53702143-68ed-456b-b799-eebb554059c2",
   "name": "EM02 - Follow-up Accreditation",
-  "version": 2,
+  "version": 4,
   "subject": "Tenable — Follow-up Accreditation EM | {{partner_name}}",
   "body": "Hello ,\n\nOlá, {{contact_name}}!\n\nTudo bem? Passando para acompanhar o andamento da acreditação EM da {{partner_name}}.\n\n📊 STATUS ATUAL\n\n• Módulos de Introdução concluídos:\n{{intro_completed_courses}} \n\n• Módulos Specialist concluídos: \n{{specialist_completed_courses}}\n\n• Módulos EM Theory concluídos: \n{{em_theory_completed_courses}}\n\n• Progresso geral: \n{{program_progress_percentage}}\n\n📋 PENDÊNCIAS — INTRODUÇÃO (https://university.tenable.com/learn/catalog/view/77):\n{{intro_missing_courses}}\n\n📋 PENDÊNCIAS — SPECIALIST (https://university.tenable.com/learn/catalog/view/78):\n{{specialist_missing_courses}}\n\n📋 PENDÊNCIAS — EM Theory (https://university.tenable.com/learn/catalog/view/79):\n{{em_theory_missing_courses}}\n\nEstou disponível para tirar dúvidas, agendar sessões de apoio ou facilitar o acesso aos materiais.\n\nAbs,\nMarcelo Rovere\nTenable — Channel Engineer",
-  "updatedAt": "2026-06-02T13:24:14.379819+00:00",
+  "updatedAt": "2026-06-02T13:31:12.597980+00:00",
   "updatedBy": "marcelo@mrovere.com",
   "versions": [
     {
@@ -13,6 +13,20 @@
       "body": "Hello ,\n\nOlá, {{contact_name}}!\n\nTudo bem? Passando para acompanhar o andamento da acreditação EM da {{partner_name}}.\n\n📊 STATUS ATUAL\n\n• Módulos de Introdução concluídos:\n{{intro_completed_courses}} \n\n• Módulos Specialist concluídos: \n{{specialist_completed_courses}}\n\n• Módulos EM Theory concluídos: \n{{em_theory_completed_courses}}\n\n• Progresso geral: \n{{program_progress_percentage}}\n\n📋 PENDÊNCIAS — INTRODUÇÃO (https://university.tenable.com/learn/catalog/view/77):\n{{intro_missing_courses}}\n\n📋 PENDÊNCIAS — SPECIALIST (https://university.tenable.com/learn/catalog/view/78):\n{{specialist_missing_courses}}\n\n📋 PENDÊNCIAS — EM Theory (https://university.tenable.com/learn/catalog/view/79):\n{{em_theory_missing_courses}}\n\nEstou disponível para tirar dúvidas, agendar sessões de apoio ou facilitar o acesso aos materiais.\n\nAbs,\nMarcelo Rovere\nTenable — Channel Engineer",
       "updatedAt": "2026-06-02T13:23:48.078Z",
       "updatedBy": "system"
+    },
+    {
+      "version": 2,
+      "subject": "Tenable — Follow-up Accreditation EM | {{partner_name}}",
+      "body": "Hello ,\n\nOlá, {{contact_name}}!\n\nTudo bem? Passando para acompanhar o andamento da acreditação EM da {{partner_name}}.\n\n📊 STATUS ATUAL\n\n• Módulos de Introdução concluídos:\n{{intro_completed_courses}} \n\n• Módulos Specialist concluídos: \n{{specialist_completed_courses}}\n\n• Módulos EM Theory concluídos: \n{{em_theory_completed_courses}}\n\n• Progresso geral: \n{{program_progress_percentage}}\n\n📋 PENDÊNCIAS — INTRODUÇÃO (https://university.tenable.com/learn/catalog/view/77):\n{{intro_missing_courses}}\n\n📋 PENDÊNCIAS — SPECIALIST (https://university.tenable.com/learn/catalog/view/78):\n{{specialist_missing_courses}}\n\n📋 PENDÊNCIAS — EM Theory (https://university.tenable.com/learn/catalog/view/79):\n{{em_theory_missing_courses}}\n\nEstou disponível para tirar dúvidas, agendar sessões de apoio ou facilitar o acesso aos materiais.\n\nAbs,\nMarcelo Rovere\nTenable — Channel Engineer",
+      "updatedAt": "2026-06-02T13:30:31.815Z",
+      "updatedBy": "marcelo@mrovere.com"
+    },
+    {
+      "version": 3,
+      "subject": "Tenable — Follow-up Accreditation EM | {{partner_name}}",
+      "body": "Hello ,\n\nOlá, {{contact_name}}!\n\nTudo bem? Passando para acompanhar o andamento da acreditação EM da {{partner_name}}.\n\n📊 STATUS ATUAL\n\n• Módulos de Introdução concluídos:\n{{intro_completed_courses}} \n\n• Módulos Specialist concluídos: \n{{specialist_completed_courses}}\n\n• Módulos EM Theory concluídos: \n{{em_theory_completed_courses}}\n\n• Progresso geral: \n{{program_progress_percentage}}\n\n📋 PENDÊNCIAS — INTRODUÇÃO (https://university.tenable.com/learn/catalog/view/77):\n{{intro_missing_courses}}\n\n📋 PENDÊNCIAS — SPECIALIST (https://university.tenable.com/learn/catalog/view/78):\n{{specialist_missing_courses}}\n\n📋 PENDÊNCIAS — EM Theory (https://university.tenable.com/learn/catalog/view/79):\n{{em_theory_missing_courses}}\n\nEstou disponível para tirar dúvidas, agendar sessões de apoio ou facilitar o acesso aos materiais.\n\nAbs,\nMarcelo Rovere\nTenable — Channel Engineer",
+      "updatedAt": "2026-06-02T13:30:32.983Z",
+      "updatedBy": "marcelo@mrovere.com"
     }
   ]
 }
