@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-02T14:29:45.686938+00:00",
+  "updatedAt": "2026-06-02T14:35:42.970914+00:00",
   "templates": [
     {
       "id": "new-partner-orientation",
@@ -70,6 +70,16 @@
       "subject": "Tenable Guardian Program — A mais alta certificação técnica | {{partner_name}}",
       "body": "Olá, {{contact_name}}!\n\nQueria apresentar uma oportunidade importante para a equipe técnica da {{partner_name}} o programa Tenable Guardian.\n\nO QUE É O TENABLE GUARDIAN?\n\nTenable Guardian é a certificação técnica mais alta disponível no programa Tenable Assure. Oferecida por convite a engenheiros que demonstram o mais alto nível de expertise em Cyber Exposure, é um diferencial competitivo significativo no mercado.\n\nComo Guardian, o profissional passa a ser reconhecido como membro virtual do time técnico Tenable, com acesso a:\n\n• Suporte direto ao Tier II da Tenable\n• Treinamentos avançados dos Sales Engineers Tenable\n• Quarterly Update Calls e SE Summit\n• Credential logo e materiais de branding exclusivos\n\nCOMO SE TORNAR GUARDIAN?\n\nO convite Guardian é emitido pela Tenable quando o profissional atende a dois critérios:\n\n1️⃣ Empresa parceira no nível Gold ou Platinum no Tenable Assure\n   → {{partner_name}} {{tier}} ✓\n\n2️⃣ Conclusão das 3 certificações técnicas obrigatórias:\n   • Tenable Certified Sales Associate (TCSA)\n   • Tenable Certified Sales Engineer (TCSE)\n   • Tenable Certified Delivery Engineer (TCDE)\n\nTodas estão disponíveis no Tenable University: https://university.tenable.com\n\nEstou à disposição para apoiar {recurso} nessa jornada — desde materiais de estudo até sessões de alinhamento técnico antes das provas.\n\nVamos começar?\n\nAbs,\nMarcelo Rovere\nTenable — Channel Engineer",
       "updatedAt": "2026-06-02T14:29:45.686274+00:00",
+      "updatedBy": "system",
+      "versions": []
+    },
+    {
+      "id": "template-95b9b01a-a3a2-4f39-906f-e4ffbc5405a1",
+      "name": "Guardian02 - Follow-up",
+      "version": 1,
+      "subject": "Tenable Guardian Program — Acompanhamento de Certificações | {{partner_name}}",
+      "body": "Olá, {{contact_name}}!\n\nEspero que esteja bem. Passando para compartilhar o andamento das certificações Tenable de {{guardian_name}} e alinhar os próximos passos rumo ao programa Tenable Guardian.\n\nO QUE É O TENABLE GUARDIAN?\n\nTenable Guardian é a mais alta certificação técnica disponível no programa Tenable Assure — oferecida por convite a engenheiros que demonstraram o mais alto nível de expertise em Cyber Exposure. Além de diferenciar a {{partner_name}} no mercado, o Guardian abre benefícios exclusivos:\n\n• Suporte direto com engenheiros Tier II da Tenable\n• Treinamentos avançados dos SEs Tenable\n• Reconhecimento como membro virtual do time técnico Tenable\n• Participação em Quarterly Update Calls e SE Summit\n• Uso do credential logo e materiais de branding\n\nREQUISITOS PARA INDICAÇÃO\n\nPara que {{guardian_name}} seja elegível ao convite Guardian, é necessário:\n\nEmpresa no nível Gold ou Platinum no Tenable Assure → {{partner_name}} {{tier}} ✓\n\nCertificações individuais obrigatórias:\n\n  • Tenable Certified Sales Associate (TCSA) → {{status_tcsa}}\n  • Tenable Certified Sales Engineer (TCSE) → {{status_tcse}}\n  • Tenable Certified Delivery Engineer (TCDE) → {{status_tcde}}\n\nPROGRESSO ATUAL\n\nProgresso geral: [***comentar aqui***]\n\n\nEstou acompanhando de perto a jornada e posso apoiar com materiais de estudo, acesso ao Tenable University e alinhamentos técnicos. Assim que {{guardian_name}}completar as 3 certificações, encaminho a indicação formal à Tenable para avaliação do convite Guardian.\n\nQualquer dúvida, estou à disposição!\n\nAbs,\n[Seu nome]\nTenable — Channel Engineer",
+      "updatedAt": "2026-06-02T14:35:42.970234+00:00",
       "updatedBy": "system",
       "versions": []
     },
