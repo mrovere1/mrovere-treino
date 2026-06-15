@@ -13,7 +13,8 @@ import {
   loadAccreditationRequirements,
   loadPartnerWorkbook,
   parsePartnerWorkbook,
-  parseGuardianSheet
+  parseGuardianSheet,
+  parseTechCertsSheet
 } from "./partner-excel.js";
 
 const partnerState = {
@@ -23,7 +24,8 @@ const partnerState = {
   partners: [],
   requirements: null,
   templates: [],
-  guardians: []
+  guardians: [],
+  techCerts: []
 };
 
 const TEMPLATE_WORKFLOW_URL =
@@ -41,6 +43,7 @@ export async function renderPartnerDashboard(container, userContext) {
 
     partnerState.partners = parsePartnerWorkbook(workbook, requirements);
     partnerState.guardians = parseGuardianSheet(workbook);
+    partnerState.techCerts = parseTechCertsSheet(workbook);
     partnerState.requirements = requirements;
     partnerState.templates = templates;
     partnerState.selectedTemplateId = partnerState.selectedTemplateId || templates[0]?.id || null;
@@ -474,6 +477,99 @@ export function renderEmailTemplates(userContext) {
   `;
 }
 
+export function renderTechCertsTab(techCerts) {
+  const GROUPS = [
+    { label: "Vulnerability Management", keys: ["VM-SE", "VM-Sales"] },
+    { label: "Cloud Security",           keys: ["CS-SE", "CS-Sales"] },
+    { label: "OT Security",              keys: ["OT-SE", "OT-Sales"] },
+    { label: "Identity Security",        keys: ["IE-SE", "IE-Sales"] },
+    { label: "Attack Surface Mgmt",      keys: ["ASM-SE", "ASM-Sales"] },
+    { label: "Nessus",                   keys: ["Nessus"] },
+    { label: "Tenable One",              keys: ["ONE-SE", "ONE-Sales"] },
+    { label: "MSSP",                     keys: ["MSSP"] }
+  ];
+
+  if (!techCerts || techCerts.length === 0) {
+    return `
+      <section class="tab-section">
+        <div class="empty-state">
+          <p>Sem dados de Tech Certs disponíveis.</p>
+          <p class="hint">Execute o script <code>update_certs.py</code> para popular a aba "Tech Certs" no Excel.</p>
+        </div>
+      </section>`;
+  }
+
+  const allKeys = GROUPS.flatMap((g) => g.keys);
+  const totalCerts = techCerts.reduce((sum, p) => {
+    return sum + allKeys.reduce((s, k) => s + (p.certs[k] || 0), 0);
+  }, 0);
+  const certifiedPartners = techCerts.filter((p) =>
+    allKeys.some((k) => (p.certs[k] || 0) > 0)
+  ).length;
+
+  function certPill(count) {
+    if (!count) return `<span class="cert-pill cert-pill--none">–</span>`;
+    if (count >= 3) return `<span class="cert-pill cert-pill--high">${count}</span>`;
+    return `<span class="cert-pill cert-pill--low">${count}</span>`;
+  }
+
+  const headerCols = GROUPS.map((g) => {
+    const sub = g.keys.length > 1
+      ? `<div class="col-subheaders">${g.keys.map((k) => `<span>${k.split("-")[1] || k}</span>`).join("")}</div>`
+      : "";
+    return `<th class="col-group" colspan="${g.keys.length}"><span>${g.label}</span>${sub}</th>`;
+  }).join("");
+
+  const rows = techCerts.map((p) => {
+    const cells = GROUPS.flatMap((g) =>
+      g.keys.map((k) => `<td class="cert-cell">${certPill(p.certs[k] || 0)}</td>`)
+    ).join("");
+    return `
+      <tr>
+        <td class="partner-cell">${escapeHtml(p.partnerName || p.partnerId)}</td>
+        ${cells}
+      </tr>`;
+  }).join("");
+
+  return `
+    <section class="tab-section">
+      <div class="section-header">
+        <h2 class="section-title">Tech Certifications by Partner</h2>
+        <p class="section-subtitle">Contagem de usuários únicos certificados por produto e track — fonte: Tableau Individual Certs Dashboard</p>
+      </div>
+
+      <div class="stats-row" style="display:flex;gap:1.5rem;margin-bottom:1.5rem;">
+        <div class="stat-card" style="flex:1">
+          <div class="stat-label">Parceiros com certs</div>
+          <div class="stat-value">${certifiedPartners} / ${techCerts.length}</div>
+        </div>
+        <div class="stat-card" style="flex:1">
+          <div class="stat-label">Total de certs mapeadas</div>
+          <div class="stat-value">${totalCerts}</div>
+        </div>
+      </div>
+
+      <div class="table-wrapper" style="overflow-x:auto;">
+        <table class="certs-table tech-certs-table">
+          <thead>
+            <tr>
+              <th class="partner-header" rowspan="1">Partner</th>
+              ${headerCols}
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+
+      <div class="legend" style="margin-top:1rem;display:flex;gap:1rem;font-size:.75rem;color:var(--color-gray-light);">
+        <span><span class="cert-pill cert-pill--high" style="display:inline-block">3+</span> Alta cobertura</span>
+        <span><span class="cert-pill cert-pill--low" style="display:inline-block">1</span> Baixa cobertura</span>
+        <span><span class="cert-pill cert-pill--none" style="display:inline-block">–</span> Sem cert</span>
+        <span style="margin-left:auto">SE = Sales Engineer track &nbsp;|&nbsp; Sales = Sales track</span>
+      </div>
+    </section>`;
+}
+
 function drawPartnerModule(container, userContext) {
   container.innerHTML = `
     <div class="dashboard-shell">
@@ -492,7 +588,8 @@ function drawPartnerModule(container, userContext) {
       </section>
       <section class="tab-strip">
         ${renderTabButton("overview", "Overview")}
-        ${renderTabButton("certifications", "Courses")}
+        ${renderTabButton("certifications", "EM Certs")}
+        ${renderTabButton("techcerts", "Tech Certs")}
         ${renderTabButton("maturity", "Maturity")}
         ${renderTabButton("guardian", "Guardian")}
         ${renderTabButton("email", "Email Templates")}
@@ -520,6 +617,11 @@ function renderPartnerTabContent(tabContent, userContext) {
 
   if (partnerState.activeTab === "maturity") {
     tabContent.innerHTML = renderPartnerMaturity(partnerState.partners);
+    return;
+  }
+
+  if (partnerState.activeTab === "techcerts") {
+    tabContent.innerHTML = renderTechCertsTab(partnerState.techCerts);
     return;
   }
 
