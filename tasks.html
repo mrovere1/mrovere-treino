@@ -67,7 +67,7 @@ body{font-family:'Inter','Helvetica Neue',sans-serif;background:var(--bg);color:
 .form-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.1rem 1.25rem;margin-bottom:1.1rem}
 .form-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
 .form-panel-title{font-size:.84rem;font-weight:700}
-.form-row{display:grid;grid-template-columns:120px 130px 155px 1fr 90px;gap:.65rem;align-items:end}
+.form-row{display:grid;grid-template-columns:110px 115px 125px 145px 1fr 90px;gap:.65rem;align-items:end}
 .form-row-2{display:grid;grid-template-columns:1fr;margin-top:.65rem}
 .fld{display:flex;flex-direction:column;gap:.28rem}
 .lbl{font-size:.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em}
@@ -120,6 +120,16 @@ textarea.inp{resize:vertical;min-height:52px}
 .cat.cliente{background:rgba(78,165,255,.13);color:#4EA5FF;border:1px solid rgba(78,165,255,.28)}
 .cat.parceiro{background:rgba(187,143,242,.12);color:#BB8FF2;border:1px solid rgba(187,143,242,.25)}
 .cat.tenable{background:rgba(255,136,55,.1);color:#FF8837;border:1px solid rgba(255,136,55,.22)}
+
+/* ─── Status badges ─── */
+.st{display:inline-flex;align-items:center;padding:.13rem .42rem;border-radius:999px;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+.st.new{background:rgba(78,165,255,.14);color:#4EA5FF;border:1px solid rgba(78,165,255,.3)}
+.st.active{background:rgba(113,255,198,.12);color:#71FFC6;border:1px solid rgba(113,255,198,.26)}
+.st.resurfaced{background:rgba(255,136,55,.13);color:#FF8837;border:1px solid rgba(255,136,55,.3)}
+.st.done{background:rgba(204,204,204,.1);color:#9aa0a2;border:1px solid rgba(204,204,204,.2)}
+
+/* ─── Modal edit grid ─── */
+.modal-edit{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.85rem}
 
 /* ─── Date cells ─── */
 .dc{white-space:nowrap;color:var(--text-muted);font-size:.77rem}
@@ -300,6 +310,14 @@ textarea.inp{resize:vertical;min-height:52px}
               </select>
             </div>
             <div class="fld">
+              <label class="lbl">Status</label>
+              <select class="sel" id="f-status">
+                <option value="new" selected>New</option>
+                <option value="active">Active</option>
+                <option value="resurfaced">Resurfaced</option>
+              </select>
+            </div>
+            <div class="fld">
               <label class="lbl">Data alvo</label>
               <input type="date" class="inp" id="f-date">
             </div>
@@ -335,6 +353,13 @@ textarea.inp{resize:vertical;min-height:52px}
             <option value="media">Média</option>
             <option value="baixa">Baixa</option>
           </select>
+          <select class="filt" id="fl-status" onchange="renderTasks()">
+            <option value="">Todos status</option>
+            <option value="new">New</option>
+            <option value="active">Active</option>
+            <option value="resurfaced">Resurfaced</option>
+            <option value="done">Done</option>
+          </select>
           <input type="text" class="filt" id="fl-search" placeholder="Buscar…" oninput="renderTasks()" style="min-width:150px">
         </div>
         <div class="toolbar-right">
@@ -349,6 +374,7 @@ textarea.inp{resize:vertical;min-height:52px}
               <th style="width:30px"></th>
               <th onclick="sortBy('priority')" data-col="priority">Prio</th>
               <th onclick="sortBy('category')" data-col="category">Categoria</th>
+              <th onclick="sortBy('status')" data-col="status">Status</th>
               <th onclick="sortBy('title')" data-col="title" style="min-width:200px">Título</th>
               <th onclick="sortBy('targetDate')" data-col="targetDate">Data alvo</th>
               <th onclick="sortBy('createdAt')" data-col="createdAt">Criada</th>
@@ -374,7 +400,7 @@ textarea.inp{resize:vertical;min-height:52px}
             <thead>
               <tr>
                 <th style="width:30px"></th>
-                <th>Prio</th><th>Categoria</th>
+                <th>Prio</th><th>Categoria</th><th>Status</th>
                 <th style="min-width:200px">Título</th>
                 <th>Data alvo</th><th>Concluída em</th>
                 <th style="width:40px"></th>
@@ -403,20 +429,58 @@ textarea.inp{resize:vertical;min-height:52px}
   </div>
 </div>
 
-<!-- Detail modal -->
+<!-- Edit modal -->
 <div class="overlay hidden" id="modal">
   <div class="modal">
     <div class="modal-head">
-      <div class="modal-title" id="m-title"></div>
+      <div class="modal-title" id="m-head">Editar task</div>
       <button class="modal-x" onclick="closeModal()">✕</button>
     </div>
+    <div class="modal-edit">
+      <div class="fld" style="grid-column:1/-1">
+        <label class="lbl">Título</label>
+        <input type="text" class="inp" id="m-title-input">
+      </div>
+      <div class="fld">
+        <label class="lbl">Categoria</label>
+        <select class="sel" id="m-cat">
+          <option value="cliente">Cliente</option>
+          <option value="parceiro">Parceiro</option>
+          <option value="tenable">Tenable</option>
+        </select>
+      </div>
+      <div class="fld">
+        <label class="lbl">Prioridade</label>
+        <select class="sel" id="m-prio">
+          <option value="alta">Alta</option>
+          <option value="media">Média</option>
+          <option value="baixa">Baixa</option>
+        </select>
+      </div>
+      <div class="fld">
+        <label class="lbl">Status</label>
+        <select class="sel" id="m-status">
+          <option value="new">New</option>
+          <option value="active">Active</option>
+          <option value="resurfaced">Resurfaced</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+      <div class="fld">
+        <label class="lbl">Data alvo</label>
+        <input type="date" class="inp" id="m-date">
+      </div>
+      <div class="fld" style="grid-column:1/-1">
+        <label class="lbl">Descrição detalhada</label>
+        <textarea class="inp" id="m-desc-input" style="min-height:90px"></textarea>
+      </div>
+    </div>
     <div class="modal-meta" id="m-meta"></div>
-    <div class="modal-desc" id="m-desc"></div>
     <div class="modal-footer">
       <button class="btn btn-danger btn-sm" id="m-del">Excluir task</button>
       <div style="display:flex;gap:.4rem">
-        <button class="btn btn-ghost btn-sm" onclick="closeModal()">Fechar</button>
-        <button class="btn btn-primary btn-sm" id="m-done">Marcar concluída</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-primary btn-sm" id="m-save">Salvar alterações</button>
       </div>
     </div>
   </div>
@@ -512,6 +576,7 @@ async function connectFromSetup() {
     localStorage.setItem(CFG_TOKEN, token);
     tasks       = data.tasks       || [];
     briefChecks = data.briefChecks || {};
+    normalizeTasks();
     msg.textContent = 'Conectado ✓';
     msg.className = 'setup-msg ok';
     setConn('ok', 'Drive conectado');
@@ -535,6 +600,7 @@ async function init() {
     const data = await apiGet();
     tasks       = data.tasks       || [];
     briefChecks = data.briefChecks || {};
+    normalizeTasks();
     setConn('ok', 'Drive conectado');
     setDirty(false);
     document.getElementById('setup-screen').classList.add('hidden');
@@ -645,6 +711,26 @@ function esc(s) {
                       .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// Ensure every loaded task has a coherent status (back-compat with old records)
+function normalizeTasks() {
+  tasks.forEach(t => {
+    if (!t.status) t.status = t.done ? 'done' : 'active';
+    if (t.status === 'done') t.done = true;
+    if (t.done && t.status !== 'done') t.status = 'done';
+  });
+}
+
+// Keep status ↔ done in sync
+function applyStatus(t, status) {
+  t.status = status;
+  if (status === 'done') {
+    if (!t.done) { t.done = true; t.doneAt = t.doneAt || new Date().toISOString(); }
+  } else {
+    t.done = false;
+    t.doneAt = null;
+  }
+}
+
 // ── CRUD (local only → markDirty; persist on Save)
 
 function addTask() {
@@ -656,6 +742,7 @@ function addTask() {
     targetDate:  document.getElementById('f-date').value,
     category:    document.getElementById('f-cat').value,
     priority:    document.getElementById('f-prio').value,
+    status:      document.getElementById('f-status').value || 'new',
     title,
     description: document.getElementById('f-desc').value.trim(),
     done: false, doneAt: null,
@@ -669,8 +756,7 @@ function addTask() {
 function toggleDone(id) {
   const t = tasks.find(t => t.id === id);
   if (!t) return;
-  t.done   = !t.done;
-  t.doneAt = t.done ? new Date().toISOString() : null;
+  applyStatus(t, t.done ? 'active' : 'done');
   setDirty(true);
   renderTasks();
 }
@@ -687,20 +773,38 @@ function openModal(id) {
   const t = tasks.find(t => t.id === id);
   if (!t) return;
   activeId = id;
-  document.getElementById('m-title').textContent = t.title;
+  document.getElementById('m-title-input').value = t.title || '';
+  document.getElementById('m-cat').value         = t.category || 'cliente';
+  document.getElementById('m-prio').value        = t.priority || 'media';
+  document.getElementById('m-status').value      = t.status || (t.done ? 'done' : 'active');
+  document.getElementById('m-date').value        = t.targetDate || '';
+  document.getElementById('m-desc-input').value  = t.description || '';
   document.getElementById('m-meta').innerHTML = `
-    ${catBadge(t.category)} ${prioBadge(t.priority)}
     <span class="modal-meta-item">Criada: ${fmtDate(t.createdAt)}</span>
-    ${t.targetDate ? `<span class="modal-meta-item">Alvo: ${fmtDate(t.targetDate)}</span>` : ''}
+    ${t.doneAt ? `<span class="modal-meta-item">Concluída: ${fmtDate(t.doneAt)}</span>` : ''}
   `;
-  const desc = document.getElementById('m-desc');
-  desc.textContent = t.description || '(sem descrição)';
-  desc.className = 'modal-desc' + (t.description ? '' : ' empty-desc');
-  document.getElementById('m-done').textContent = t.done ? 'Reabrir task' : 'Marcar concluída';
-  document.getElementById('m-done').onclick = () => { toggleDone(id); closeModal(); };
-  document.getElementById('m-del').onclick = () => deleteTask(id);
+  document.getElementById('m-del').onclick  = () => deleteTask(id);
+  document.getElementById('m-save').onclick = () => saveModalEdit(id);
   document.getElementById('modal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('m-title-input').focus(), 50);
 }
+
+function saveModalEdit(id) {
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  const title = document.getElementById('m-title-input').value.trim();
+  if (!title) { document.getElementById('m-title-input').focus(); return; }
+  t.title       = title;
+  t.category    = document.getElementById('m-cat').value;
+  t.priority    = document.getElementById('m-prio').value;
+  t.targetDate  = document.getElementById('m-date').value;
+  t.description = document.getElementById('m-desc-input').value.trim();
+  applyStatus(t, document.getElementById('m-status').value);
+  setDirty(true);
+  closeModal();
+  renderTasks();
+}
+
 function closeModal() { document.getElementById('modal').classList.add('hidden'); activeId = null; }
 
 // ── Filtering / sorting
@@ -710,12 +814,14 @@ const PRIO_ORD = { alta:0, media:1, baixa:2 };
 function getFiltered(done) {
   const cat    = document.getElementById('fl-cat')?.value    || '';
   const prio   = document.getElementById('fl-prio')?.value   || '';
+  const status = document.getElementById('fl-status')?.value || '';
   const search = (document.getElementById('fl-search')?.value || '').toLowerCase();
   return tasks
     .filter(t => {
       if (t.done !== done) return false;
-      if (cat  && t.category !== cat)  return false;
-      if (prio && t.priority !== prio) return false;
+      if (cat    && t.category !== cat)   return false;
+      if (prio   && t.priority !== prio)  return false;
+      if (status && (t.status||'active') !== status) return false;
       if (search && !t.title.toLowerCase().includes(search) &&
           !(t.description||'').toLowerCase().includes(search)) return false;
       return true;
@@ -747,7 +853,7 @@ function renderTasks() {
 
   document.querySelectorAll('.tbl th[data-col]').forEach(th => {
     const col  = th.dataset.col;
-    const base = { priority:'Prio', category:'Categoria', title:'Título',
+    const base = { priority:'Prio', category:'Categoria', status:'Status', title:'Título',
                    targetDate:'Data alvo', createdAt:'Criada' }[col] || col;
     th.textContent = base + (col === sortCol ? (sortDir===1?' ↑':' ↓') : '');
     th.classList.toggle('sorted', col === sortCol);
@@ -770,6 +876,7 @@ function taskRow(t) {
     <td><input type="checkbox" class="task-check" ${t.done?'checked':''} onchange="toggleDone('${t.id}')"></td>
     <td>${prioBadge(t.priority)}</td>
     <td>${catBadge(t.category)}</td>
+    <td>${statusBadge(t.status)}</td>
     <td><button class="title-btn" onclick="openModal('${t.id}')" title="${esc(t.title)}">${esc(t.title)}</button></td>
     <td class="${dcClass(days)}">${t.targetDate ? fmtDate(t.targetDate)+daysLbl(days) : '—'}</td>
     <td class="dc">${fmtDate(t.createdAt)}</td>
@@ -780,7 +887,7 @@ function taskRow(t) {
 function taskRowDone(t) {
   return `<tr class="done-row">
     <td><input type="checkbox" class="task-check" checked onchange="toggleDone('${t.id}')"></td>
-    <td>${prioBadge(t.priority)}</td><td>${catBadge(t.category)}</td>
+    <td>${prioBadge(t.priority)}</td><td>${catBadge(t.category)}</td><td>${statusBadge(t.status)}</td>
     <td><button class="title-btn striked" onclick="openModal('${t.id}')">${esc(t.title)}</button></td>
     <td class="dc">${t.targetDate ? fmtDate(t.targetDate) : '—'}</td>
     <td class="dc">${t.doneAt ? fmtDate(t.doneAt) : '—'}</td>
@@ -792,6 +899,10 @@ function taskRowDone(t) {
 
 function prioBadge(p) { return `<span class="prio ${p}">${{alta:'Alta',media:'Média',baixa:'Baixa'}[p]||p}</span>`; }
 function catBadge(c)  { return `<span class="cat ${c}">${{cliente:'Cliente',parceiro:'Parceiro',tenable:'Tenable'}[c]||c}</span>`; }
+function statusBadge(s) {
+  const v = s || 'active';
+  return `<span class="st ${v}">${{new:'New',active:'Active',resurfaced:'Resurfaced',done:'Done'}[v]||v}</span>`;
+}
 
 function fmtDate(d) {
   if (!d) return '';
