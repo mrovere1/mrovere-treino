@@ -340,6 +340,7 @@ function drawTasksModule(container, userContext) {
         ${renderTaskTab("claude", "Claude Tasks")}
         ${renderTaskTab("slack", "Slack Tasks")}
         ${renderTaskTab("todos", "Todo List")}
+        ${renderTaskTab("tasks-app", "Tasks & Briefs")}
       </section>
       <section id="tasks-tab-content"></section>
     </div>
@@ -405,6 +406,15 @@ function drawTasksModule(container, userContext) {
 }
 
 function renderTasksTabContent(tabContent, container, userContext) {
+  if (tasksState.activeTab === "tasks-app") {
+    tabContent.innerHTML = `
+      <div style="border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden;height:calc(100vh - 210px);min-height:640px">
+        <iframe src="/tasks.html" style="width:100%;height:100%;border:none;display:block" title="Tasks & Daily Briefs"></iframe>
+      </div>
+    `;
+    return;
+  }
+
   if (tasksState.activeTab === "slack") {
     tabContent.innerHTML = renderSlackTasks();
     return;
