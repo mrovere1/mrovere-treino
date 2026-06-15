@@ -2,11 +2,11 @@ name: Sync partner workbook from Google Drive
 
 on:
   schedule:
-    - cron: '0 10 * * *'
+    - cron: "0 10 * * *"
   workflow_dispatch:
     inputs:
       force:
-        description: 'Force commit even if file is unchanged'
+        description: "Force commit even if file is unchanged"
         required: false
         type: boolean
         default: false
@@ -27,7 +27,8 @@ jobs:
 
       - name: Download workbook from Google Drive
         run: |
-          FILE_ID="1hekmNC50aaZNnSS5rt5WyTGc-9V90nhQ"
+          # Arquivo sincronizado automaticamente via Google Drive Backup (Computers > My Mac)
+          FILE_ID="18WLDivVm_DHZv-vOZP65a160kIYLHafb"
           OUTPUT="data/partner/Focus Partner Tracking BR.xlsx"
           TMP="$(mktemp --suffix=.xlsx)"
 
@@ -57,7 +58,7 @@ jobs:
           if git diff --cached --quiet && [ "${FORCED}" != "true" ]; then
             echo "Workbook unchanged — nothing to commit."
           else
-            TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+            TIMESTAMP=$(date -u "+%Y-%m-%d %H:%M UTC")
             git commit -m "sync: partner workbook from Google Drive (${TIMESTAMP})"
             git push
             echo "Workbook updated and pushed to main."
