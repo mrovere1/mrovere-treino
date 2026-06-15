@@ -216,14 +216,14 @@ export function renderPartnerMaturity(partners) {
                   <tr>
                     <td><strong>${escapeHtml(partner.partnerName)}</strong></td>
                     <td>${renderTierBadge(partner.status)}</td>
-                    <td class="maturity-delivery-start">${renderMaturityValue(partner.maturity.current.EM)}</td>
-                    <td>${renderMaturityValue(partner.maturity.current["VM/WAS"])}</td>
-                    <td>${renderMaturityValue(partner.maturity.current.CS)}</td>
-                    <td class="maturity-delivery-end">${renderMaturityValue(partner.maturity.current.TPM)}</td>
-                    <td class="maturity-presales-start">${renderMaturityValue(partner.maturity.target.EM)}</td>
-                    <td>${renderMaturityValue(partner.maturity.target["VM/WAS"])}</td>
-                    <td>${renderMaturityValue(partner.maturity.target.CS)}</td>
-                    <td>${renderMaturityValue(partner.maturity.target.TPM)}</td>
+                    <td class="maturity-delivery maturity-delivery-start">${renderMaturityValue(partner.maturity.current.EM)}</td>
+                    <td class="maturity-delivery">${renderMaturityValue(partner.maturity.current["VM/WAS"])}</td>
+                    <td class="maturity-delivery">${renderMaturityValue(partner.maturity.current.CS)}</td>
+                    <td class="maturity-delivery maturity-delivery-end">${renderMaturityValue(partner.maturity.current.TPM)}</td>
+                    <td class="maturity-presales maturity-presales-start">${renderMaturityValue(partner.maturity.target.EM)}</td>
+                    <td class="maturity-presales">${renderMaturityValue(partner.maturity.target["VM/WAS"])}</td>
+                    <td class="maturity-presales">${renderMaturityValue(partner.maturity.target.CS)}</td>
+                    <td class="maturity-presales">${renderMaturityValue(partner.maturity.target.TPM)}</td>
                   </tr>
                 `
               )
@@ -1115,3 +1115,4 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 }
+
