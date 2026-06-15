@@ -21,7 +21,7 @@
 const SPREADSHEET_NAME  = 'Channel SE Tasks (MROVERE)';
 const SHEET_NAME_TASKS  = 'Tasks';
 const SHEET_NAME_META   = 'Meta';
-const TASK_COLUMNS      = ['id','createdAt','targetDate','category','priority','title','description','done','doneAt'];
+const TASK_COLUMNS      = ['id','createdAt','targetDate','category','priority','status','title','description','done','doneAt'];
 
 // Deixe '' para liberar acesso só pela URL. Defina um valor para exigir token.
 const SECRET = '';
@@ -48,9 +48,12 @@ function getSpreadsheet_() {
   }
   if (tasksSheet.getLastRow() === 0) {
     tasksSheet.appendRow(TASK_COLUMNS);
-    tasksSheet.getRange(1, 1, 1, TASK_COLUMNS.length).setFontWeight('bold');
     tasksSheet.setFrozenRows(1);
   }
+  // Keep the header row in sync with the current schema (cosmetic + safe).
+  tasksSheet.getRange(1, 1, 1, TASK_COLUMNS.length)
+            .setValues([TASK_COLUMNS])
+            .setFontWeight('bold');
 
   let metaSheet = ss.getSheetByName(SHEET_NAME_META);
   if (!metaSheet) {
@@ -86,6 +89,8 @@ function readData_() {
     t.targetDate = t.targetDate instanceof Date
       ? Utilities.formatDate(t.targetDate, tz, 'yyyy-MM-dd')
       : (t.targetDate ? String(t.targetDate) : '');
+
+    t.status = t.status ? String(t.status) : (t.done ? 'done' : 'active');
 
     tasks.push(t);
   }
