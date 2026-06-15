@@ -317,10 +317,110 @@
   font-size: 0.82rem;
 }
 
+/* ── Tech Certs table ───────────────────────────────────────────────────── */
+
+.tech-certs-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.82rem;
+}
+
+.tech-certs-table .tc-group-row th {
+  background: #1e2426;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-align: center;
+  padding: 0.5rem 0.6rem 0.3rem;
+  border-bottom: none;
+  white-space: nowrap;
+}
+
+.tech-certs-table .tc-partner-header {
+  text-align: left !important;
+  min-width: 130px;
+}
+
+.tech-certs-table .tc-group {
+  border-left: 2px solid #44494b;
+}
+
+.tech-certs-table .tc-sub-row th {
+  background: #2d3436;
+  color: #cccccc;
+  font-weight: 600;
+  font-size: 0.72rem;
+  text-align: center;
+  padding: 0.25rem 0.5rem 0.4rem;
+  border-bottom: 2px solid #44494b;
+}
+
+.tech-certs-table .tc-sub {
+  border-left: 1px solid #44494b;
+}
+
+.tech-certs-table .tc-sub:first-child {
+  border-left: 2px solid #44494b;
+}
+
+.tech-certs-table tbody tr {
+  background: var(--surface);
+}
+
+.tech-certs-table tbody tr.tc-row-alt {
+  background: var(--surface-muted);
+}
+
+.tech-certs-table tbody tr:hover {
+  background: rgba(231, 255, 0, 0.05);
+}
+
+.tech-certs-table .partner-cell {
+  padding: 0.5rem 0.75rem;
+  white-space: nowrap;
+  border-right: 1px solid var(--line);
+}
+
+.tech-certs-table .cert-cell {
+  text-align: center;
+  padding: 0.35rem 0.3rem;
+  border-left: 1px solid var(--line-strong);
+}
+
+.cert-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.cert-pill--high {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.cert-pill--low {
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.cert-pill--none {
+  background: #f2f2f2;
+  color: #9ca3af;
+  border: 1px solid #e5e7eb;
+}
+
 @media (max-width: 1080px) {
   .partner-template-grid,
   .partner-grid4 {
     grid-template-columns: 1fr;
   }
 }
+
 
