@@ -222,21 +222,23 @@
 .maturity-table .maturity-delivery,
 .maturity-table .maturity-delivery-start,
 .maturity-table .maturity-delivery-end {
-  background: #fff7ed;
+  background: #fff0e0;
 }
 
 .maturity-table .maturity-group-delivery {
-  color: #c2410c;
+  color: #b84800;
+  letter-spacing: 0.01em;
 }
 
 .maturity-table .maturity-group-presales,
 .maturity-table .maturity-presales,
 .maturity-table .maturity-presales-start {
-  background: #eff6ff;
+  background: #e8f0fe;
 }
 
 .maturity-table .maturity-group-presales {
-  color: #1d4ed8;
+  color: #1a56c4;
+  letter-spacing: 0.01em;
 }
 
 .maturity-table .maturity-delivery-start,
@@ -321,3 +323,4 @@
     grid-template-columns: 1fr;
   }
 }
+
