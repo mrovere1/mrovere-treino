@@ -15,38 +15,49 @@
   --accent:       #E7FF00;
   --gray:         #44494B;
   --line:         #3a4145;
-  --line-strong:  #50595d;
-  --data-blue:    #4EA5FF;
-  --data-green:   #71FFC6;
-  --data-purple:  #BB8FF2;
-  --data-orange:  #FF8837;
   --r:            5px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter','Helvetica Neue',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.4}
 
-/* ─── Header ─────────────────────────────────────────────────────────────── */
-.hdr{background:var(--bg-alt);border-bottom:1px solid var(--line);padding:0 1.5rem;height:52px;display:flex;align-items:center;justify-content:space-between}
-.hdr-brand{display:flex;align-items:center;gap:.75rem}
+/* ─── Header ─── */
+.hdr{background:var(--bg-alt);border-bottom:1px solid var(--line);padding:0 1.5rem;height:52px;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.hdr-brand{display:flex;align-items:center;gap:.75rem;flex-shrink:0}
 .hdr-wordmark{font-size:.95rem;font-weight:800;color:var(--accent);letter-spacing:.04em}
 .hdr-sep{width:1px;height:20px;background:var(--line)}
 .hdr-title{font-size:.88rem;font-weight:600}
 .hdr-sub{font-size:.72rem;color:var(--text-muted)}
+.hdr-right{display:flex;align-items:center;gap:.65rem}
+.drive-status{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-muted);padding:.28rem .6rem;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);cursor:pointer;transition:border-color .15s}
+.drive-status:hover{border-color:var(--gray)}
+.drive-dot{width:7px;height:7px;border-radius:50%;background:var(--gray);flex-shrink:0}
+.drive-dot.ok{background:#71FFC6}
+.drive-dot.warn{background:#fb923c}
 .hdr-nav a{color:var(--text-muted);text-decoration:none;font-size:.78rem;padding:.3rem .7rem;border:1px solid var(--line);border-radius:var(--r)}
 .hdr-nav a:hover{color:var(--text)}
 
-/* ─── Main tabs ──────────────────────────────────────────────────────────── */
+/* ─── Main tabs ─── */
 .tabs-bar{display:flex;background:var(--bg-alt);border-bottom:1px solid var(--line);padding:0 1.5rem}
-.tab-btn{padding:.65rem 1.1rem;border:none;background:none;color:var(--text-muted);font-size:.83rem;cursor:pointer;border-bottom:2px solid transparent;font-family:inherit;font-weight:500;transition:color .15s}
+.tab-btn{padding:.65rem 1.1rem;border:none;background:none;color:var(--text-muted);font-size:.83rem;cursor:pointer;border-bottom:2px solid transparent;font-family:inherit;font-weight:500}
 .tab-btn:hover{color:var(--text)}
 .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
 
-/* ─── Content ────────────────────────────────────────────────────────────── */
+/* ─── Content ─── */
 .content{padding:1.25rem 1.5rem;max-width:1440px}
 .tab-panel{display:none}
 .tab-panel.active{display:block}
 
-/* ─── Form panel ─────────────────────────────────────────────────────────── */
+/* ─── Setup screen ─── */
+.setup-screen{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 100px)}
+.setup-card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:2.5rem;max-width:520px;width:100%;text-align:center}
+.setup-icon{font-size:2.5rem;margin-bottom:1rem}
+.setup-title{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
+.setup-desc{font-size:.84rem;color:var(--text-muted);line-height:1.65;margin-bottom:1.5rem}
+.setup-path{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:.55rem .85rem;font-size:.78rem;color:var(--accent);font-family:monospace;margin-bottom:1.5rem;word-break:break-all}
+.setup-actions{display:flex;flex-direction:column;gap:.6rem;align-items:center}
+.setup-note{font-size:.72rem;color:var(--text-muted);margin-top:.75rem}
+
+/* ─── Form panel ─── */
 .form-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.1rem 1.25rem;margin-bottom:1.1rem}
 .form-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
 .form-panel-title{font-size:.84rem;font-weight:700}
@@ -59,8 +70,8 @@ body{font-family:'Inter','Helvetica Neue',sans-serif;background:var(--bg);color:
 .inp::placeholder{color:var(--gray)}
 textarea.inp{resize:vertical;min-height:52px}
 
-/* ─── Buttons ────────────────────────────────────────────────────────────── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;padding:.42rem .9rem;border-radius:var(--r);font-size:.8rem;font-weight:600;font-family:inherit;cursor:pointer;border:none;white-space:nowrap;transition:background .12s,color .12s}
+/* ─── Buttons ─── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;padding:.42rem .9rem;border-radius:var(--r);font-size:.8rem;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:background .12s,color .12s}
 .btn-primary{background:var(--accent);color:#1a1f21}
 .btn-primary:hover{background:#d4eb00}
 .btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--line)}
@@ -71,7 +82,7 @@ textarea.inp{resize:vertical;min-height:52px}
 .btn-accent-ghost{background:transparent;color:var(--accent);border:1px solid rgba(231,255,0,.3);font-size:.68rem;padding:.2rem .55rem}
 .btn-accent-ghost:hover{background:rgba(231,255,0,.07)}
 
-/* ─── Toolbar ────────────────────────────────────────────────────────────── */
+/* ─── Toolbar ─── */
 .toolbar{display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem;flex-wrap:wrap}
 .toolbar-left{display:flex;align-items:center;gap:.55rem;flex:1;flex-wrap:wrap}
 .toolbar-right{display:flex;align-items:center;gap:.55rem}
@@ -79,7 +90,7 @@ textarea.inp{resize:vertical;min-height:52px}
 .filt:focus{outline:none;border-color:var(--accent)}
 .count-chip{font-size:.72rem;color:var(--text-muted);padding:.18rem .5rem;border:1px solid var(--line);border-radius:999px;background:var(--surface-muted);white-space:nowrap}
 
-/* ─── Table ──────────────────────────────────────────────────────────────── */
+/* ─── Table ─── */
 .tbl-wrap{overflow-x:auto}
 .tbl{width:100%;border-collapse:collapse;font-size:.81rem}
 .tbl th{background:var(--bg-alt);color:var(--text-muted);font-size:.69rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
@@ -87,44 +98,43 @@ textarea.inp{resize:vertical;min-height:52px}
 .tbl th.sorted{color:var(--accent)}
 .tbl td{padding:.5rem .7rem;border-bottom:1px solid var(--line);vertical-align:middle}
 .tbl tr:hover td{background:rgba(255,255,255,.025)}
-.tbl tr.done-row td{opacity:.42}
+.tbl tr.done-row td{opacity:.4}
 .task-check{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
 .title-btn{background:none;border:none;color:var(--text);font-size:.81rem;cursor:pointer;text-align:left;padding:0;font-family:inherit;max-width:340px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .title-btn:hover{color:var(--accent)}
-.title-btn.striked{text-decoration:line-through;opacity:.55}
+.title-btn.striked{text-decoration:line-through;opacity:.5}
 
-/* ─── Badges ─────────────────────────────────────────────────────────────── */
+/* ─── Badges ─── */
 .prio{display:inline-flex;align-items:center;padding:.13rem .42rem;border-radius:999px;font-size:.68rem;font-weight:700}
 .prio.alta{background:rgba(239,68,68,.13);color:#f87171;border:1px solid rgba(239,68,68,.28)}
 .prio.media{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.28)}
 .prio.baixa{background:rgba(113,255,198,.1);color:#71FFC6;border:1px solid rgba(113,255,198,.22)}
-
 .cat{display:inline-flex;padding:.13rem .42rem;border-radius:3px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
 .cat.cliente{background:rgba(78,165,255,.13);color:#4EA5FF;border:1px solid rgba(78,165,255,.28)}
 .cat.parceiro{background:rgba(187,143,242,.12);color:#BB8FF2;border:1px solid rgba(187,143,242,.25)}
 .cat.tenable{background:rgba(255,136,55,.1);color:#FF8837;border:1px solid rgba(255,136,55,.22)}
 
-/* ─── Date cells ─────────────────────────────────────────────────────────── */
+/* ─── Date cells ─── */
 .dc{white-space:nowrap;color:var(--text-muted);font-size:.77rem}
 .dc.overdue{color:#f87171}
 .dc.today{color:var(--accent);font-weight:600}
 .dc.soon{color:#fb923c}
 
-/* ─── Icon button ────────────────────────────────────────────────────────── */
+/* ─── Icon button ─── */
 .icon-btn{background:none;border:none;color:var(--gray);cursor:pointer;padding:.18rem .28rem;border-radius:3px;font-size:.85rem;line-height:1}
 .icon-btn:hover{color:#f87171;background:rgba(248,113,113,.1)}
 
-/* ─── Section divider ────────────────────────────────────────────────────── */
+/* ─── Section divider ─── */
 .divider{display:flex;align-items:center;gap:.7rem;margin:1.4rem 0 .9rem}
 .divider-line{flex:1;height:1px;background:var(--line)}
 .divider-lbl{font-size:.68rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
 
-/* ─── Empty state ────────────────────────────────────────────────────────── */
+/* ─── Empty state ─── */
 .empty{text-align:center;padding:2.5rem 1rem;color:var(--text-muted)}
 .empty-icon{font-size:2rem;margin-bottom:.6rem}
 .empty-txt{font-size:.83rem}
 
-/* ─── Modal ──────────────────────────────────────────────────────────────── */
+/* ─── Modal ─── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem}
 .overlay.hidden{display:none}
 .modal{background:var(--surface);border:1px solid var(--line);border-radius:7px;max-width:680px;width:100%;max-height:88vh;overflow-y:auto;padding:1.4rem}
@@ -138,77 +148,52 @@ textarea.inp{resize:vertical;min-height:52px}
 .modal-desc.empty-desc{color:var(--gray);font-style:italic}
 .modal-footer{display:flex;gap:.45rem;margin-top:.9rem;justify-content:space-between;align-items:center}
 
-/* Edit fields in modal */
-.modal-edit{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.65rem}
-
-/* ─── Briefs layout ──────────────────────────────────────────────────────── */
+/* ─── Briefs ─── */
 .briefs-wrap{display:grid;grid-template-columns:190px 1fr;gap:1.1rem}
 .briefs-side{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:.7rem 0;height:fit-content;position:sticky;top:1rem;max-height:calc(100vh - 120px);overflow-y:auto}
 .briefs-side-title{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);padding:0 .9rem .6rem;border-bottom:1px solid var(--line);margin-bottom:.35rem}
-.bdate-btn{display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:none;color:var(--text-muted);font-family:inherit;font-size:.79rem;padding:.4rem .9rem;text-align:left;cursor:pointer;transition:color .1s,background .1s}
+.bdate-btn{display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:none;color:var(--text-muted);font-family:inherit;font-size:.79rem;padding:.4rem .9rem;text-align:left;cursor:pointer}
 .bdate-btn:hover{color:var(--text);background:rgba(255,255,255,.03)}
 .bdate-btn.active{color:var(--accent);font-weight:600;background:rgba(231,255,0,.05)}
 .bdate-badge{font-size:.63rem;background:rgba(231,255,0,.12);color:var(--accent);padding:.1rem .35rem;border-radius:999px}
-
 .brief-main{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.4rem;min-height:400px}
 .brief-loading{text-align:center;padding:3rem;color:var(--text-muted);font-size:.85rem}
-
-/* Brief header */
 .brief-hdr{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:1.2rem}
 .brief-hdr-title{font-size:1rem;font-weight:700}
 .brief-hdr-sub{font-size:.73rem;color:var(--text-muted);margin-top:.2rem}
 .brief-progress{display:flex;align-items:center;gap:.5rem;padding:.45rem .7rem;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);font-size:.75rem;color:var(--text-muted);white-space:nowrap}
 .prog-bar{width:90px;height:4px;background:var(--line);border-radius:999px;overflow:hidden}
 .prog-fill{height:100%;background:var(--accent);border-radius:inherit;transition:width .3s}
-
-/* Brief sections */
 .brief-sec{margin-bottom:1.4rem}
 .brief-sec-head{font-size:.82rem;font-weight:700;border-bottom:1px solid var(--line);padding-bottom:.45rem;margin-bottom:.7rem;display:flex;align-items:center;gap:.45rem}
-.sec-icon{font-size:.95rem}
-
-/* Action items */
-.action-row{display:flex;align-items:flex-start;gap:.55rem;padding:.42rem .5rem;border-radius:var(--r);margin-bottom:.3rem;border:1px solid transparent;transition:background .1s}
+.action-row{display:flex;align-items:flex-start;gap:.55rem;padding:.42rem .5rem;border-radius:var(--r);margin-bottom:.3rem;border:1px solid transparent}
 .action-row:hover{background:rgba(255,255,255,.025)}
-.action-row.done-action{opacity:.38}
+.action-row.done-action{opacity:.35}
 .action-chk{width:14px;height:14px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;margin-top:3px}
 .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.dot.r{background:#f87171}
-.dot.y{background:#fb923c}
-.dot.g{background:#71ffc6}
-.dot.b{background:var(--text-muted)}
+.dot.r{background:#f87171}.dot.y{background:#fb923c}.dot.g{background:#71ffc6}.dot.b{background:var(--text-muted)}
 .action-text{font-size:.8rem;color:var(--text);line-height:1.5;flex:1}
 .action-text strong{color:var(--text)}
-.action-add-btn{flex-shrink:0;margin-top:1px}
-
-/* Brief prose */
 .bprose{font-size:.8rem;color:var(--text-muted);line-height:1.65;margin-bottom:.4rem}
 .bprose strong{color:var(--text)}
-.balert{background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18);border-left:3px solid #f87171;padding:.55rem .75rem;border-radius:var(--r);margin-bottom:.4rem;font-size:.8rem;color:var(--text);line-height:1.5}
 .bquote{border-left:2px solid var(--accent);padding:.45rem .9rem;color:var(--text-muted);font-style:italic;font-size:.82rem;margin:.5rem 0}
 .agenda-day-lbl{font-size:.72rem;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.04em;margin:.8rem 0 .35rem}
 .agenda-row{display:flex;gap:.65rem;padding:.3rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.8rem}
 .agenda-time{color:var(--accent);font-weight:600;min-width:46px;flex-shrink:0}
 .agenda-evt{color:var(--text-muted);line-height:1.4}
-.warn-tag{display:inline-flex;align-items:center;padding:.1rem .4rem;border-radius:999px;font-size:.66rem;font-weight:700;background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.25);margin-left:.35rem}
 .prio-header{font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin:.65rem 0 .35rem;display:flex;align-items:center;gap:.4rem}
-.prio-header.r{color:#f87171}
-.prio-header.y{color:#fb923c}
-.prio-header.g{color:#71ffc6}
+.prio-header.r{color:#f87171}.prio-header.y{color:#fb923c}.prio-header.g{color:#71ffc6}
 
-/* ─── Notify toast ───────────────────────────────────────────────────────── */
-.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:.65rem 1rem;font-size:.8rem;color:var(--text);z-index:2000;box-shadow:0 4px 20px rgba(0,0,0,.5);transition:opacity .3s}
-.toast.hidden{opacity:0;pointer-events:none}
+/* ─── Saving indicator ─── */
+.save-indicator{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:.55rem .9rem;font-size:.78rem;color:var(--text-muted);z-index:2000;opacity:0;transition:opacity .25s;pointer-events:none}
+.save-indicator.show{opacity:1}
 
-/* ─── Util ────────────────────────────────────────────────────────────────── */
+/* ─── Util ─── */
 .hidden{display:none!important}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:var(--bg-alt)}
 ::-webkit-scrollbar-thumb{background:var(--gray);border-radius:3px}
-@media(max-width:860px){
-  .form-row{grid-template-columns:1fr 1fr}
-  .briefs-wrap{grid-template-columns:1fr}
-  .briefs-side{position:static;max-height:200px;overflow-x:auto}
-}
+@media(max-width:860px){.form-row{grid-template-columns:1fr 1fr}.briefs-wrap{grid-template-columns:1fr}.briefs-side{position:static;max-height:200px}}
 </style>
 </head>
 <body>
@@ -222,151 +207,183 @@ textarea.inp{resize:vertical;min-height:52px}
       <div class="hdr-sub">Marcelo Rovere — Brasil</div>
     </div>
   </div>
-  <nav class="hdr-nav"><a href="/">← Partner Dashboard</a></nav>
+  <div class="hdr-right">
+    <div class="drive-status" id="drive-status" onclick="reconnectDrive()" title="Clique para reconectar pasta">
+      <div class="drive-dot" id="drive-dot"></div>
+      <span id="drive-label">Sem pasta</span>
+    </div>
+    <nav class="hdr-nav"><a href="/">← Portal</a></nav>
+  </div>
 </header>
 
-<div class="tabs-bar">
-  <button class="tab-btn active" data-tab="tasks">Tasks</button>
-  <button class="tab-btn" data-tab="briefs">Daily Briefs</button>
+<!-- Setup screen (shown when no folder selected) -->
+<div id="setup-screen" class="hidden">
+  <div class="setup-screen">
+    <div class="setup-card">
+      <div class="setup-icon">📂</div>
+      <div class="setup-title">Conectar pasta do Google Drive</div>
+      <div class="setup-desc">
+        Selecione a pasta onde as tasks serão salvas. Qualquer pasta sincronizada com o Drive funciona —
+        os dados ficam no Drive automaticamente via Backup & Sync.
+      </div>
+      <div class="setup-path" id="suggested-path">~/Documents/app-mrovere/tasks-data/</div>
+      <div class="setup-actions">
+        <button class="btn btn-primary" id="btn-reconnect-stored" onclick="tryReconnectStored()" style="display:none;width:100%">
+          Reconectar pasta anterior
+        </button>
+        <button class="btn btn-ghost" id="btn-pick-folder" onclick="pickFolder()" style="width:100%">
+          Selecionar outra pasta…
+        </button>
+      </div>
+      <div class="setup-note">
+        O browser pedirá permissão de leitura/escrita nesta pasta uma única vez.<br>
+        Nenhum dado sai do seu computador via esta página.
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="content">
+<!-- Main app (hidden until folder is connected) -->
+<div id="main-app" class="hidden">
 
-  <!-- ═══ TASKS TAB ════════════════════════════════════════════════════════ -->
-  <div id="tab-tasks" class="tab-panel active">
+  <div class="tabs-bar">
+    <button class="tab-btn active" data-tab="tasks">Tasks</button>
+    <button class="tab-btn" data-tab="briefs">Daily Briefs</button>
+  </div>
 
-    <div class="form-panel">
-      <div class="form-panel-head">
-        <div class="form-panel-title">+ Nova task</div>
-        <button class="btn btn-ghost btn-sm" id="collapse-btn">Minimizar</button>
-      </div>
-      <div id="form-body">
-        <div class="form-row">
-          <div class="fld">
-            <label class="lbl">Categoria</label>
-            <select class="sel" id="f-cat">
-              <option value="cliente">Cliente</option>
-              <option value="parceiro">Parceiro</option>
-              <option value="tenable">Tenable</option>
-            </select>
+  <div class="content">
+
+    <!-- ═══ TASKS ═══ -->
+    <div id="tab-tasks" class="tab-panel active">
+
+      <div class="form-panel">
+        <div class="form-panel-head">
+          <div class="form-panel-title">+ Nova task</div>
+          <button class="btn btn-ghost btn-sm" id="collapse-btn">Minimizar</button>
+        </div>
+        <div id="form-body">
+          <div class="form-row">
+            <div class="fld">
+              <label class="lbl">Categoria</label>
+              <select class="sel" id="f-cat">
+                <option value="cliente">Cliente</option>
+                <option value="parceiro">Parceiro</option>
+                <option value="tenable">Tenable</option>
+              </select>
+            </div>
+            <div class="fld">
+              <label class="lbl">Prioridade</label>
+              <select class="sel" id="f-prio">
+                <option value="alta">Alta</option>
+                <option value="media" selected>Média</option>
+                <option value="baixa">Baixa</option>
+              </select>
+            </div>
+            <div class="fld">
+              <label class="lbl">Data alvo</label>
+              <input type="date" class="inp" id="f-date">
+            </div>
+            <div class="fld">
+              <label class="lbl">Título *</label>
+              <input type="text" class="inp" id="f-title" placeholder="Short description...">
+            </div>
+            <div class="fld" style="padding-top:1.4rem">
+              <button class="btn btn-primary" onclick="addTask()">Adicionar</button>
+            </div>
           </div>
-          <div class="fld">
-            <label class="lbl">Prioridade</label>
-            <select class="sel" id="f-prio">
-              <option value="alta">Alta</option>
-              <option value="media" selected>Média</option>
-              <option value="baixa">Baixa</option>
-            </select>
-          </div>
-          <div class="fld">
-            <label class="lbl">Data alvo</label>
-            <input type="date" class="inp" id="f-date">
-          </div>
-          <div class="fld">
-            <label class="lbl">Título *</label>
-            <input type="text" class="inp" id="f-title" placeholder="Short description...">
-          </div>
-          <div class="fld" style="padding-top:1.4rem">
-            <button class="btn btn-primary" onclick="addTask()">Adicionar</button>
+          <div class="form-row-2">
+            <div class="fld">
+              <label class="lbl">Descrição detalhada (opcional)</label>
+              <textarea class="inp" id="f-desc" placeholder="Contexto, links, próximos passos..."></textarea>
+            </div>
           </div>
         </div>
-        <div class="form-row-2">
-          <div class="fld">
-            <label class="lbl">Descrição detalhada (opcional)</label>
-            <textarea class="inp" id="f-desc" placeholder="Contexto, links, próximos passos..."></textarea>
-          </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <span class="count-chip" id="open-count">0 abertas</span>
+          <select class="filt" id="fl-cat" onchange="renderTasks()">
+            <option value="">Todas categorias</option>
+            <option value="cliente">Cliente</option>
+            <option value="parceiro">Parceiro</option>
+            <option value="tenable">Tenable</option>
+          </select>
+          <select class="filt" id="fl-prio" onchange="renderTasks()">
+            <option value="">Todas prioridades</option>
+            <option value="alta">Alta</option>
+            <option value="media">Média</option>
+            <option value="baixa">Baixa</option>
+          </select>
+          <input type="text" class="filt" id="fl-search" placeholder="Buscar…" oninput="renderTasks()" style="min-width:150px">
+        </div>
+        <div class="toolbar-right">
+          <button class="btn btn-ghost btn-sm" id="archive-toggle" onclick="toggleArchive()">Mostrar concluídas</button>
         </div>
       </div>
-    </div>
 
-    <div class="toolbar">
-      <div class="toolbar-left">
-        <span class="count-chip" id="open-count">0 abertas</span>
-        <select class="filt" id="fl-cat" onchange="renderTasks()">
-          <option value="">Todas categorias</option>
-          <option value="cliente">Cliente</option>
-          <option value="parceiro">Parceiro</option>
-          <option value="tenable">Tenable</option>
-        </select>
-        <select class="filt" id="fl-prio" onchange="renderTasks()">
-          <option value="">Todas prioridades</option>
-          <option value="alta">Alta</option>
-          <option value="media">Média</option>
-          <option value="baixa">Baixa</option>
-        </select>
-        <input type="text" class="filt" id="fl-search" placeholder="Buscar..." oninput="renderTasks()" style="min-width:150px">
-      </div>
-      <div class="toolbar-right">
-        <button class="btn btn-ghost btn-sm" id="archive-toggle" onclick="toggleArchive()">Mostrar concluídas</button>
-      </div>
-    </div>
-
-    <div class="tbl-wrap">
-      <table class="tbl">
-        <thead>
-          <tr>
-            <th style="width:30px"></th>
-            <th onclick="sortBy('priority')" data-col="priority">Prio</th>
-            <th onclick="sortBy('category')" data-col="category">Categoria</th>
-            <th onclick="sortBy('title')" data-col="title" style="min-width:200px">Título</th>
-            <th onclick="sortBy('targetDate')" data-col="targetDate">Data alvo</th>
-            <th onclick="sortBy('createdAt')" data-col="createdAt">Criada</th>
-            <th style="width:40px"></th>
-          </tr>
-        </thead>
-        <tbody id="open-body"></tbody>
-      </table>
-    </div>
-    <div id="empty-open" class="empty hidden">
-      <div class="empty-icon">✅</div>
-      <div class="empty-txt">Sem tasks abertas — adicione uma acima!</div>
-    </div>
-
-    <div id="archive-section" class="hidden">
-      <div class="divider">
-        <div class="divider-line"></div>
-        <div class="divider-lbl">Concluídas</div>
-        <div class="divider-line"></div>
-      </div>
       <div class="tbl-wrap">
         <table class="tbl">
           <thead>
             <tr>
               <th style="width:30px"></th>
-              <th>Prio</th>
-              <th>Categoria</th>
-              <th style="min-width:200px">Título</th>
-              <th>Data alvo</th>
-              <th>Concluída em</th>
+              <th onclick="sortBy('priority')" data-col="priority">Prio</th>
+              <th onclick="sortBy('category')" data-col="category">Categoria</th>
+              <th onclick="sortBy('title')" data-col="title" style="min-width:200px">Título</th>
+              <th onclick="sortBy('targetDate')" data-col="targetDate">Data alvo</th>
+              <th onclick="sortBy('createdAt')" data-col="createdAt">Criada</th>
               <th style="width:40px"></th>
             </tr>
           </thead>
-          <tbody id="done-body"></tbody>
+          <tbody id="open-body"></tbody>
         </table>
       </div>
-      <div id="empty-done" class="empty hidden">
-        <div class="empty-txt">Nenhuma task concluída ainda.</div>
+      <div id="empty-open" class="empty hidden">
+        <div class="empty-icon">✅</div>
+        <div class="empty-txt">Sem tasks abertas — adicione uma acima!</div>
+      </div>
+
+      <div id="archive-section" class="hidden">
+        <div class="divider">
+          <div class="divider-line"></div>
+          <div class="divider-lbl">Concluídas</div>
+          <div class="divider-line"></div>
+        </div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th style="width:30px"></th>
+                <th>Prio</th><th>Categoria</th>
+                <th style="min-width:200px">Título</th>
+                <th>Data alvo</th><th>Concluída em</th>
+                <th style="width:40px"></th>
+              </tr>
+            </thead>
+            <tbody id="done-body"></tbody>
+          </table>
+        </div>
+        <div id="empty-done" class="empty hidden"><div class="empty-txt">Nenhuma task concluída ainda.</div></div>
+      </div>
+    </div>
+
+    <!-- ═══ BRIEFS ═══ -->
+    <div id="tab-briefs" class="tab-panel">
+      <div class="briefs-wrap">
+        <aside class="briefs-side">
+          <div class="briefs-side-title">Briefs</div>
+          <div id="brief-list">Carregando…</div>
+        </aside>
+        <main class="brief-main" id="brief-main">
+          <div class="brief-loading">Selecione um brief →</div>
+        </main>
       </div>
     </div>
 
   </div>
-
-  <!-- ═══ BRIEFS TAB ════════════════════════════════════════════════════════ -->
-  <div id="tab-briefs" class="tab-panel">
-    <div class="briefs-wrap">
-      <aside class="briefs-side">
-        <div class="briefs-side-title">Briefs</div>
-        <div id="brief-list">Carregando...</div>
-      </aside>
-      <main class="brief-main" id="brief-main">
-        <div class="brief-loading">Selecione um brief →</div>
-      </main>
-    </div>
-  </div>
-
 </div>
 
-<!-- ═══ DETAIL MODAL ══════════════════════════════════════════════════════ -->
+<!-- Detail modal -->
 <div class="overlay hidden" id="modal">
   <div class="modal">
     <div class="modal-head">
@@ -385,80 +402,262 @@ textarea.inp{resize:vertical;min-height:52px}
   </div>
 </div>
 
-<!-- toast -->
-<div class="toast hidden" id="toast"></div>
+<!-- Save indicator -->
+<div class="save-indicator" id="save-indicator">Salvo no Drive ✓</div>
 
 <script>
 // ══════════════════════════════════════════════════════════════════
-// STATE
+// FILE SYSTEM ACCESS API — Drive persistence
 // ══════════════════════════════════════════════════════════════════
 
-const TASKS_KEY  = 'mrovere_tasks_v2';
-const CHECKS_KEY = 'mrovere_brief_checks_v1';
+const IDB_NAME    = 'mrovere-fsa-v1';
+const IDB_STORE   = 'handles';
+const DATA_FILE   = 'mrovere-tasks.json';
 
-let tasks       = load(TASKS_KEY, []);
-let briefChecks = load(CHECKS_KEY, {});
+let dirHandle = null;
+let saveTimer  = null;
+
+// ── IndexedDB helpers for persisting directory handle
+
+function idbOpen() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore(IDB_STORE);
+    req.onsuccess = e => res(e.target.result);
+    req.onerror   = () => rej(req.error);
+  });
+}
+
+async function idbGet(key) {
+  const db = await idbOpen();
+  return new Promise((res, rej) => {
+    const tx  = db.transaction(IDB_STORE, 'readonly');
+    const req = tx.objectStore(IDB_STORE).get(key);
+    req.onsuccess = () => res(req.result);
+    req.onerror   = () => rej(req.error);
+  });
+}
+
+async function idbPut(key, value) {
+  const db = await idbOpen();
+  return new Promise((res, rej) => {
+    const tx  = db.transaction(IDB_STORE, 'readwrite');
+    const req = tx.objectStore(IDB_STORE).put(value, key);
+    req.onsuccess = () => res();
+    req.onerror   = () => rej(req.error);
+  });
+}
+
+// ── Init: check stored handle permission
+
+async function initDrive() {
+  if (!window.showDirectoryPicker) {
+    // Unsupported (Safari): fall back to localStorage with a warning
+    fallbackToLocalStorage();
+    return;
+  }
+
+  const stored = await idbGet('dir').catch(() => null);
+
+  if (stored) {
+    const perm = await stored.queryPermission({ mode: 'readwrite' }).catch(() => 'denied');
+    if (perm === 'granted') {
+      dirHandle = stored;
+      await onDriveReady();
+      return;
+    }
+    // permission not auto-granted → show reconnect
+    document.getElementById('btn-reconnect-stored').style.display = '';
+    const name = stored.name || '...';
+    document.getElementById('btn-reconnect-stored').textContent = `Reconectar "${name}"`;
+  }
+
+  showSetup();
+}
+
+// Called after user gesture to connect
+
+async function tryReconnectStored() {
+  const stored = await idbGet('dir').catch(() => null);
+  if (!stored) { pickFolder(); return; }
+  try {
+    const perm = await stored.requestPermission({ mode: 'readwrite' });
+    if (perm === 'granted') {
+      dirHandle = stored;
+      await onDriveReady();
+    }
+  } catch { pickFolder(); }
+}
+
+async function pickFolder() {
+  try {
+    const handle = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'documents' });
+    await idbPut('dir', handle);
+    dirHandle = handle;
+    await onDriveReady();
+  } catch (e) {
+    if (e.name !== 'AbortError') console.error(e);
+  }
+}
+
+async function reconnectDrive() {
+  if (dirHandle) {
+    // Already connected — show path info
+    showIndicator(`Pasta: ${dirHandle.name}`);
+    return;
+  }
+  showSetup();
+  await tryReconnectStored();
+}
+
+async function onDriveReady() {
+  hideSetup();
+  updateDriveStatus(true, dirHandle.name);
+  const data = await readFile();
+  tasks       = data.tasks       || [];
+  briefChecks = data.briefChecks || {};
+  renderTasks();
+}
+
+// ── Read / write
+
+async function readFile() {
+  if (!dirHandle) return { tasks: [], briefChecks: {} };
+  try {
+    const fh   = await dirHandle.getFileHandle(DATA_FILE);
+    const file = await fh.getFile();
+    return JSON.parse(await file.text());
+  } catch {
+    return { tasks: [], briefChecks: {} };
+  }
+}
+
+async function writeFile() {
+  if (!dirHandle) return;
+  try {
+    const fh       = await dirHandle.getFileHandle(DATA_FILE, { create: true });
+    const writable = await fh.createWritable();
+    await writable.write(JSON.stringify(
+      { version: 1, tasks, briefChecks, updatedAt: new Date().toISOString() },
+      null, 2
+    ));
+    await writable.close();
+    showIndicator('Salvo no Drive ✓');
+  } catch (e) {
+    console.error('Save error:', e);
+    showIndicator('Erro ao salvar ✗');
+  }
+}
+
+// debounced save (300ms after last change)
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(writeFile, 300);
+}
+
+// ── Fallback: no File System Access API (Safari)
+
+function fallbackToLocalStorage() {
+  dirHandle = 'localstorage'; // sentinel
+  const raw = localStorage.getItem('mrovere_tasks_fallback');
+  try {
+    const data = JSON.parse(raw || '{}');
+    tasks       = data.tasks       || [];
+    briefChecks = data.briefChecks || {};
+  } catch { tasks = []; briefChecks = {}; }
+  updateDriveStatus(false, 'localStorage (sem Drive)');
+  hideSetup();
+  renderTasks();
+}
+
+async function writeFileFallback() {
+  localStorage.setItem('mrovere_tasks_fallback',
+    JSON.stringify({ tasks, briefChecks, updatedAt: new Date().toISOString() }));
+  showIndicator('Salvo localmente');
+}
+
+// Wrap both modes
+async function save() {
+  if (dirHandle === 'localstorage') { await writeFileFallback(); return; }
+  scheduleSave();
+}
+
+// ── UI helpers
+
+function showSetup()  { document.getElementById('setup-screen').classList.remove('hidden'); document.getElementById('main-app').classList.add('hidden'); }
+function hideSetup()  { document.getElementById('setup-screen').classList.add('hidden');    document.getElementById('main-app').classList.remove('hidden'); }
+
+function updateDriveStatus(ok, label) {
+  document.getElementById('drive-dot').className   = 'drive-dot ' + (ok ? 'ok' : 'warn');
+  document.getElementById('drive-label').textContent = label || '';
+}
+
+function showIndicator(msg) {
+  const el = document.getElementById('save-indicator');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TASKS STATE
+// ══════════════════════════════════════════════════════════════════
+
+let tasks       = [];
+let briefChecks = {};
 let sortCol     = 'targetDate';
-let sortDir     = 1;
+let sortDir     =  1;
 let showArchive = false;
 let formMin     = false;
 let activeId    = null;
 let briefIndex  = null;
 let curDate     = null;
 
-function load(k, def) {
-  try { return JSON.parse(localStorage.getItem(k)) ?? def; }
-  catch { return def; }
-}
-function save(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
 function esc(s) {
-  return String(s||'')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ══════════════════════════════════════════════════════════════════
-// TASKS
-// ══════════════════════════════════════════════════════════════════
+// ── CRUD
 
-function addTask() {
+async function addTask() {
   const title = document.getElementById('f-title').value.trim();
   if (!title) { document.getElementById('f-title').focus(); return; }
   tasks.unshift({
-    id:         uid(),
-    createdAt:  new Date().toISOString(),
-    targetDate: document.getElementById('f-date').value,
-    category:   document.getElementById('f-cat').value,
-    priority:   document.getElementById('f-prio').value,
+    id:          uid(),
+    createdAt:   new Date().toISOString(),
+    targetDate:  document.getElementById('f-date').value,
+    category:    document.getElementById('f-cat').value,
+    priority:    document.getElementById('f-prio').value,
     title,
     description: document.getElementById('f-desc').value.trim(),
     done: false, doneAt: null,
   });
-  save(TASKS_KEY, tasks);
+  await save();
   ['f-title','f-desc'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-date').value = '';
   renderTasks();
-  toast('Task adicionada ✓');
+  showIndicator('Task adicionada ✓');
 }
 
-function toggleDone(id) {
+async function toggleDone(id) {
   const t = tasks.find(t => t.id === id);
   if (!t) return;
-  t.done = !t.done;
+  t.done  = !t.done;
   t.doneAt = t.done ? new Date().toISOString() : null;
-  save(TASKS_KEY, tasks);
+  await save();
   renderTasks();
-  if (t.done) toast('Task concluída ✓');
+  if (t.done) showIndicator('Task concluída ✓');
 }
 
-function deleteTask(id) {
+async function deleteTask(id) {
   if (!confirm('Excluir esta task?')) return;
   tasks = tasks.filter(t => t.id !== id);
-  save(TASKS_KEY, tasks);
+  await save();
   closeModal();
   renderTasks();
-  toast('Task excluída');
 }
 
 function openModal(id) {
@@ -474,30 +673,26 @@ function openModal(id) {
   const desc = document.getElementById('m-desc');
   desc.textContent = t.description || '(sem descrição)';
   desc.className = 'modal-desc' + (t.description ? '' : ' empty-desc');
-  const doneBtn = document.getElementById('m-done');
-  doneBtn.textContent = t.done ? 'Reabrir task' : 'Marcar concluída';
-  doneBtn.onclick = () => { toggleDone(id); closeModal(); };
+  document.getElementById('m-done').textContent = t.done ? 'Reabrir task' : 'Marcar concluída';
+  document.getElementById('m-done').onclick = () => { toggleDone(id); closeModal(); };
   document.getElementById('m-del').onclick = () => deleteTask(id);
   document.getElementById('modal').classList.remove('hidden');
 }
-function closeModal() {
-  document.getElementById('modal').classList.add('hidden');
-  activeId = null;
-}
+function closeModal() { document.getElementById('modal').classList.add('hidden'); activeId = null; }
 
-// ── sorting / filtering
+// ── Filtering / sorting
 
 const PRIO_ORD = { alta:0, media:1, baixa:2 };
 
 function getFiltered(done) {
-  const cat    = document.getElementById('fl-cat')?.value  || '';
-  const prio   = document.getElementById('fl-prio')?.value || '';
+  const cat    = document.getElementById('fl-cat')?.value    || '';
+  const prio   = document.getElementById('fl-prio')?.value   || '';
   const search = (document.getElementById('fl-search')?.value || '').toLowerCase();
   return tasks
     .filter(t => {
       if (t.done !== done) return false;
-      if (cat  && t.category !== cat)   return false;
-      if (prio && t.priority !== prio)  return false;
+      if (cat  && t.category !== cat)  return false;
+      if (prio && t.priority !== prio) return false;
       if (search && !t.title.toLowerCase().includes(search) &&
           !(t.description||'').toLowerCase().includes(search)) return false;
       return true;
@@ -505,52 +700,40 @@ function getFiltered(done) {
     .sort((a, b) => {
       let av = a[sortCol] ?? '', bv = b[sortCol] ?? '';
       if (sortCol === 'priority') { av = PRIO_ORD[a.priority]; bv = PRIO_ORD[b.priority]; }
-      if (av < bv) return -sortDir;
-      if (av > bv) return  sortDir;
-      return 0;
+      return av < bv ? -sortDir : av > bv ? sortDir : 0;
     });
 }
 
-function sortBy(col) {
-  sortDir = sortCol === col ? -sortDir : 1;
-  sortCol = col;
-  renderTasks();
-}
+function sortBy(col) { sortDir = sortCol === col ? -sortDir : 1; sortCol = col; renderTasks(); }
 
 function toggleArchive() {
   showArchive = !showArchive;
-  document.getElementById('archive-toggle').textContent =
-    showArchive ? 'Ocultar concluídas' : 'Mostrar concluídas';
+  document.getElementById('archive-toggle').textContent = showArchive ? 'Ocultar concluídas' : 'Mostrar concluídas';
   document.getElementById('archive-section').classList.toggle('hidden', !showArchive);
   renderTasks();
 }
 
-// ── render
+// ── Render
 
 function renderTasks() {
   const open = getFiltered(false);
   const done = getFiltered(true);
 
-  // count
   const total = tasks.filter(t => !t.done).length;
-  document.getElementById('open-count').textContent =
-    `${total} aberta${total !== 1 ? 's' : ''}`;
+  document.getElementById('open-count').textContent = `${total} aberta${total !== 1 ? 's' : ''}`;
 
-  // sort indicators
   document.querySelectorAll('.tbl th[data-col]').forEach(th => {
-    const col = th.dataset.col;
+    const col  = th.dataset.col;
     const base = { priority:'Prio', category:'Categoria', title:'Título',
                    targetDate:'Data alvo', createdAt:'Criada' }[col] || col;
     th.textContent = base + (col === sortCol ? (sortDir===1?' ↑':' ↓') : '');
     th.classList.toggle('sorted', col === sortCol);
   });
 
-  // open
   const openBody = document.getElementById('open-body');
   openBody.innerHTML = open.length ? open.map(taskRow).join('') : '';
   document.getElementById('empty-open').classList.toggle('hidden', open.length > 0);
 
-  // done
   if (showArchive) {
     const doneBody = document.getElementById('done-body');
     doneBody.innerHTML = done.length ? done.map(taskRowDone).join('') : '';
@@ -567,15 +750,14 @@ function taskRow(t) {
     <td><button class="title-btn" onclick="openModal('${t.id}')" title="${esc(t.title)}">${esc(t.title)}</button></td>
     <td class="${dcClass(days)}">${t.targetDate ? fmtDate(t.targetDate)+daysLbl(days) : '—'}</td>
     <td class="dc">${fmtDate(t.createdAt)}</td>
-    <td><button class="icon-btn" title="Excluir" onclick="deleteTask('${t.id}')">✕</button></td>
+    <td><button class="icon-btn" onclick="deleteTask('${t.id}')">✕</button></td>
   </tr>`;
 }
 
 function taskRowDone(t) {
   return `<tr class="done-row">
     <td><input type="checkbox" class="task-check" checked onchange="toggleDone('${t.id}')"></td>
-    <td>${prioBadge(t.priority)}</td>
-    <td>${catBadge(t.category)}</td>
+    <td>${prioBadge(t.priority)}</td><td>${catBadge(t.category)}</td>
     <td><button class="title-btn striked" onclick="openModal('${t.id}')">${esc(t.title)}</button></td>
     <td class="dc">${t.targetDate ? fmtDate(t.targetDate) : '—'}</td>
     <td class="dc">${t.doneAt ? fmtDate(t.doneAt) : '—'}</td>
@@ -583,19 +765,15 @@ function taskRowDone(t) {
   </tr>`;
 }
 
-// ── helpers
+// ── Helpers
 
-function prioBadge(p) {
-  return `<span class="prio ${p}">${{alta:'Alta',media:'Média',baixa:'Baixa'}[p]||p}</span>`;
-}
-function catBadge(c) {
-  return `<span class="cat ${c}">${{cliente:'Cliente',parceiro:'Parceiro',tenable:'Tenable'}[c]||c}</span>`;
-}
+function prioBadge(p) { return `<span class="prio ${p}">${{alta:'Alta',media:'Média',baixa:'Baixa'}[p]||p}</span>`; }
+function catBadge(c)  { return `<span class="cat ${c}">${{cliente:'Cliente',parceiro:'Parceiro',tenable:'Tenable'}[c]||c}</span>`; }
+
 function fmtDate(d) {
   if (!d) return '';
   const dt = new Date(d.includes('T') ? d : d+'T12:00:00');
-  if (isNaN(dt)) return d;
-  return dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  return isNaN(dt) ? d : dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
 }
 function daysUntil(ds) {
   if (!ds) return null;
@@ -603,43 +781,78 @@ function daysUntil(ds) {
   return Math.round((new Date(ds+'T00:00:00') - now) / 86400000);
 }
 function dcClass(d) {
-  if (d === null) return 'dc';
-  if (d < 0) return 'dc overdue'; if (d === 0) return 'dc today'; if (d <= 3) return 'dc soon';
-  return 'dc';
+  if (d===null) return 'dc'; if (d<0) return 'dc overdue';
+  if (d===0) return 'dc today'; if (d<=3) return 'dc soon'; return 'dc';
 }
 function daysLbl(d) {
-  if (d === null) return '';
-  if (d < 0) return ` (${Math.abs(d)}d atrás)`;
-  if (d === 0) return ' (hoje)';
-  if (d === 1) return ' (amanhã)';
-  return ` (+${d}d)`;
+  if (d===null) return ''; if (d<0) return ` (${Math.abs(d)}d atrás)`;
+  if (d===0) return ' (hoje)'; if (d===1) return ' (amanhã)'; return ` (+${d}d)`;
 }
 
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.remove('hidden');
-  clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.add('hidden'), 2200);
-}
-
-// ── form collapse
+// ── Form collapse / keyboard
 document.getElementById('collapse-btn').addEventListener('click', () => {
   formMin = !formMin;
   document.getElementById('form-body').classList.toggle('hidden', formMin);
   document.getElementById('collapse-btn').textContent = formMin ? 'Expandir' : 'Minimizar';
 });
-
-// Enter adds task
 document.getElementById('f-title').addEventListener('keydown', e => { if(e.key==='Enter') addTask(); });
-
-// overlay click closes
-document.getElementById('modal').addEventListener('click', e => {
-  if (e.target === document.getElementById('modal')) closeModal();
-});
+document.getElementById('modal').addEventListener('click', e => { if(e.target===document.getElementById('modal')) closeModal(); });
 
 // ══════════════════════════════════════════════════════════════════
-// DAILY BRIEFS
+// TABS
+// ══════════════════════════════════════════════════════════════════
+
+document.querySelectorAll('.tab-btn').forEach(btn =>
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b===btn));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id==='tab-'+btn.dataset.tab));
+    if (btn.dataset.tab==='briefs') initBriefs();
+  })
+);
+
+// ══════════════════════════════════════════════════════════════════
+// BRIEF CHECKS — persisted in the same Drive file
+// ══════════════════════════════════════════════════════════════════
+
+async function toggleCheck(date, key, checked) {
+  if (!briefChecks[date]) briefChecks[date] = {};
+  if (checked) briefChecks[date][key] = true;
+  else delete briefChecks[date][key];
+  await save();
+
+  const row = document.getElementById('ar-' + key);
+  if (row) row.classList.toggle('done-action', checked);
+
+  // Update progress bar inline
+  const all  = document.querySelectorAll('.action-chk');
+  const tot  = all.length;
+  const dn   = document.querySelectorAll('.action-chk:checked').length;
+  const pct  = tot > 0 ? Math.round(dn/tot*100) : 0;
+  const fill = document.getElementById('prog-fill');
+  if (fill) fill.style.width = pct + '%';
+  const spans = document.querySelectorAll('.brief-progress span');
+  if (spans[0]) spans[0].textContent = `${dn}/${tot} concluídos`;
+  if (spans[1]) spans[1].textContent = `${pct}%`;
+
+  renderBriefSidebar();
+  document.querySelectorAll('.bdate-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.date === curDate));
+}
+
+function briefToTask(text) {
+  const cleaned = text.replace(/📌\s*(HERDADO\s*[—–-]?\s*)?/i,'').replace(/\*\*/g,'').trim();
+  const title = cleaned.length > 80 ? cleaned.slice(0,80)+'…' : cleaned;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab==='tasks'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id==='tab-tasks'));
+  document.querySelector('.form-panel').scrollIntoView({behavior:'smooth'});
+  document.getElementById('f-title').value = title;
+  document.getElementById('f-title').focus();
+  if (formMin) { formMin=false; document.getElementById('form-body').classList.remove('hidden'); document.getElementById('collapse-btn').textContent='Minimizar'; }
+  showIndicator('Título copiado para nova task ✓');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// BRIEFS READER
 // ══════════════════════════════════════════════════════════════════
 
 async function initBriefs() {
@@ -657,10 +870,9 @@ async function initBriefs() {
 }
 
 function renderBriefSidebar() {
-  const checks = briefChecks;
+  if (!briefIndex) return;
   document.getElementById('brief-list').innerHTML = briefIndex.map(d => {
-    const c = checks[d] || {};
-    const done = Object.values(c).filter(Boolean).length;
+    const done = Object.values(briefChecks[d]||{}).filter(Boolean).length;
     return `<button class="bdate-btn" data-date="${d}" onclick="loadBrief('${d}')">
       ${fmtBriefDate(d)}
       ${done > 0 ? `<span class="bdate-badge">${done}</span>` : ''}
@@ -669,7 +881,7 @@ function renderBriefSidebar() {
 }
 
 function fmtBriefDate(d) {
-  const dt = new Date(d + 'T12:00:00');
+  const dt   = new Date(d+'T12:00:00');
   const days = ['dom','seg','ter','qua','qui','sex','sáb'];
   return `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')} (${days[dt.getDay()]})`;
 }
@@ -678,32 +890,27 @@ async function loadBrief(date) {
   curDate = date;
   document.querySelectorAll('.bdate-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.date === date));
-  document.getElementById('brief-main').innerHTML = '<div class="brief-loading">Carregando...</div>';
+  document.getElementById('brief-main').innerHTML = '<div class="brief-loading">Carregando…</div>';
   try {
     const r = await fetch(`/data/briefs/${date}-brief.md`, { cache: 'no-store' });
     if (!r.ok) throw new Error();
-    const md = await r.text();
-    renderBrief(md, date);
+    renderBrief(await r.text(), date);
   } catch {
-    document.getElementById('brief-main').innerHTML =
-      '<div class="brief-loading">Erro ao carregar o brief.</div>';
+    document.getElementById('brief-main').innerHTML = '<div class="brief-loading">Erro ao carregar o brief.</div>';
   }
 }
 
-// ── Brief renderer
-
 function renderBrief(md, date) {
-  const lines = md.split('\n');
+  const lines    = md.split('\n');
   const sections = parseSections(lines);
-  const checks = briefChecks[date] || {};
+  const checks   = briefChecks[date] || {};
 
-  // count checkable
   let total = 0, done = 0;
   sections.forEach(s => s.items.forEach(it => {
     if (it.checkable) { total++; if (checks[it.key]) done++; }
   }));
-
   const pct = total > 0 ? Math.round(done/total*100) : 0;
+
   const title = (lines.find(l=>l.startsWith('# '))||'').replace(/^#\s*/,'').replace(/🌅\s*/,'').trim();
   const gen   = (lines.find(l=>l.includes('Gerado')||l.includes('gerado'))||'').replace(/^_|_$/g,'').trim();
 
@@ -717,226 +924,116 @@ function renderBrief(md, date) {
   </div>`;
 
   sections.forEach(sec => {
-    if (!sec.title && sec.items.length === 0) return;
+    if (!sec.title && !sec.items.length) return;
     html += `<div class="brief-sec">`;
-    if (sec.title) html += `<div class="brief-sec-head"><span class="sec-icon">${sec.icon}</span>${esc(sec.title)}</div>`;
-
+    if (sec.title) html += `<div class="brief-sec-head"><span>${sec.icon}</span>${esc(sec.title)}</div>`;
     sec.items.forEach(it => {
       if (it.checkable) {
         const ck = checks[it.key];
         html += `<div class="action-row ${ck?'done-action':''}" id="ar-${it.key}">
           <div class="dot ${it.dot}"></div>
-          <input type="checkbox" class="action-chk" ${ck?'checked':''}
-            onchange="toggleCheck('${date}','${it.key}',this.checked)">
+          <input type="checkbox" class="action-chk" ${ck?'checked':''} onchange="toggleCheck('${date}','${it.key}',this.checked)">
           <div class="action-text">${renderInline(it.text)}</div>
-          <button class="btn btn-accent-ghost action-add-btn btn-sm" title="Criar task" onclick="briefToTask('${esc(it.text)}')">+ task</button>
+          <button class="btn btn-accent-ghost btn-sm" title="Criar task" onclick="briefToTask('${esc(it.text)}')">+ task</button>
         </div>`;
-      } else if (it.type==='alert') {
-        html += `<div class="balert">${renderInline(it.text)}</div>`;
-      } else if (it.type==='quote') {
-        html += `<div class="bquote">${renderInline(it.text)}</div>`;
-      } else if (it.type==='prio-header') {
-        html += `<div class="prio-header ${it.dot}">${esc(it.text)}</div>`;
-      } else if (it.type==='agenda-day') {
-        html += `<div class="agenda-day-lbl">${esc(it.text)}</div>`;
-      } else if (it.type==='agenda-event') {
-        const warn = it.text.includes('⚠️') || it.text.includes('conflito') ? '<span class="warn-tag">conflito</span>' : '';
-        html += `<div class="agenda-row"><span class="agenda-time">${esc(it.time)}</span><span class="agenda-evt">${renderInline(it.text)}${warn}</span></div>`;
-      } else {
-        html += `<div class="bprose">${renderInline(it.text)}</div>`;
-      }
+      } else if (it.type==='quote')       { html += `<div class="bquote">${renderInline(it.text)}</div>`; }
+        else if (it.type==='prio-header') { html += `<div class="prio-header ${it.dot}">${esc(it.text)}</div>`; }
+        else if (it.type==='agenda-day')  { html += `<div class="agenda-day-lbl">${esc(it.text)}</div>`; }
+        else if (it.type==='agenda-event'){ html += `<div class="agenda-row"><span class="agenda-time">${esc(it.time)}</span><span class="agenda-evt">${renderInline(it.text)}</span></div>`; }
+        else                              { html += `<div class="bprose">${renderInline(it.text)}</div>`; }
     });
-
     html += `</div>`;
   });
 
   document.getElementById('brief-main').innerHTML = html;
 }
 
-function toggleCheck(date, key, checked) {
-  if (!briefChecks[date]) briefChecks[date] = {};
-  if (checked) briefChecks[date][key] = true;
-  else delete briefChecks[date][key];
-  save(CHECKS_KEY, briefChecks);
-
-  // update row class
-  const row = document.getElementById('ar-' + key);
-  if (row) row.classList.toggle('done-action', checked);
-
-  // update progress
-  const all = document.querySelectorAll('.action-chk');
-  const tot = all.length;
-  const dn  = document.querySelectorAll('.action-chk:checked').length;
-  const pct = tot > 0 ? Math.round(dn/tot*100) : 0;
-  const fill = document.getElementById('prog-fill');
-  if (fill) fill.style.width = pct + '%';
-  const progs = document.querySelector('.brief-progress');
-  if (progs) {
-    const spans = progs.querySelectorAll('span');
-    if (spans[0]) spans[0].textContent = `${dn}/${tot} concluídos`;
-    if (spans[1]) spans[1].textContent = `${pct}%`;
-  }
-
-  // update sidebar badge
-  renderBriefSidebar();
-  // re-mark active
-  document.querySelectorAll('.bdate-btn').forEach(b =>
-    b.classList.toggle('active', b.dataset.date === curDate));
-}
-
-function briefToTask(text) {
-  // Pre-fill title from brief item
-  const cleaned = text.replace(/📌\s*(HERDADO\s*[—–-]?\s*)?/i,'').replace(/\*\*/g,'').trim();
-  const title = cleaned.length > 80 ? cleaned.slice(0,80)+'…' : cleaned;
-  // switch to tasks tab
-  switchTab('tasks');
-  // scroll to form
-  document.querySelector('.form-panel').scrollIntoView({behavior:'smooth'});
-  document.getElementById('f-title').value = title;
-  document.getElementById('f-title').focus();
-  if (formMin) {
-    formMin = false;
-    document.getElementById('form-body').classList.remove('hidden');
-    document.getElementById('collapse-btn').textContent = 'Minimizar';
-  }
-  toast('Título copiado para a nova task ✓');
-}
-
-// ── Parser
-
 function parseSections(lines) {
   const secs = [];
-  let cur = null;
-  let isAgenda = false;
-  let dotState = 'b'; // current priority dot color
+  let cur = null, isAgenda = false, dotState = 'b';
 
   const matchSection = raw => {
     const u = raw.toUpperCase();
-    if (u.includes('ATENÇÃO') || u.includes('IMEDIATA')) return { icon:'⚠️', checkable:true, agenda:false };
-    if (u.includes('AGENDA DE HOJE'))                     return { icon:'📅', checkable:false, agenda:true };
-    if (u.includes('E-MAIL'))                             return { icon:'📧', checkable:true, agenda:false };
-    if (u.includes('ACTION'))                             return { icon:'✅', checkable:true, agenda:false };
-    if (u.includes('SLACK'))                              return { icon:'💬', checkable:true, agenda:false };
-    if (u.includes('AGENDA DA SEMANA'))                   return { icon:'🗓️', checkable:false, agenda:true };
-    if (u.includes('AVISO'))                              return { icon:'⚠️', checkable:false, agenda:false };
-    if (u.includes('FRASE'))                              return { icon:'✨', checkable:false, agenda:false };
-    return { icon:'•', checkable:false, agenda:false };
+    if (u.includes('ATENÇÃO')||u.includes('IMEDIATA')) return {icon:'⚠️',checkable:true,agenda:false};
+    if (u.includes('AGENDA DE HOJE'))                   return {icon:'📅',checkable:false,agenda:true};
+    if (u.includes('E-MAIL'))                           return {icon:'📧',checkable:true,agenda:false};
+    if (u.includes('ACTION'))                           return {icon:'✅',checkable:true,agenda:false};
+    if (u.includes('SLACK'))                            return {icon:'💬',checkable:true,agenda:false};
+    if (u.includes('AGENDA DA SEMANA'))                 return {icon:'🗓️',checkable:false,agenda:true};
+    if (u.includes('AVISO'))                            return {icon:'⚠️',checkable:false,agenda:false};
+    if (u.includes('FRASE'))                            return {icon:'✨',checkable:false,agenda:false};
+    return {icon:'•',checkable:false,agenda:false};
   };
 
   function makeKey(text) {
-    // stable key from text (no btoa to avoid encoding issues)
-    let h = 0;
-    for (let i=0;i<text.length&&i<120;i++) h = (Math.imul(31,h)+text.charCodeAt(i))|0;
-    return 'k' + Math.abs(h).toString(36);
+    let h=0;
+    for (let i=0;i<text.length&&i<120;i++) h=(Math.imul(31,h)+text.charCodeAt(i))|0;
+    return 'k'+Math.abs(h).toString(36);
   }
 
-  for (let i=0;i<lines.length;i++) {
-    const l = lines[i];
-
+  for (const l of lines) {
     if (l.startsWith('# ')) continue;
-
     if (l.startsWith('## ')) {
-      const raw = l.slice(3).replace(/[⚠️📅📧✅💬🗓️✨]/g,'').trim();
+      const raw  = l.slice(3).replace(/[⚠️📅📧✅💬🗓️✨]/g,'').trim();
       const meta = matchSection(raw);
-      cur = { title: raw, icon: meta.icon, checkable: meta.checkable, items: [] };
-      isAgenda = meta.agenda;
-      dotState = 'b';
-      secs.push(cur);
-      continue;
+      cur = {title:raw, icon:meta.icon, checkable:meta.checkable, items:[]};
+      isAgenda = meta.agenda; dotState = 'b';
+      secs.push(cur); continue;
     }
-
-    if (!cur) { cur = { title:'', icon:'', checkable:false, items:[] }; secs.push(cur); }
+    if (!cur) { cur={title:'',icon:'',checkable:false,items:[]}; secs.push(cur); }
 
     if (l.startsWith('### ')) {
-      const sub = l.slice(4).trim();
-      const u = sub.toUpperCase();
-      if (u.includes('HIGH') || u.includes('🔴') || u.includes('ALTA'))      dotState = 'r';
-      else if (u.includes('MEDIUM') || u.includes('🟡') || u.includes('MÉDIA')) dotState = 'y';
-      else if (u.includes('LOW') || u.includes('🟢') || u.includes('BAIXA'))  dotState = 'g';
-      cur.items.push({ type:'prio-header', text:sub, dot:dotState });
-      continue;
+      const sub = l.slice(4).trim(), u = sub.toUpperCase();
+      if      (u.includes('HIGH')||u.includes('🔴')||u.includes('ALTA'))    dotState='r';
+      else if (u.includes('MEDIUM')||u.includes('🟡')||u.includes('MÉDIA')) dotState='y';
+      else if (u.includes('LOW')||u.includes('🟢')||u.includes('BAIXA'))   dotState='g';
+      cur.items.push({type:'prio-header', text:sub, dot:dotState}); continue;
     }
 
-    // inline prio headers like **🔴 Alta (10)**
-    if (/^\*{1,2}🔴/.test(l))  { dotState='r'; cur.items.push({type:'prio-header',text:l.replace(/\*+/g,'').trim(),dot:'r'}); continue; }
-    if (/^\*{1,2}🟡/.test(l))  { dotState='y'; cur.items.push({type:'prio-header',text:l.replace(/\*+/g,'').trim(),dot:'y'}); continue; }
-    if (/^\*{1,2}🟢/.test(l))  { dotState='g'; cur.items.push({type:'prio-header',text:l.replace(/\*+/g,'').trim(),dot:'g'}); continue; }
+    if (/^\*{1,2}🔴/.test(l)) { dotState='r'; cur.items.push({type:'prio-header',text:l.replace(/\*+/g,'').trim(),dot:'r'}); continue; }
+    if (/^\*{1,2}🟡/.test(l)) { dotState='y'; cur.items.push({type:'prio-header',text:l.replace(/\*+/g,'').trim(),dot:'y'}); continue; }
+    if (/^\*{1,2}🟢/.test(l)) { dotState='g'; cur.items.push({type:'prio-header',text:l.replace(/\*+/g,'').trim(),dot:'g'}); continue; }
 
-    if (l.match(/^---+$/)) continue;
-    if (!l.trim()) continue;
+    if (l.match(/^---+$/)||!l.trim()) continue;
+    if (l.startsWith('> ')) { cur.items.push({type:'quote',text:l.slice(2)}); continue; }
 
-    if (l.startsWith('> ')) {
-      cur.items.push({ type:'quote', text:l.slice(2) });
-      continue;
-    }
-
-    // agenda mode
     if (isAgenda) {
       const dm = l.match(/^\*{1,3}([^*]+\d{1,2}\/\d{1,2}[^*]*)\*{1,3}/);
-      if (dm) { cur.items.push({ type:'agenda-day', text:dm[1].trim() }); continue; }
+      if (dm) { cur.items.push({type:'agenda-day',text:dm[1].trim()}); continue; }
       const tm = l.match(/^[-–]?\s*(\d{1,2}[:h]\d{0,2})\s+(.+)/);
-      if (tm) { cur.items.push({ type:'agenda-event', time:tm[1], text:tm[2] }); continue; }
-      cur.items.push({ type:'prose', text:l });
-      continue;
+      if (tm) { cur.items.push({type:'agenda-event',time:tm[1],text:tm[2]}); continue; }
+      cur.items.push({type:'prose',text:l}); continue;
     }
 
-    // list item
     const li = l.match(/^(\s{0,4})[-*]\s+(.+)/);
     if (li && cur.checkable) {
       const text = li[2];
       let dot = dotState;
-      if (text.startsWith('🔴')) dot='r';
-      else if (text.startsWith('🟡')) dot='y';
-      else if (text.startsWith('🟢')) dot='g';
-      cur.items.push({ checkable:true, text, key:makeKey(text), dot });
-      continue;
+      if (text.startsWith('🔴')) dot='r'; else if (text.startsWith('🟡')) dot='y'; else if (text.startsWith('🟢')) dot='g';
+      cur.items.push({checkable:true, text, key:makeKey(text), dot}); continue;
     }
 
-    // numbered item
     const ni = l.match(/^\d+\.\s+(.+)/);
     if (ni && cur.checkable) {
-      const text = ni[1];
-      cur.items.push({ checkable:true, text, key:makeKey(text), dot:dotState });
-      continue;
+      cur.items.push({checkable:true, text:ni[1], key:makeKey(ni[1]), dot:dotState}); continue;
     }
 
-    // alert (starts with -, bold)
-    if (l.startsWith('- **') && cur.checkable) {
-      const text = l.slice(2);
-      cur.items.push({ checkable:true, text, key:makeKey(text), dot:dotState||'b' });
-      continue;
-    }
-
-    cur.items.push({ type:'prose', text:l });
+    cur.items.push({type:'prose', text:l});
   }
-
   return secs;
 }
 
 function renderInline(text) {
   return esc(text)
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-    .replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,.08);padding:.1em .3em;border-radius:3px;font-size:.85em">$1</code>');
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g,'<em>$1</em>')
+    .replace(/`([^`]+)`/g,'<code style="background:rgba(255,255,255,.08);padding:.1em .3em;border-radius:3px;font-size:.85em">$1</code>');
 }
 
 // ══════════════════════════════════════════════════════════════════
-// TABS
+// BOOT
 // ══════════════════════════════════════════════════════════════════
-
-function switchTab(name) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===name));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id==='tab-'+name));
-  if (name==='briefs') initBriefs();
-}
-
-document.querySelectorAll('.tab-btn').forEach(btn =>
-  btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
-
-// ══════════════════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════════════════
-renderTasks();
+initDrive();
 </script>
 </body>
 </html>
