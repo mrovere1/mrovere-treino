@@ -275,7 +275,7 @@ export function renderGuardianTab(guardians, partners) {
       <header>
         <div>
           <h3>Guardian candidates</h3>
-          <p class="muted">Required certifications: Specialist Course + TCSA + TCSE + TCDE. Offered by invitation — company must hold Gold or Platinum tier.</p>
+          <p class="muted">Requisitos atuais (VM/OT/Cloud): VM Sales + VM SE + TCDE (prova teórica + prática). Curso de Specialist recomendado mas não obrigatório. Oferecido por convite — empresa deve ser Gold ou Platinum.</p>
         </div>
       </header>
       <div class="table-wrap">
@@ -285,9 +285,9 @@ export function renderGuardianTab(guardians, partners) {
               <th>Name</th>
               <th>Partner</th>
               <th>Specialist</th>
-              <th>TCSA</th>
-              <th>TCSE</th>
-              <th>TCDE</th>
+              <th title="Certificação Sales — VM, OT ou Cloud (substitui TCSA legado)">VM Sales</th>
+              <th title="Certificação SE — VM, OT ou Cloud (substitui TCSE legado)">VM SE</th>
+              <th title="2 provas: teórica + prática para VM, OT ou Cloud (substitui TCDE legado)">TCDE</th>
               <th>Progress</th>
               <th>Status</th>
               <th>Notes</th>
@@ -513,20 +513,24 @@ export function renderTechCertsTab(techCerts) {
     return `<span class="cert-pill cert-pill--low">${count}</span>`;
   }
 
-  const headerCols = GROUPS.map((g) => {
-    const sub = g.keys.length > 1
-      ? `<div class="col-subheaders">${g.keys.map((k) => `<span>${k.split("-")[1] || k}</span>`).join("")}</div>`
-      : "";
-    return `<th class="col-group" colspan="${g.keys.length}"><span>${g.label}</span>${sub}</th>`;
-  }).join("");
+  const groupRow = GROUPS.map((g) =>
+    `<th class="tc-group" colspan="${g.keys.length}">${g.label}</th>`
+  ).join("");
 
-  const rows = techCerts.map((p) => {
+  const subRow = GROUPS.flatMap((g) =>
+    g.keys.map((k) => {
+      const label = k.includes("-") ? k.split("-")[1] : "—";
+      return `<th class="tc-sub">${label}</th>`;
+    })
+  ).join("");
+
+  const rows = techCerts.map((p, i) => {
     const cells = GROUPS.flatMap((g) =>
       g.keys.map((k) => `<td class="cert-cell">${certPill(p.certs[k] || 0)}</td>`)
     ).join("");
     return `
-      <tr>
-        <td class="partner-cell">${escapeHtml(p.partnerName || p.partnerId)}</td>
+      <tr class="${i % 2 === 1 ? "tc-row-alt" : ""}">
+        <td class="partner-cell"><strong>${escapeHtml(p.partnerName || p.partnerId)}</strong></td>
         ${cells}
       </tr>`;
   }).join("");
@@ -552,16 +556,19 @@ export function renderTechCertsTab(techCerts) {
       <div class="table-wrapper" style="overflow-x:auto;">
         <table class="certs-table tech-certs-table">
           <thead>
-            <tr>
-              <th class="partner-header" rowspan="1">Partner</th>
-              ${headerCols}
+            <tr class="tc-group-row">
+              <th class="tc-partner-header" rowspan="2">Partner</th>
+              ${groupRow}
+            </tr>
+            <tr class="tc-sub-row">
+              ${subRow}
             </tr>
           </thead>
           <tbody>${rows}</tbody>
         </table>
       </div>
 
-      <div class="legend" style="margin-top:1rem;display:flex;gap:1rem;font-size:.75rem;color:var(--color-gray-light);">
+      <div class="legend" style="margin-top:1rem;display:flex;gap:1rem;font-size:.75rem;color:var(--text-muted);">
         <span><span class="cert-pill cert-pill--high" style="display:inline-block">3+</span> Alta cobertura</span>
         <span><span class="cert-pill cert-pill--low" style="display:inline-block">1</span> Baixa cobertura</span>
         <span><span class="cert-pill cert-pill--none" style="display:inline-block">–</span> Sem cert</span>
@@ -1115,4 +1122,5 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 }
+
 
