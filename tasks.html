@@ -27,14 +27,13 @@ body{font-family:'Inter','Helvetica Neue',sans-serif;background:var(--bg);color:
 .hdr-sep{width:1px;height:20px;background:var(--line)}
 .hdr-title{font-size:.88rem;font-weight:600}
 .hdr-sub{font-size:.72rem;color:var(--text-muted)}
-.hdr-right{display:flex;align-items:center;gap:.65rem}
-.drive-status{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-muted);padding:.28rem .6rem;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);cursor:pointer;transition:border-color .15s}
-.drive-status:hover{border-color:var(--gray)}
-.drive-dot{width:7px;height:7px;border-radius:50%;background:var(--gray);flex-shrink:0}
-.drive-dot.ok{background:#71FFC6}
-.drive-dot.warn{background:#fb923c}
-.hdr-nav a{color:var(--text-muted);text-decoration:none;font-size:.78rem;padding:.3rem .7rem;border:1px solid var(--line);border-radius:var(--r)}
-.hdr-nav a:hover{color:var(--text)}
+.conn-status{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-muted);padding:.28rem .6rem;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);cursor:pointer;transition:border-color .15s}
+.conn-status:hover{border-color:var(--gray)}
+.conn-dot{width:7px;height:7px;border-radius:50%;background:var(--gray);flex-shrink:0}
+.conn-dot.ok{background:#71FFC6}
+.conn-dot.warn{background:#fb923c}
+.conn-dot.connecting{background:var(--accent);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
 
 /* ─── Main tabs ─── */
 .tabs-bar{display:flex;background:var(--bg-alt);border-bottom:1px solid var(--line);padding:0 1.5rem}
@@ -43,19 +42,26 @@ body{font-family:'Inter','Helvetica Neue',sans-serif;background:var(--bg);color:
 .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
 
 /* ─── Content ─── */
-.content{padding:1.25rem 1.5rem;max-width:1440px}
+.content{padding:1.25rem 1.5rem 5.5rem;max-width:1440px}
 .tab-panel{display:none}
 .tab-panel.active{display:block}
 
 /* ─── Setup screen ─── */
-.setup-screen{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 100px)}
-.setup-card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:2.5rem;max-width:520px;width:100%;text-align:center}
-.setup-icon{font-size:2.5rem;margin-bottom:1rem}
-.setup-title{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
-.setup-desc{font-size:.84rem;color:var(--text-muted);line-height:1.65;margin-bottom:1.5rem}
-.setup-path{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:.55rem .85rem;font-size:.78rem;color:var(--accent);font-family:monospace;margin-bottom:1.5rem;word-break:break-all}
-.setup-actions{display:flex;flex-direction:column;gap:.6rem;align-items:center}
-.setup-note{font-size:.72rem;color:var(--text-muted);margin-top:.75rem}
+.setup-screen{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 100px);padding:1.5rem}
+.setup-card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:2.2rem;max-width:580px;width:100%}
+.setup-icon{font-size:2.2rem;margin-bottom:.8rem;text-align:center}
+.setup-title{font-size:1.1rem;font-weight:700;margin-bottom:.5rem;text-align:center}
+.setup-desc{font-size:.84rem;color:var(--text-muted);line-height:1.65;margin-bottom:1.4rem;text-align:center}
+.setup-steps{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:1.4rem}
+.setup-steps ol{margin:0;padding-left:1.2rem;font-size:.8rem;color:var(--text-muted);line-height:1.85}
+.setup-steps code{background:rgba(231,255,0,.08);color:var(--accent);padding:.05em .35em;border-radius:3px;font-size:.92em}
+.setup-steps a{color:var(--accent)}
+.setup-field{margin-bottom:.85rem}
+.setup-field label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin-bottom:.35rem}
+.setup-actions{display:flex;gap:.6rem;align-items:center;justify-content:flex-end}
+.setup-msg{font-size:.78rem;margin-top:.85rem;min-height:1.2em}
+.setup-msg.err{color:#f87171}
+.setup-msg.ok{color:#71FFC6}
 
 /* ─── Form panel ─── */
 .form-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.1rem 1.25rem;margin-bottom:1.1rem}
@@ -71,9 +77,10 @@ body{font-family:'Inter','Helvetica Neue',sans-serif;background:var(--bg);color:
 textarea.inp{resize:vertical;min-height:52px}
 
 /* ─── Buttons ─── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;padding:.42rem .9rem;border-radius:var(--r);font-size:.8rem;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:background .12s,color .12s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;padding:.42rem .9rem;border-radius:var(--r);font-size:.8rem;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:background .12s,color .12s,opacity .12s}
 .btn-primary{background:var(--accent);color:#1a1f21}
 .btn-primary:hover{background:#d4eb00}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
 .btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--line)}
 .btn-ghost:hover{color:var(--text);border-color:var(--gray)}
 .btn-sm{padding:.28rem .65rem;font-size:.72rem}
@@ -184,9 +191,18 @@ textarea.inp{resize:vertical;min-height:52px}
 .prio-header{font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin:.65rem 0 .35rem;display:flex;align-items:center;gap:.4rem}
 .prio-header.r{color:#f87171}.prio-header.y{color:#fb923c}.prio-header.g{color:#71ffc6}
 
-/* ─── Saving indicator ─── */
-.save-indicator{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:.55rem .9rem;font-size:.78rem;color:var(--text-muted);z-index:2000;opacity:0;transition:opacity .25s;pointer-events:none}
-.save-indicator.show{opacity:1}
+/* ─── Save bar (fixed bottom) ─── */
+.save-bar{position:fixed;left:0;right:0;bottom:0;z-index:900;background:var(--bg-alt);border-top:1px solid var(--line);padding:.6rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.save-bar.dirty{border-top-color:var(--accent)}
+.save-bar-status{display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--text-muted)}
+.save-bar-dot{width:8px;height:8px;border-radius:50%;background:#71FFC6;flex-shrink:0}
+.save-bar.dirty .save-bar-dot{background:var(--accent);animation:pulse 1.4s infinite}
+.save-bar-right{display:flex;align-items:center;gap:.6rem}
+.save-bar-hint{font-size:.72rem;color:var(--gray)}
+
+/* ─── Toast ─── */
+.toast{position:fixed;bottom:4.5rem;right:1.5rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:.55rem .9rem;font-size:.78rem;color:var(--text-muted);z-index:2000;opacity:0;transition:opacity .25s;pointer-events:none}
+.toast.show{opacity:1}
 
 /* ─── Util ─── */
 .hidden{display:none!important}
@@ -207,45 +223,50 @@ textarea.inp{resize:vertical;min-height:52px}
       <div class="hdr-sub">Marcelo Rovere — Brasil</div>
     </div>
   </div>
-  <div class="hdr-right">
-    <div class="drive-status" id="drive-status" onclick="reconnectDrive()" title="Clique para reconectar pasta">
-      <div class="drive-dot" id="drive-dot"></div>
-      <span id="drive-label">Sem pasta</span>
-    </div>
-    <nav class="hdr-nav"><a href="/">← Portal</a></nav>
+  <div class="conn-status" id="conn-status" onclick="openSetup()" title="Conexão com Google Drive (Apps Script)">
+    <div class="conn-dot" id="conn-dot"></div>
+    <span id="conn-label">Não conectado</span>
   </div>
 </header>
 
-<!-- Setup screen (shown when no folder selected) -->
-<div id="setup-screen" class="hidden">
+<!-- ═══ SETUP SCREEN ═══ -->
+<div id="setup-screen">
   <div class="setup-screen">
     <div class="setup-card">
-      <div class="setup-icon">📂</div>
-      <div class="setup-title">Conectar pasta do Google Drive</div>
+      <div class="setup-icon">🔗</div>
+      <div class="setup-title">Conectar ao Google Drive</div>
       <div class="setup-desc">
-        Selecione a pasta onde as tasks serão salvas. Qualquer pasta sincronizada com o Drive funciona —
-        os dados ficam no Drive automaticamente via Backup & Sync.
+        As tasks são salvas numa planilha Google no seu Drive via Apps Script.
+        Cole abaixo a URL do app da Web que você publicou.
       </div>
-      <div class="setup-path" id="suggested-path">~/Documents/app-mrovere/tasks-data/</div>
+      <div class="setup-steps">
+        <ol>
+          <li>Abra <a href="https://script.google.com" target="_blank" rel="noopener">script.google.com</a> → <strong>Novo projeto</strong></li>
+          <li>Cole o conteúdo de <code>apps-script/Code.gs</code> e salve</li>
+          <li><strong>Implantar</strong> → <strong>Nova implantação</strong> → tipo <strong>App da Web</strong></li>
+          <li>Executar como <strong>Eu</strong>; acesso <strong>Qualquer pessoa com o link</strong></li>
+          <li>Copie a <strong>URL do app da Web</strong> e cole aqui ↓</li>
+        </ol>
+      </div>
+      <div class="setup-field">
+        <label for="setup-url">URL do app da Web</label>
+        <input type="url" class="inp" id="setup-url" placeholder="https://script.google.com/macros/s/AKfy.../exec">
+      </div>
+      <div class="setup-field">
+        <label for="setup-token">Token (opcional — só se definiu SECRET no script)</label>
+        <input type="text" class="inp" id="setup-token" placeholder="deixe vazio se não usou SECRET">
+      </div>
       <div class="setup-actions">
-        <button class="btn btn-primary" id="btn-reconnect-stored" onclick="tryReconnectStored()" style="display:none;width:100%">
-          Reconectar pasta anterior
-        </button>
-        <button class="btn btn-ghost" id="btn-pick-folder" onclick="pickFolder()" style="width:100%">
-          Selecionar outra pasta…
-        </button>
+        <button class="btn btn-ghost" id="setup-cancel" onclick="closeSetup()" style="display:none">Cancelar</button>
+        <button class="btn btn-primary" id="setup-connect" onclick="connectFromSetup()">Conectar</button>
       </div>
-      <div class="setup-note">
-        O browser pedirá permissão de leitura/escrita nesta pasta uma única vez.<br>
-        Nenhum dado sai do seu computador via esta página.
-      </div>
+      <div class="setup-msg" id="setup-msg"></div>
     </div>
   </div>
 </div>
 
-<!-- Main app (hidden until folder is connected) -->
+<!-- ═══ MAIN APP ═══ -->
 <div id="main-app" class="hidden">
-
   <div class="tabs-bar">
     <button class="tab-btn active" data-tab="tasks">Tasks</button>
     <button class="tab-btn" data-tab="briefs">Daily Briefs</button>
@@ -253,9 +274,8 @@ textarea.inp{resize:vertical;min-height:52px}
 
   <div class="content">
 
-    <!-- ═══ TASKS ═══ -->
+    <!-- TASKS -->
     <div id="tab-tasks" class="tab-panel active">
-
       <div class="form-panel">
         <div class="form-panel-head">
           <div class="form-panel-title">+ Nova task</div>
@@ -367,7 +387,7 @@ textarea.inp{resize:vertical;min-height:52px}
       </div>
     </div>
 
-    <!-- ═══ BRIEFS ═══ -->
+    <!-- BRIEFS -->
     <div id="tab-briefs" class="tab-panel">
       <div class="briefs-wrap">
         <aside class="briefs-side">
@@ -402,203 +422,208 @@ textarea.inp{resize:vertical;min-height:52px}
   </div>
 </div>
 
-<!-- Save indicator -->
-<div class="save-indicator" id="save-indicator">Salvo no Drive ✓</div>
+<!-- Save bar -->
+<div class="save-bar" id="save-bar">
+  <div class="save-bar-status">
+    <div class="save-bar-dot"></div>
+    <span id="save-bar-label">Tudo salvo</span>
+  </div>
+  <div class="save-bar-right">
+    <span class="save-bar-hint" id="save-bar-hint"></span>
+    <button class="btn btn-primary" id="save-btn" onclick="saveAll()" disabled>Salvar no Drive</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
 // ══════════════════════════════════════════════════════════════════
-// FILE SYSTEM ACCESS API — Drive persistence
+// PERSISTENCE — Google Apps Script (Drive)
 // ══════════════════════════════════════════════════════════════════
 
-const IDB_NAME    = 'mrovere-fsa-v1';
-const IDB_STORE   = 'handles';
-const DATA_FILE   = 'mrovere-tasks.json';
+const CFG_URL   = 'mrovere_tasks_endpoint';
+const CFG_TOKEN = 'mrovere_tasks_token';
 
-let dirHandle = null;
-let saveTimer  = null;
+let endpoint = localStorage.getItem(CFG_URL)   || '';
+let token    = localStorage.getItem(CFG_TOKEN) || '';
 
-// ── IndexedDB helpers for persisting directory handle
+let dirty  = false;
+let saving = false;
 
-function idbOpen() {
-  return new Promise((res, rej) => {
-    const req = indexedDB.open(IDB_NAME, 1);
-    req.onupgradeneeded = e => e.target.result.createObjectStore(IDB_STORE);
-    req.onsuccess = e => res(e.target.result);
-    req.onerror   = () => rej(req.error);
-  });
+// ── API
+
+async function apiGet() {
+  const url = endpoint + (token ? (endpoint.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(token) : '');
+  const r = await fetch(url, { method: 'GET', redirect: 'follow' });
+  const data = await r.json();
+  if (!data.ok) throw new Error(data.error || 'Resposta inválida do script');
+  return data;
 }
 
-async function idbGet(key) {
-  const db = await idbOpen();
-  return new Promise((res, rej) => {
-    const tx  = db.transaction(IDB_STORE, 'readonly');
-    const req = tx.objectStore(IDB_STORE).get(key);
-    req.onsuccess = () => res(req.result);
-    req.onerror   = () => rej(req.error);
+async function apiPost(payload) {
+  const r = await fetch(endpoint, {
+    method: 'POST',
+    redirect: 'follow',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ ...payload, token })
   });
+  const data = await r.json();
+  if (!data.ok) throw new Error(data.error || 'Falha ao salvar');
+  return data;
 }
 
-async function idbPut(key, value) {
-  const db = await idbOpen();
-  return new Promise((res, rej) => {
-    const tx  = db.transaction(IDB_STORE, 'readwrite');
-    const req = tx.objectStore(IDB_STORE).put(value, key);
-    req.onsuccess = () => res();
-    req.onerror   = () => rej(req.error);
-  });
+// ── Setup flow
+
+function openSetup() {
+  document.getElementById('setup-url').value   = endpoint;
+  document.getElementById('setup-token').value = token;
+  document.getElementById('setup-cancel').style.display = endpoint ? '' : 'none';
+  document.getElementById('setup-msg').textContent = '';
+  document.getElementById('setup-msg').className = 'setup-msg';
+  document.getElementById('setup-screen').classList.remove('hidden');
+  document.getElementById('main-app').classList.add('hidden');
+}
+function closeSetup() {
+  if (!endpoint) return;
+  document.getElementById('setup-screen').classList.add('hidden');
+  document.getElementById('main-app').classList.remove('hidden');
 }
 
-// ── Init: check stored handle permission
+async function connectFromSetup() {
+  const url = document.getElementById('setup-url').value.trim();
+  const tok = document.getElementById('setup-token').value.trim();
+  const msg = document.getElementById('setup-msg');
 
-async function initDrive() {
-  if (!window.showDirectoryPicker) {
-    // Unsupported (Safari): fall back to localStorage with a warning
-    fallbackToLocalStorage();
+  if (!url || !/^https:\/\/script\.google\.com\/macros\/s\//.test(url)) {
+    msg.textContent = 'Cole uma URL válida do app da Web (…/macros/s/…/exec).';
+    msg.className = 'setup-msg err';
     return;
   }
 
-  const stored = await idbGet('dir').catch(() => null);
+  endpoint = url;
+  token    = tok;
+  msg.textContent = 'Testando conexão…';
+  msg.className = 'setup-msg';
+  document.getElementById('setup-connect').disabled = true;
 
-  if (stored) {
-    const perm = await stored.queryPermission({ mode: 'readwrite' }).catch(() => 'denied');
-    if (perm === 'granted') {
-      dirHandle = stored;
-      await onDriveReady();
-      return;
-    }
-    // permission not auto-granted → show reconnect
-    document.getElementById('btn-reconnect-stored').style.display = '';
-    const name = stored.name || '...';
-    document.getElementById('btn-reconnect-stored').textContent = `Reconectar "${name}"`;
-  }
-
-  showSetup();
-}
-
-// Called after user gesture to connect
-
-async function tryReconnectStored() {
-  const stored = await idbGet('dir').catch(() => null);
-  if (!stored) { pickFolder(); return; }
   try {
-    const perm = await stored.requestPermission({ mode: 'readwrite' });
-    if (perm === 'granted') {
-      dirHandle = stored;
-      await onDriveReady();
-    }
-  } catch { pickFolder(); }
-}
-
-async function pickFolder() {
-  try {
-    const handle = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'documents' });
-    await idbPut('dir', handle);
-    dirHandle = handle;
-    await onDriveReady();
-  } catch (e) {
-    if (e.name !== 'AbortError') console.error(e);
-  }
-}
-
-async function reconnectDrive() {
-  if (dirHandle) {
-    // Already connected — show path info
-    showIndicator(`Pasta: ${dirHandle.name}`);
-    return;
-  }
-  showSetup();
-  await tryReconnectStored();
-}
-
-async function onDriveReady() {
-  hideSetup();
-  updateDriveStatus(true, dirHandle.name);
-  const data = await readFile();
-  tasks       = data.tasks       || [];
-  briefChecks = data.briefChecks || {};
-  renderTasks();
-}
-
-// ── Read / write
-
-async function readFile() {
-  if (!dirHandle) return { tasks: [], briefChecks: {} };
-  try {
-    const fh   = await dirHandle.getFileHandle(DATA_FILE);
-    const file = await fh.getFile();
-    return JSON.parse(await file.text());
-  } catch {
-    return { tasks: [], briefChecks: {} };
-  }
-}
-
-async function writeFile() {
-  if (!dirHandle) return;
-  try {
-    const fh       = await dirHandle.getFileHandle(DATA_FILE, { create: true });
-    const writable = await fh.createWritable();
-    await writable.write(JSON.stringify(
-      { version: 1, tasks, briefChecks, updatedAt: new Date().toISOString() },
-      null, 2
-    ));
-    await writable.close();
-    showIndicator('Salvo no Drive ✓');
-  } catch (e) {
-    console.error('Save error:', e);
-    showIndicator('Erro ao salvar ✗');
-  }
-}
-
-// debounced save (300ms after last change)
-function scheduleSave() {
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(writeFile, 300);
-}
-
-// ── Fallback: no File System Access API (Safari)
-
-function fallbackToLocalStorage() {
-  dirHandle = 'localstorage'; // sentinel
-  const raw = localStorage.getItem('mrovere_tasks_fallback');
-  try {
-    const data = JSON.parse(raw || '{}');
+    const data = await apiGet();
+    localStorage.setItem(CFG_URL, endpoint);
+    localStorage.setItem(CFG_TOKEN, token);
     tasks       = data.tasks       || [];
     briefChecks = data.briefChecks || {};
-  } catch { tasks = []; briefChecks = {}; }
-  updateDriveStatus(false, 'localStorage (sem Drive)');
-  hideSetup();
-  renderTasks();
+    msg.textContent = 'Conectado ✓';
+    msg.className = 'setup-msg ok';
+    setConn('ok', 'Drive conectado');
+    setDirty(false);
+    document.getElementById('setup-screen').classList.add('hidden');
+    document.getElementById('main-app').classList.remove('hidden');
+    renderTasks();
+  } catch (e) {
+    msg.textContent = 'Erro: ' + e.message + ' — verifique a URL e o acesso "Qualquer pessoa com o link".';
+    msg.className = 'setup-msg err';
+    setConn('warn', 'Falha na conexão');
+  } finally {
+    document.getElementById('setup-connect').disabled = false;
+  }
 }
 
-async function writeFileFallback() {
-  localStorage.setItem('mrovere_tasks_fallback',
-    JSON.stringify({ tasks, briefChecks, updatedAt: new Date().toISOString() }));
-  showIndicator('Salvo localmente');
+async function init() {
+  if (!endpoint) { setConn('warn', 'Não conectado'); openSetup(); return; }
+  setConn('connecting', 'Conectando…');
+  try {
+    const data = await apiGet();
+    tasks       = data.tasks       || [];
+    briefChecks = data.briefChecks || {};
+    setConn('ok', 'Drive conectado');
+    setDirty(false);
+    document.getElementById('setup-screen').classList.add('hidden');
+    document.getElementById('main-app').classList.remove('hidden');
+    renderTasks();
+  } catch (e) {
+    setConn('warn', 'Falha na conexão');
+    openSetup();
+    const msg = document.getElementById('setup-msg');
+    msg.textContent = 'Não foi possível conectar: ' + e.message;
+    msg.className = 'setup-msg err';
+  }
 }
 
-// Wrap both modes
-async function save() {
-  if (dirHandle === 'localstorage') { await writeFileFallback(); return; }
-  scheduleSave();
+// ── Save
+
+async function saveAll() {
+  if (!endpoint || saving || !dirty) return;
+  saving = true;
+  updateSaveBar();
+  try {
+    await apiPost({ tasks, briefChecks });
+    setDirty(false);
+    toast('Salvo no Drive ✓');
+    setConn('ok', 'Drive conectado');
+  } catch (e) {
+    toast('Erro ao salvar ✗');
+    setConn('warn', 'Erro ao salvar');
+    alert('Não foi possível salvar no Google Drive:\n\n' + e.message +
+          '\n\nSuas alterações continuam aqui — tente Salvar novamente.');
+  } finally {
+    saving = false;
+    updateSaveBar();
+  }
 }
 
-// ── UI helpers
+// ── Dirty state
 
-function showSetup()  { document.getElementById('setup-screen').classList.remove('hidden'); document.getElementById('main-app').classList.add('hidden'); }
-function hideSetup()  { document.getElementById('setup-screen').classList.add('hidden');    document.getElementById('main-app').classList.remove('hidden'); }
-
-function updateDriveStatus(ok, label) {
-  document.getElementById('drive-dot').className   = 'drive-dot ' + (ok ? 'ok' : 'warn');
-  document.getElementById('drive-label').textContent = label || '';
+function setDirty(v) {
+  dirty = v;
+  updateSaveBar();
 }
 
-function showIndicator(msg) {
-  const el = document.getElementById('save-indicator');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('show'), 2000);
+function updateSaveBar() {
+  const bar   = document.getElementById('save-bar');
+  const label = document.getElementById('save-bar-label');
+  const hint  = document.getElementById('save-bar-hint');
+  const btn   = document.getElementById('save-btn');
+
+  bar.classList.toggle('dirty', dirty);
+
+  if (saving) {
+    label.textContent = 'Salvando…';
+    hint.textContent  = '';
+    btn.disabled = true;
+    btn.textContent = 'Salvando…';
+    return;
+  }
+  btn.textContent = 'Salvar no Drive';
+  if (dirty) {
+    label.textContent = 'Alterações não salvas';
+    hint.textContent  = 'As mudanças só vão para o Drive ao salvar.';
+    btn.disabled = false;
+  } else {
+    label.textContent = 'Tudo salvo';
+    hint.textContent  = '';
+    btn.disabled = true;
+  }
 }
+
+// ── Connection chip
+
+function setConn(state, label) {
+  document.getElementById('conn-dot').className = 'conn-dot ' + state;
+  document.getElementById('conn-label').textContent = label;
+}
+
+// ── Guard: block leaving with unsaved changes
+window.addEventListener('beforeunload', (e) => {
+  if (dirty) { e.preventDefault(); e.returnValue = ''; return ''; }
+});
+
+// keyboard: Cmd/Ctrl+S saves
+window.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
+    e.preventDefault();
+    saveAll();
+  }
+});
 
 // ══════════════════════════════════════════════════════════════════
 // TASKS STATE
@@ -620,9 +645,9 @@ function esc(s) {
                       .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── CRUD
+// ── CRUD (local only → markDirty; persist on Save)
 
-async function addTask() {
+function addTask() {
   const title = document.getElementById('f-title').value.trim();
   if (!title) { document.getElementById('f-title').focus(); return; }
   tasks.unshift({
@@ -635,27 +660,25 @@ async function addTask() {
     description: document.getElementById('f-desc').value.trim(),
     done: false, doneAt: null,
   });
-  await save();
   ['f-title','f-desc'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-date').value = '';
+  setDirty(true);
   renderTasks();
-  showIndicator('Task adicionada ✓');
 }
 
-async function toggleDone(id) {
+function toggleDone(id) {
   const t = tasks.find(t => t.id === id);
   if (!t) return;
-  t.done  = !t.done;
+  t.done   = !t.done;
   t.doneAt = t.done ? new Date().toISOString() : null;
-  await save();
+  setDirty(true);
   renderTasks();
-  if (t.done) showIndicator('Task concluída ✓');
 }
 
-async function deleteTask(id) {
+function deleteTask(id) {
   if (!confirm('Excluir esta task?')) return;
   tasks = tasks.filter(t => t.id !== id);
-  await save();
+  setDirty(true);
   closeModal();
   renderTasks();
 }
@@ -789,6 +812,14 @@ function daysLbl(d) {
   if (d===0) return ' (hoje)'; if (d===1) return ' (amanhã)'; return ` (+${d}d)`;
 }
 
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
 // ── Form collapse / keyboard
 document.getElementById('collapse-btn').addEventListener('click', () => {
   formMin = !formMin;
@@ -811,19 +842,18 @@ document.querySelectorAll('.tab-btn').forEach(btn =>
 );
 
 // ══════════════════════════════════════════════════════════════════
-// BRIEF CHECKS — persisted in the same Drive file
+// BRIEF CHECKS — persisted with tasks (markDirty → Save)
 // ══════════════════════════════════════════════════════════════════
 
-async function toggleCheck(date, key, checked) {
+function toggleCheck(date, key, checked) {
   if (!briefChecks[date]) briefChecks[date] = {};
   if (checked) briefChecks[date][key] = true;
   else delete briefChecks[date][key];
-  await save();
+  setDirty(true);
 
   const row = document.getElementById('ar-' + key);
   if (row) row.classList.toggle('done-action', checked);
 
-  // Update progress bar inline
   const all  = document.querySelectorAll('.action-chk');
   const tot  = all.length;
   const dn   = document.querySelectorAll('.action-chk:checked').length;
@@ -848,7 +878,7 @@ function briefToTask(text) {
   document.getElementById('f-title').value = title;
   document.getElementById('f-title').focus();
   if (formMin) { formMin=false; document.getElementById('form-body').classList.remove('hidden'); document.getElementById('collapse-btn').textContent='Minimizar'; }
-  showIndicator('Título copiado para nova task ✓');
+  toast('Título copiado para nova task ✓');
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -1033,7 +1063,8 @@ function renderInline(text) {
 // ══════════════════════════════════════════════════════════════════
 // BOOT
 // ══════════════════════════════════════════════════════════════════
-initDrive();
+updateSaveBar();
+init();
 </script>
 </body>
 </html>
