@@ -400,3 +400,29 @@ function readGuardianBool(value) {
   const normalized = String(value ?? "").trim().toLowerCase();
   return ["true", "yes", "ok", "1", "x", "done", "complete"].includes(normalized);
 }
+
+export function parseTechCertsSheet(workbook) {
+  const sheetName = workbook.SheetNames.find((name) => /tech.?cert/i.test(name.trim()));
+  if (!sheetName) return [];
+
+  const sheet = workbook.Sheets[sheetName];
+  const rows = window.XLSX.utils.sheet_to_json(sheet, { header: 1, defval: 0 });
+  if (rows.length < 2) return [];
+
+  const headers = (rows[0] || []).map((h) => String(h || "").trim());
+
+  return rows
+    .slice(1)
+    .filter((row) => String(row[1] || "").trim())
+    .map((row) => {
+      const certs = {};
+      headers.slice(2).forEach((h, i) => {
+        certs[h] = Number(row[i + 2]) || 0;
+      });
+      return {
+        partnerId: String(row[0] || "").trim(),
+        partnerName: String(row[1] || "").trim(),
+        certs
+      };
+    });
+}
