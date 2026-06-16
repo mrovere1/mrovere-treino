@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
 <title>Tasks — Channel SE</title>
 <style>
 :root {
@@ -1114,6 +1115,8 @@ function parseSections(lines) {
 
   for (const l of lines) {
     if (l.startsWith('# ')) continue;
+    // Skip the italic "Gerado …" timestamp line — already shown in the brief header
+    if (/gerad/i.test(l) && /^[_*].*[_*]\s*$/.test(l.trim())) continue;
     if (l.startsWith('## ')) {
       const raw  = l.slice(3).replace(/[⚠️📅📧✅💬🗓️✨]/g,'').trim();
       const meta = matchSection(raw);
