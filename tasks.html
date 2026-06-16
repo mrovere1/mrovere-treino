@@ -435,16 +435,10 @@ textarea.inp{resize:vertical;min-height:52px}
       </div>
     </div>
 
-    <!-- BRIEFS -->
+    <!-- BRIEFS (cowork HTML, hybrid) -->
     <div id="tab-briefs" class="tab-panel">
-      <div class="briefs-wrap">
-        <aside class="briefs-side">
-          <div class="briefs-side-title">Briefs</div>
-          <div id="brief-list">Carregando…</div>
-        </aside>
-        <main class="brief-main" id="brief-main">
-          <div class="brief-loading">Selecione um brief →</div>
-        </main>
+      <div style="height:calc(100vh - 168px);min-height:600px;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#F4F6F8">
+        <iframe id="brief-frame" title="Daily Brief" style="width:100%;height:100%;border:none;display:block"></iframe>
       </div>
     </div>
 
@@ -1213,49 +1207,69 @@ function briefToTask(text) {
 // BRIEFS READER
 // ══════════════════════════════════════════════════════════════════
 
-async function initBriefs() {
-  if (briefIndex) return;
-  try {
-    const r = await fetch('/data/briefs/index.json', { cache: 'no-store' });
-    if (!r.ok) throw new Error();
-    briefIndex = await r.json();
-    renderBriefSidebar();
-    if (briefIndex.length > 0) loadBrief(briefIndex[0]);
-  } catch {
-    document.getElementById('brief-list').innerHTML =
-      '<p style="padding:.75rem 1rem;color:var(--text-muted);font-size:.77rem">Nenhum brief encontrado.</p>';
+// Load the cowork brief HTML (with the hybrid layer) into the iframe once.
+let briefLoaded = false;
+function initBriefs() {
+  if (briefLoaded) return;
+  briefLoaded = true;
+  const f = document.getElementById('brief-frame');
+  f.src = '/data/briefs/attention-today.html?v=' + Date.now();
+}
+
+// ── Bridge: persisted "done" set lives inside briefChecks._done ──────────────
+function briefDoneSet() {
+  if (!briefChecks._done || typeof briefChecks._done !== 'object') briefChecks._done = {};
+  return briefChecks._done;
+}
+function sendBriefState() {
+  const f = document.getElementById('brief-frame');
+  f?.contentWindow?.postMessage(
+    { type: 'brief-state', doneIds: briefDoneSet() }, window.location.origin
+  );
+}
+function markBriefDone(id) {
+  if (!id) return;
+  briefDoneSet()[id] = true;
+  setDirty(true);
+  toast('Item concluído — não volta nos próximos reports (salve no Drive)');
+}
+function createTaskFromBriefItem(item) {
+  if (!item) return;
+  const cat  = item.partner ? 'parceiro' : item.customer ? 'cliente' : 'tenable';
+  const prio = { high: 'alta', medium: 'media', low: 'baixa' }[item.priority] || 'media';
+  const desc = [
+    item.summary || '',
+    item.partner  ? `Parceiro: ${item.partner}`   : '',
+    item.customer ? `Cliente: ${item.customer}`   : '',
+    item.source   ? `Origem: ${item.source}`      : ''
+  ].filter(Boolean).join('\n');
+  tasks.unshift({
+    id: uid(),
+    createdAt: new Date().toISOString(),
+    targetDate: parseBriefDue(item.dueDate),
+    category: cat,
+    priority: prio,
+    status: 'new',
+    title: item.title || 'Item do brief',
+    description: desc,
+    parentId: '',
+    done: false, doneAt: null
+  });
+  if (item.id) briefDoneSet()[item.id] = true;   // dismiss from future reports
+  setDirty(true);
+  toast('Task criada a partir do brief ✓');
+}
+function parseBriefDue(d) {
+  if (!d) return '';
+  if (d === 'HOJE' || d === 'VENCENDO HOJE') return new Date().toISOString().slice(0, 10);
+  if (d === 'VENCIDO') return '';
+  const m = String(d).match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/);
+  if (m) {
+    const now = new Date();
+    let y = m[3] ? (m[3].length === 2 ? '20' + m[3] : m[3]) : now.getFullYear();
+    return `${y}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
   }
-}
-
-function renderBriefSidebar() {
-  if (!briefIndex) return;
-  document.getElementById('brief-list').innerHTML = briefIndex.map(d => {
-    const done = Object.values(briefChecks[d]||{}).filter(Boolean).length;
-    return `<button class="bdate-btn" data-date="${d}" onclick="loadBrief('${d}')">
-      ${fmtBriefDate(d)}
-      ${done > 0 ? `<span class="bdate-badge">${done}</span>` : ''}
-    </button>`;
-  }).join('');
-}
-
-function fmtBriefDate(d) {
-  const dt   = new Date(d+'T12:00:00');
-  const days = ['dom','seg','ter','qua','qui','sex','sáb'];
-  return `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')} (${days[dt.getDay()]})`;
-}
-
-async function loadBrief(date) {
-  curDate = date;
-  document.querySelectorAll('.bdate-btn').forEach(b =>
-    b.classList.toggle('active', b.dataset.date === date));
-  document.getElementById('brief-main').innerHTML = '<div class="brief-loading">Carregando…</div>';
-  try {
-    const r = await fetch(`/data/briefs/${date}-brief.md`, { cache: 'no-store' });
-    if (!r.ok) throw new Error();
-    renderBrief(await r.text(), date);
-  } catch {
-    document.getElementById('brief-main').innerHTML = '<div class="brief-loading">Erro ao carregar o brief.</div>';
-  }
+  return '';
 }
 
 function renderBrief(md, date) {
@@ -1389,6 +1403,15 @@ function renderInline(text) {
     .replace(/\*([^*]+)\*/g,'<em>$1</em>')
     .replace(/`([^`]+)`/g,'<code style="background:rgba(255,255,255,.08);padding:.1em .3em;border-radius:3px;font-size:.85em">$1</code>');
 }
+
+// ── Messages from the cowork brief iframe ───────────────────────────────────
+window.addEventListener('message', (event) => {
+  if (event.origin !== window.location.origin) return;
+  const d = event.data || {};
+  if (d.type === 'brief-ready')        sendBriefState();
+  else if (d.type === 'brief-done')    markBriefDone(d.id);
+  else if (d.type === 'brief-to-task') createTaskFromBriefItem(d.item);
+});
 
 // ══════════════════════════════════════════════════════════════════
 // BOOT
