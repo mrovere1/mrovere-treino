@@ -284,6 +284,7 @@ textarea.inp{resize:vertical;min-height:52px}
         <input type="text" class="inp" id="setup-token" placeholder="deixe vazio se não usou SECRET">
       </div>
       <div class="setup-actions">
+        <button class="btn btn-ghost" id="setup-clear" onclick="clearOverride()" style="display:none">Usar config do perfil</button>
         <button class="btn btn-ghost" id="setup-cancel" onclick="closeSetup()" style="display:none">Cancelar</button>
         <button class="btn btn-primary" id="setup-connect" onclick="connectFromSetup()">Conectar</button>
       </div>
@@ -533,12 +534,14 @@ textarea.inp{resize:vertical;min-height:52px}
 const CFG_URL   = 'mrovere_tasks_endpoint';
 const CFG_TOKEN = 'mrovere_tasks_token';
 
-// When embedded in the portal, the endpoint comes from the Firebase profile
-// (via postMessage) and is NOT read from / written to localStorage.
+// Embedded in the portal: endpoint normally comes from the Firebase profile
+// (via postMessage). A manual URL entered through the connection chip is stored
+// in localStorage and takes precedence (escape hatch when the profile is wrong).
 const EMBEDDED = window.parent && window.parent !== window;
 
-let endpoint = EMBEDDED ? '' : (localStorage.getItem(CFG_URL)   || '');
-let token    = EMBEDDED ? '' : (localStorage.getItem(CFG_TOKEN) || '');
+let endpoint = localStorage.getItem(CFG_URL)   || '';
+let token    = localStorage.getItem(CFG_TOKEN) || '';
+let usedOverride = false;   // a manual URL override is active
 
 let dirty  = false;
 let saving = false;
@@ -568,10 +571,12 @@ async function apiPost(payload) {
 // ── Setup flow
 
 function openSetup() {
-  if (EMBEDDED) return; // no manual URL entry inside the portal
   document.getElementById('setup-url').value   = endpoint;
   document.getElementById('setup-token').value = token;
   document.getElementById('setup-cancel').style.display = endpoint ? '' : 'none';
+  // In the portal, offer reverting to the profile-provided URL.
+  const clearBtn = document.getElementById('setup-clear');
+  if (clearBtn) clearBtn.style.display = (EMBEDDED && localStorage.getItem(CFG_URL)) ? '' : 'none';
   document.getElementById('setup-msg').textContent = '';
   document.getElementById('setup-msg').className = 'setup-msg';
   document.getElementById('setup-screen').classList.remove('hidden');
@@ -604,6 +609,7 @@ async function connectFromSetup() {
     const data = await apiGet();
     localStorage.setItem(CFG_URL, endpoint);
     localStorage.setItem(CFG_TOKEN, token);
+    usedOverride = true;   // manual URL now wins over the profile config
     tasks       = data.tasks       || [];
     briefChecks = data.briefChecks || {};
     normalizeTasks();
@@ -659,40 +665,53 @@ async function initStandalone() {
   }
 }
 
-// Embedded (inside the portal): endpoint arrives from the Firebase profile.
+// Embedded (inside the portal): endpoint normally from the Firebase profile,
+// but a manual override (localStorage) wins. On any failure, open the manual
+// form so the user can paste/fix the URL right here in the portal.
 function initEmbedded() {
   document.getElementById('setup-screen').classList.add('hidden');
   document.getElementById('main-app').classList.remove('hidden');
   setConn('connecting', 'Conectando…');
 
+  // 1) Manual override already saved → use it and ignore the profile config.
+  if (endpoint) {
+    usedOverride = true;
+    loadFromEndpoint().then(ok => {
+      if (!ok) embeddedError('Não foi possível conectar com a URL salva. Cole/corrija a URL abaixo.');
+    });
+  }
+
+  // 2) Otherwise, wait for the profile config posted by the portal.
   window.addEventListener('message', async (event) => {
     if (event.origin !== window.location.origin) return;
     if (event.data?.type !== 'tasks-config') return;
+    if (usedOverride) return;                 // local override already in charge
     endpoint = event.data.endpoint || '';
     token    = event.data.token || '';
     if (!endpoint) {
-      showEmbeddedMessage('Configure o campo <code>tasksEndpoint</code> no seu perfil para usar este módulo.');
+      embeddedError('Sem URL no seu perfil. Cole a URL do Apps Script abaixo para conectar.');
       return;
     }
     const ok = await loadFromEndpoint();
-    if (!ok) {
-      showEmbeddedMessage('Não foi possível conectar ao Google Drive. Verifique o endpoint do Apps Script no seu perfil.');
-    }
+    if (!ok) embeddedError('Não foi possível conectar. Verifique/cole a URL do Apps Script abaixo.');
   });
 
-  // Tell the portal we're ready to receive the per-user config.
   try { window.parent.postMessage({ type: 'tasks-ready' }, window.location.origin); } catch {}
 }
 
-function showEmbeddedMessage(msg) {
-  document.getElementById('main-app').classList.add('hidden');
-  const s = document.getElementById('setup-screen');
-  s.classList.remove('hidden');
-  s.innerHTML = `<div class="setup-screen"><div class="setup-card" style="text-align:center">
-    <div class="setup-icon">🔗</div>
-    <div class="setup-title">Channel SE Tasks</div>
-    <div class="setup-desc">${msg}</div>
-  </div></div>`;
+// Show the manual setup form (inside the portal) with an error message.
+function embeddedError(text) {
+  setConn('warn', 'Falha na conexão');
+  openSetup();
+  const msg = document.getElementById('setup-msg');
+  if (msg) { msg.textContent = text; msg.className = 'setup-msg err'; }
+}
+
+// Drop the manual override and fall back to the profile-provided URL.
+function clearOverride() {
+  localStorage.removeItem(CFG_URL);
+  localStorage.removeItem(CFG_TOKEN);
+  location.reload();
 }
 
 // ── Save
