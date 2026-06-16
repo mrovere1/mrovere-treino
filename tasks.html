@@ -132,6 +132,22 @@ textarea.inp{resize:vertical;min-height:52px}
 /* ─── Modal edit grid ─── */
 .modal-edit{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.85rem}
 
+/* ─── Task tree (subtasks) ─── */
+.title-cell{display:flex;align-items:center;gap:.4rem}
+.caret{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.7rem;width:14px;flex-shrink:0;padding:0;line-height:1}
+.caret:hover{color:var(--accent)}
+.caret-spacer{display:inline-block;width:14px;flex-shrink:0}
+.child-prog{font-size:.64rem;font-weight:700;color:var(--text-muted);background:var(--surface-muted);border:1px solid var(--line);border-radius:999px;padding:.05rem .4rem;flex-shrink:0;white-space:nowrap}
+.child-prog.cp-full{color:#71FFC6;border-color:rgba(113,255,198,.3)}
+.add-sub{background:none;border:none;color:var(--gray);cursor:pointer;font-size:.9rem;line-height:1;padding:0 .2rem;flex-shrink:0;opacity:0;transition:opacity .12s}
+.tbl tr:hover .add-sub{opacity:1}
+.add-sub:hover{color:var(--accent)}
+.tbl tr.child-row td{background:rgba(255,255,255,.015)}
+.title-cell .title-btn{max-width:300px}
+.subtask-banner{display:flex;align-items:center;gap:.6rem;background:rgba(231,255,0,.08);border:1px solid rgba(231,255,0,.3);border-radius:var(--r);padding:.45rem .7rem;margin-bottom:.7rem;font-size:.78rem;color:var(--text-muted)}
+.subtask-banner strong{color:var(--accent)}
+.subtask-banner button{margin-left:auto}
+
 /* ─── Date cells ─── */
 .dc{white-space:nowrap;color:var(--text-muted);font-size:.77rem}
 .dc.overdue{color:#f87171}
@@ -293,6 +309,10 @@ textarea.inp{resize:vertical;min-height:52px}
           <button class="btn btn-ghost btn-sm" id="collapse-btn">Minimizar</button>
         </div>
         <div id="form-body">
+          <div class="subtask-banner hidden" id="subtask-banner">
+            <span>Nova subtask de: <strong id="subtask-parent-name"></strong></span>
+            <button class="btn btn-ghost btn-sm" onclick="cancelSubtask()">Cancelar subtask</button>
+          </div>
           <div class="form-row">
             <div class="fld">
               <label class="lbl">Categoria</label>
@@ -470,6 +490,10 @@ textarea.inp{resize:vertical;min-height:52px}
       <div class="fld">
         <label class="lbl">Data alvo</label>
         <input type="date" class="inp" id="m-date">
+      </div>
+      <div class="fld" style="grid-column:1/-1">
+        <label class="lbl">Task pai (subtask de…)</label>
+        <select class="sel" id="m-parent"></select>
       </div>
       <div class="fld" style="grid-column:1/-1">
         <label class="lbl">Descrição detalhada</label>
@@ -760,6 +784,8 @@ let formMin     = false;
 let activeId    = null;
 let briefIndex  = null;
 let curDate     = null;
+let collapsed   = new Set();   // ids of collapsed parents (UI only)
+let pendingParent = '';        // parentId for the next "Adicionar"
 
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
 function esc(s) {
@@ -773,6 +799,7 @@ function normalizeTasks() {
     if (!t.status) t.status = t.done ? 'done' : 'active';
     if (t.status === 'done') t.done = true;
     if (t.done && t.status !== 'done') t.status = 'done';
+    if (t.parentId === undefined || t.parentId === null) t.parentId = '';
   });
 }
 
@@ -801,12 +828,34 @@ function addTask() {
     status:      document.getElementById('f-status').value || 'new',
     title,
     description: document.getElementById('f-desc').value.trim(),
+    parentId:    pendingParent || '',
     done: false, doneAt: null,
   });
+  if (pendingParent) collapsed.delete(pendingParent); // keep the parent expanded
+  cancelSubtask();
   ['f-title','f-desc'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-date').value = '';
   setDirty(true);
   renderTasks();
+}
+
+// Start adding a subtask under a given parent (pre-arms the form)
+function startSubtask(parentId) {
+  pendingParent = parentId;
+  const p = tasks.find(t => t.id === parentId);
+  document.getElementById('subtask-parent-name').textContent = p ? p.title : '';
+  document.getElementById('subtask-banner').classList.remove('hidden');
+  if (formMin) {
+    formMin = false;
+    document.getElementById('form-body').classList.remove('hidden');
+    document.getElementById('collapse-btn').textContent = 'Minimizar';
+  }
+  document.querySelector('.form-panel').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('f-title').focus();
+}
+function cancelSubtask() {
+  pendingParent = '';
+  document.getElementById('subtask-banner').classList.add('hidden');
 }
 
 function toggleDone(id) {
@@ -818,8 +867,13 @@ function toggleDone(id) {
 }
 
 function deleteTask(id) {
-  if (!confirm('Excluir esta task?')) return;
-  tasks = tasks.filter(t => t.id !== id);
+  const descIds = getDescendantIds(id);
+  const msg = descIds.length
+    ? `Excluir esta task e suas ${descIds.length} subtask(s)?`
+    : 'Excluir esta task?';
+  if (!confirm(msg)) return;
+  const remove = new Set([id, ...descIds]);
+  tasks = tasks.filter(t => !remove.has(t.id));
   setDirty(true);
   closeModal();
   renderTasks();
@@ -835,6 +889,7 @@ function openModal(id) {
   document.getElementById('m-status').value      = t.status || (t.done ? 'done' : 'active');
   document.getElementById('m-date').value        = t.targetDate || '';
   document.getElementById('m-desc-input').value  = t.description || '';
+  buildParentOptions(t.id, t.parentId || '');
   document.getElementById('m-meta').innerHTML = `
     <span class="modal-meta-item">Criada: ${fmtDate(t.createdAt)}</span>
     ${t.doneAt ? `<span class="modal-meta-item">Concluída: ${fmtDate(t.doneAt)}</span>` : ''}
@@ -855,6 +910,11 @@ function saveModalEdit(id) {
   t.priority    = document.getElementById('m-prio').value;
   t.targetDate  = document.getElementById('m-date').value;
   t.description = document.getElementById('m-desc-input').value.trim();
+  const newParent = document.getElementById('m-parent').value;
+  // guard against cycles (options already exclude self + descendants)
+  if (newParent !== id && !getDescendantIds(id).includes(newParent)) {
+    t.parentId = newParent;
+  }
   applyStatus(t, document.getElementById('m-status').value);
   setDirty(true);
   closeModal();
@@ -863,30 +923,42 @@ function saveModalEdit(id) {
 
 function closeModal() { document.getElementById('modal').classList.add('hidden'); activeId = null; }
 
+// Build the "parent" <select> excluding self + descendants (cycle-safe)
+function buildParentOptions(selfId, currentParent) {
+  const sel = document.getElementById('m-parent');
+  const banned = new Set([selfId, ...getDescendantIds(selfId)]);
+  const opts = ['<option value="">— (tarefa raiz)</option>'];
+  const walk = (parentId, depth) => {
+    getChildren(parentId).forEach(c => {
+      if (banned.has(c.id)) return;
+      const pad = '   '.repeat(depth);
+      opts.push(`<option value="${c.id}" ${c.id===currentParent?'selected':''}>${pad}${esc(c.title)}</option>`);
+      walk(c.id, depth + 1);
+    });
+  };
+  getRoots().forEach(r => {
+    if (banned.has(r.id)) return;
+    opts.push(`<option value="${r.id}" ${r.id===currentParent?'selected':''}>${esc(r.title)}</option>`);
+    walk(r.id, 1);
+  });
+  sel.innerHTML = opts.join('');
+}
+
 // ── Filtering / sorting
 
 const PRIO_ORD = { alta:0, media:1, baixa:2 };
 
-function getFiltered(done) {
+function matchesFilters(t) {
   const cat    = document.getElementById('fl-cat')?.value    || '';
   const prio   = document.getElementById('fl-prio')?.value   || '';
   const status = document.getElementById('fl-status')?.value || '';
   const search = (document.getElementById('fl-search')?.value || '').toLowerCase();
-  return tasks
-    .filter(t => {
-      if (t.done !== done) return false;
-      if (cat    && t.category !== cat)   return false;
-      if (prio   && t.priority !== prio)  return false;
-      if (status && (t.status||'active') !== status) return false;
-      if (search && !t.title.toLowerCase().includes(search) &&
-          !(t.description||'').toLowerCase().includes(search)) return false;
-      return true;
-    })
-    .sort((a, b) => {
-      let av = a[sortCol] ?? '', bv = b[sortCol] ?? '';
-      if (sortCol === 'priority') { av = PRIO_ORD[a.priority]; bv = PRIO_ORD[b.priority]; }
-      return av < bv ? -sortDir : av > bv ? sortDir : 0;
-    });
+  if (cat    && t.category !== cat)   return false;
+  if (prio   && t.priority !== prio)  return false;
+  if (status && (t.status||'active') !== status) return false;
+  if (search && !t.title.toLowerCase().includes(search) &&
+      !(t.description||'').toLowerCase().includes(search)) return false;
+  return true;
 }
 
 function sortBy(col) { sortDir = sortCol === col ? -sortDir : 1; sortCol = col; renderTasks(); }
@@ -894,16 +966,41 @@ function sortBy(col) { sortDir = sortCol === col ? -sortDir : 1; sortCol = col; 
 function toggleArchive() {
   showArchive = !showArchive;
   document.getElementById('archive-toggle').textContent = showArchive ? 'Ocultar concluídas' : 'Mostrar concluídas';
-  document.getElementById('archive-section').classList.toggle('hidden', !showArchive);
   renderTasks();
 }
 
-// ── Render
+// ── Tree helpers
+
+function getChildren(parentId) {
+  return tasks.filter(t => (t.parentId || '') === (parentId || ''));
+}
+function getRoots() {
+  const ids = new Set(tasks.map(t => t.id));
+  return tasks.filter(t => !t.parentId || !ids.has(t.parentId)); // true roots + orphans
+}
+function getDescendantIds(id) {
+  const out = [];
+  const stack = [id];
+  while (stack.length) {
+    const cur = stack.pop();
+    tasks.forEach(t => { if ((t.parentId || '') === cur) { out.push(t.id); stack.push(t.id); } });
+  }
+  return out;
+}
+function childProgress(t) {
+  const kids = getChildren(t.id);
+  if (!kids.length) return '';
+  const done = kids.filter(k => k.done).length;
+  return `<span class="child-prog ${done === kids.length ? 'cp-full' : ''}">${done}/${kids.length}</span>`;
+}
+function toggleCollapse(id) {
+  if (collapsed.has(id)) collapsed.delete(id); else collapsed.add(id);
+  renderTasks();
+}
+
+// ── Render (tree)
 
 function renderTasks() {
-  const open = getFiltered(false);
-  const done = getFiltered(true);
-
   const total = tasks.filter(t => !t.done).length;
   document.getElementById('open-count').textContent = `${total} aberta${total !== 1 ? 's' : ''}`;
 
@@ -915,38 +1012,61 @@ function renderTasks() {
     th.classList.toggle('sorted', col === sortCol);
   });
 
-  const openBody = document.getElementById('open-body');
-  openBody.innerHTML = open.length ? open.map(taskRow).join('') : '';
-  document.getElementById('empty-open').classList.toggle('hidden', open.length > 0);
+  const statusF = document.getElementById('fl-status')?.value || '';
+  const selfVisible = (t) => {
+    if (!matchesFilters(t)) return false;
+    if (statusF) return true;              // explicit status filter governs done/open
+    return showArchive || !t.done;
+  };
+  // A task renders if it is self-visible OR has any rendered descendant (keeps context).
+  const cache = {};
+  const isRendered = (t) => {
+    if (t.id in cache) return cache[t.id];
+    cache[t.id] = true; // guard against cycles
+    const r = selfVisible(t) || getChildren(t.id).some(isRendered);
+    cache[t.id] = r;
+    return r;
+  };
 
-  if (showArchive) {
-    const doneBody = document.getElementById('done-body');
-    doneBody.innerHTML = done.length ? done.map(taskRowDone).join('') : '';
-    document.getElementById('empty-done').classList.toggle('hidden', done.length > 0);
-  }
+  const sortSiblings = (arr) => arr.slice().sort((a, b) => {
+    let av = a[sortCol] ?? '', bv = b[sortCol] ?? '';
+    if (sortCol === 'priority') { av = PRIO_ORD[a.priority]; bv = PRIO_ORD[b.priority]; }
+    return av < bv ? -sortDir : av > bv ? sortDir : 0;
+  });
+
+  const rows = [];
+  const walk = (list, depth) => {
+    sortSiblings(list).forEach(t => {
+      if (!isRendered(t)) return;
+      rows.push(renderRow(t, depth));
+      if (!collapsed.has(t.id)) walk(getChildren(t.id), depth + 1);
+    });
+  };
+  walk(getRoots(), 0);
+
+  document.getElementById('open-body').innerHTML = rows.join('');
+  document.getElementById('empty-open').classList.toggle('hidden', rows.length > 0);
 }
 
-function taskRow(t) {
+function renderRow(t, depth) {
   const days = daysUntil(t.targetDate);
-  return `<tr>
+  const hasKids = getChildren(t.id).length > 0;
+  const caret = hasKids
+    ? `<button class="caret" onclick="toggleCollapse('${t.id}')">${collapsed.has(t.id) ? '▸' : '▾'}</button>`
+    : `<span class="caret-spacer"></span>`;
+  return `<tr class="${t.done ? 'done-row' : ''}${depth ? ' child-row' : ''}">
     <td><input type="checkbox" class="task-check" ${t.done?'checked':''} onchange="toggleDone('${t.id}')"></td>
     <td>${prioBadge(t.priority)}</td>
     <td>${catBadge(t.category)}</td>
     <td>${statusBadge(t.status)}</td>
-    <td><button class="title-btn" onclick="openModal('${t.id}')" title="${esc(t.title)}">${esc(t.title)}</button></td>
+    <td class="title-cell" style="padding-left:${depth * 22 + 11}px">
+      ${caret}
+      <button class="title-btn ${t.done?'striked':''}" onclick="openModal('${t.id}')" title="${esc(t.title)}">${esc(t.title)}</button>
+      ${childProgress(t)}
+      <button class="add-sub" title="Adicionar subtask" onclick="startSubtask('${t.id}')">＋</button>
+    </td>
     <td class="${dcClass(days)}">${t.targetDate ? fmtDate(t.targetDate)+daysLbl(days) : '—'}</td>
     <td class="dc">${fmtDate(t.createdAt)}</td>
-    <td><button class="icon-btn" onclick="deleteTask('${t.id}')">✕</button></td>
-  </tr>`;
-}
-
-function taskRowDone(t) {
-  return `<tr class="done-row">
-    <td><input type="checkbox" class="task-check" checked onchange="toggleDone('${t.id}')"></td>
-    <td>${prioBadge(t.priority)}</td><td>${catBadge(t.category)}</td><td>${statusBadge(t.status)}</td>
-    <td><button class="title-btn striked" onclick="openModal('${t.id}')">${esc(t.title)}</button></td>
-    <td class="dc">${t.targetDate ? fmtDate(t.targetDate) : '—'}</td>
-    <td class="dc">${t.doneAt ? fmtDate(t.doneAt) : '—'}</td>
     <td><button class="icon-btn" onclick="deleteTask('${t.id}')">✕</button></td>
   </tr>`;
 }
