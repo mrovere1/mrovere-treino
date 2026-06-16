@@ -1,0 +1,559 @@
+<!DOCTYPE html><script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Attention Today",
+  "schemaVersion": 1,
+  "description": "Live daily attention page for Marcelo — shows today's calendar events (live from Google Calendar), priority emails, open meeting action items from Granola, and Slack mentions. Calendar and Slack refresh on demand via buttons.",
+  "mcpTools": [
+    "mcp__8ff871fe-2c2f-4c8f-98f5-445dfdb64d1d__list_events",
+    "mcp__e8984953-dcc8-4b66-bcb6-593ae85edb8d__slack_search_public_and_private"
+  ],
+  "mcpServerNames": [
+    "Google Calendar",
+    "Slack"
+  ]
+}
+</script>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Attention Today — Tenable</title>
+<style>
+:root{
+  --midnight:#041E42; --mid80:#1A3560; --mid60:#2E4D7A;
+  --blue:#00A1D5; --blue-light:#E0F5FB;
+  --gray:#8595A2; --gray-light:#D6DDE3;
+  --surface:#F4F6F8; --white:#FFFFFF;
+  --success:#00C48C; --warning:#F5A623; --danger:#E8294C;
+  --tp:#041E42; --ts:#5A6A7A; --tm:#8595A2;
+  --r:10px; --sh:0 2px 12px rgba(4,30,66,.10);
+  --shc:0 1px 4px rgba(4,30,66,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size:13px;background:var(--surface);color:var(--tp);min-height:100vh}
+.topbar{background:var(--midnight);padding:0 18px;height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.tbl{display:flex;align-items:center;gap:12px}
+.diamond{width:20px;height:20px;background:var(--blue);transform:rotate(45deg);border-radius:3px;flex-shrink:0}
+.brand{color:#fff;font-size:15px;font-weight:800;letter-spacing:-.3px}
+.divider{width:1px;height:18px;background:rgba(255,255,255,.2)}
+.tbtitle{color:rgba(255,255,255,.7);font-size:12px;font-weight:500}
+.tbr{display:flex;align-items:center;gap:8px}
+.tbdate{color:rgba(255,255,255,.55);font-size:11px}
+.tbbtn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;transition:all .15s}
+.tbbtn:hover{background:rgba(255,255,255,.2)}
+.avatar{background:var(--blue);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.main{padding:14px 16px;max-width:1200px;margin:0 auto}
+.pbanner{background:linear-gradient(135deg,#E8294C 0%,#C41535 100%);border-radius:var(--r);padding:11px 15px;margin-bottom:12px;display:flex;align-items:center;gap:10px;box-shadow:0 3px 12px rgba(232,41,76,.3)}
+.pbanner-icon{font-size:18px}
+.pbanner-title{color:#fff;font-weight:700;font-size:13px}
+.pbanner-items{display:flex;gap:7px;flex-wrap:wrap;margin-top:3px}
+.ppill{background:rgba(255,255,255,.2);color:#fff;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:500}
+.stats{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.scard{background:#fff;border:1px solid var(--gray-light);border-radius:8px;padding:10px 15px;display:flex;align-items:center;gap:10px;flex:1;min-width:110px;box-shadow:var(--shc)}
+.sicon{font-size:20px}
+.sval{font-size:20px;font-weight:800;color:var(--tp)}
+.slbl{font-size:10px;color:var(--tm);margin-top:1px}
+.sdelta{font-size:10px;color:var(--danger);margin-top:2px}
+.motive{background:linear-gradient(135deg,var(--midnight) 0%,var(--mid60) 100%);border-radius:8px;padding:11px 16px;display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.motive-text{color:rgba(255,255,255,.85);font-size:12px;font-style:italic;line-height:1.5}
+.motive-text strong{color:#fff;font-style:normal}
+.sc{background:#fff;border:1px solid var(--gray-light);border-radius:var(--r);overflow:hidden;box-shadow:var(--shc)}
+.sh{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;border-bottom:1px solid var(--gray-light);background:var(--midnight)}
+.shl{display:flex;align-items:center;gap:7px}
+.st{color:#fff;font-weight:700;font-size:13px}
+.scnt{background:var(--blue);color:#fff;border-radius:20px;padding:1px 7px;font-size:10px;font-weight:700}
+.sb{padding:11px 13px}
+.srfr{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);border-radius:5px;padding:3px 8px;font-size:10px;cursor:pointer;transition:all .15s}
+.srfr:hover{background:rgba(255,255,255,.25)}
+.grid-top{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.grid-week{margin-bottom:12px}
+.grid-bot{display:grid;grid-template-columns:1.2fr 1fr;gap:12px;margin-bottom:12px}
+.ai{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #F0F3F5}
+.ai:last-child{border-bottom:none;padding-bottom:0}
+.aitime{font-size:11px;font-weight:700;color:var(--ts);min-width:48px;padding-top:1px;font-family:monospace}
+.ainame{font-weight:600;font-size:12px;color:var(--tp);margin-bottom:3px}
+.aimeta{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.alink{display:inline-flex;align-items:center;gap:3px;color:var(--blue);font-size:11px;text-decoration:none;font-weight:500}
+.alink:hover{text-decoration:underline}
+.aprep{background:#FFF8E6;border-left:2px solid var(--warning);border-radius:0 4px 4px 0;padding:4px 7px;font-size:11px;color:#7A5200;margin-top:4px}
+.flag{display:inline-flex;align-items:center;gap:3px;border-radius:4px;padding:1px 5px;font-size:10px;font-weight:600}
+.f-urgent{background:#FFE8EC;color:#C41535}
+.f-back{background:#FFF3D9;color:#8A5500}
+.f-ext{background:#E6F6FC;color:#005F8A}
+.f-prep{background:#EEF0FF;color:#3A3FCC}
+.f-conflict{background:#FFE8EC;color:#C41535}
+.ei{padding:8px 0;border-bottom:1px solid #F0F3F5;display:flex;gap:9px;align-items:flex-start}
+.ei:last-child{border-bottom:none;padding-bottom:0}
+.edot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.dh{background:var(--danger)} .dm{background:var(--warning)} .dl{background:var(--success)}
+.efrom{font-weight:700;font-size:12px;color:var(--tp)}
+.esubj{font-size:12px;color:var(--ts);margin:1px 0}
+.esum{font-size:11px;color:var(--tm);line-height:1.5}
+.ehist{background:var(--surface);border-radius:5px;padding:5px 7px;font-size:11px;color:var(--tm);margin-top:5px;line-height:1.4}
+.ehlbl{font-weight:600;color:var(--ts)}
+.eact{display:inline-flex;align-items:center;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;margin-top:5px;cursor:pointer}
+.ea-r{background:#E0F5FB;color:#005F8A} .ea-a{background:#F0F3F5;color:#5A6A7A} .ea-w{background:#FFF8E6;color:#8A5500}
+.wgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.dcol{background:#fff;border:1px solid var(--gray-light);border-radius:8px;overflow:hidden}
+.dhdr{background:var(--mid80);padding:7px 9px;text-align:center}
+.dhdr.today{background:var(--blue)}
+.dname{color:rgba(255,255,255,.7);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.ddate{color:#fff;font-size:14px;font-weight:800;margin-top:1px}
+.dbody{padding:7px}
+.dev{border-radius:5px;padding:4px 6px;margin-bottom:4px;font-size:10px;border-left:2px solid}
+.dev:last-child{margin-bottom:0}
+.dev-i{background:#F4F6F8;border-color:var(--gray);color:var(--ts)}
+.dev-e{background:#E0F5FB;border-color:var(--blue);color:#005F8A}
+.dev-u{background:#FFE8EC;border-color:var(--danger);color:#C41535}
+.dev-p{background:#F0FBF6;border-color:var(--success);color:#005F3A}
+.devtime{font-weight:700;display:block}
+.devname{display:block;margin-top:1px;line-height:1.3}
+.dempty{text-align:center;padding:12px 6px;color:var(--tm);font-size:11px}
+.pg{margin-bottom:11px}
+.pg:last-child{margin-bottom:0}
+.plbl{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.plbl-h{color:var(--danger)} .plbl-m{color:var(--warning)} .plbl-l{color:var(--success)}
+.ait{display:flex;gap:7px;align-items:flex-start;padding:7px 9px;border-radius:7px;border:1px solid #EEF0F2;margin-bottom:5px;background:#fff;transition:all .15s;cursor:default}
+.ait:last-child{margin-bottom:0}
+.ait.done{opacity:.45}
+.ait.done .aititle{text-decoration:line-through}
+.ait.new-today{border-color:var(--blue);background:#F0FAFF}
+.achk{width:16px;height:16px;border-radius:4px;border:2px solid var(--gray-light);cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:10px}
+.achk.chk{background:var(--success);border-color:var(--success);color:#fff}
+.aititle{font-size:12px;font-weight:600;color:var(--tp);margin-bottom:2px}
+.aimeta2{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.atag{background:var(--surface);color:var(--ts);border-radius:3px;padding:1px 5px;font-size:10px}
+.at-p{background:#E6F6FC;color:#005F8A} .at-e{background:#EEF0FF;color:#3A3FCC}
+.at-f{background:#FFF3D9;color:#8A5500} .at-r{background:#F0FBF6;color:#005F3A}
+.at-new{background:#E0F5FB;color:#005F8A;font-weight:700}
+.adue{font-size:10px;color:var(--tm)} .adue-u{color:var(--danger);font-weight:600}
+.asrc{font-size:10px;color:var(--tm)}
+.inh{background:#EEF0FF;color:#3A3FCC;border-radius:3px;padding:1px 5px;font-size:9px;font-weight:700}
+.new-badge{background:var(--blue);color:#fff;border-radius:3px;padding:1px 5px;font-size:9px;font-weight:700}
+.ftabs{display:flex;gap:5px;margin-bottom:9px;flex-wrap:wrap}
+.ftab{border:1px solid var(--gray-light);border-radius:5px;padding:3px 9px;font-size:11px;cursor:pointer;background:#fff;color:var(--ts);transition:all .15s}
+.ftab.active{background:var(--midnight);border-color:var(--midnight);color:#fff;font-weight:600}
+.si{padding:7px 0;border-bottom:1px solid #F0F3F5;display:flex;gap:7px;align-items:flex-start}
+.si:last-child{border-bottom:none;padding-bottom:0}
+.savt{width:28px;height:28px;border-radius:6px;background:var(--mid60);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sch{font-size:10px;color:var(--blue);font-weight:600}
+.ssndr{font-weight:700;font-size:12px}
+.stxt{font-size:12px;color:var(--ts);line-height:1.4;margin:1px 0}
+.stime{font-size:10px;color:var(--tm)}
+.sunrd{background:var(--danger);color:#fff;border-radius:20px;padding:1px 6px;font-size:9px;font-weight:700}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--gray-light);border-radius:99px}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tbl">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="diamond"></div>
+      <span class="brand">Tenable</span>
+    </div>
+    <div class="divider"></div>
+    <span class="tbtitle">Attention Today — Marcelo Rovere</span>
+  </div>
+  <div class="tbr">
+    <span class="tbdate" id="topDate"></span>
+    <button class="tbbtn" onclick="renderAll()">↻ Refresh</button>
+    <div class="avatar">MR</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="pbanner" id="pbanner">
+    <span class="pbanner-icon">⚡</span>
+    <div>
+      <div class="pbanner-title">Atenção Imediata</div>
+      <div class="pbanner-items" id="pitems"></div>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="motive">
+    <span style="font-size:20px">🛡️</span>
+    <div class="motive-text" id="motive"></div>
+  </div>
+
+  <div class="grid-top">
+    <div class="sc">
+      <div class="sh">
+        <div class="shl"><span style="font-size:15px">📅</span><span class="st">Agenda de Hoje</span><span class="scnt" id="agCnt">0</span></div>
+        <button class="srfr" onclick="renderAgenda()">↻ Ao vivo</button>
+      </div>
+      <div class="sb" id="agBody"></div>
+    </div>
+    <div class="sc">
+      <div class="sh">
+        <div class="shl"><span style="font-size:15px">📬</span><span class="st">E-mails Prioritários</span><span class="scnt" id="emCnt">0</span></div>
+        <button class="srfr" onclick="toggleHist()">📋 Histórico</button>
+      </div>
+      <div class="sb" id="emBody"></div>
+    </div>
+  </div>
+
+  <div class="grid-week">
+    <div class="sc">
+      <div class="sh">
+        <div class="shl"><span style="font-size:15px">🗓️</span><span class="st">Agenda da Semana</span><span class="scnt" id="wkCnt">0</span></div>
+        <button class="srfr" onclick="renderWeek()">↻ Ao vivo</button>
+      </div>
+      <div class="sb"><div class="wgrid" id="wkGrid"></div></div>
+    </div>
+  </div>
+
+  <div class="grid-bot">
+    <div class="sc">
+      <div class="sh">
+        <div class="shl"><span style="font-size:15px">✅</span><span class="st">Action Items</span><span class="scnt" id="acCnt">0</span></div>
+        <div style="display:flex;gap:5px">
+          <button class="srfr" onclick="setAF('all')">Todos</button>
+          <button class="srfr" onclick="setAF('open')">Abertos</button>
+          <button class="srfr" onclick="setAF('done')">Feitos</button>
+        </div>
+      </div>
+      <div class="sb">
+        <div class="ftabs" id="ftabs"></div>
+        <div id="acBody"></div>
+      </div>
+    </div>
+    <div class="sc">
+      <div class="sh">
+        <div class="shl"><span style="font-size:15px">💬</span><span class="st">Slack</span><span class="scnt" id="slCnt">0</span></div>
+        <button class="srfr" onclick="renderSlack()">↻ Ao vivo</button>
+      </div>
+      <div class="sb" id="slBody"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA — Morning Brief 16/06/2026 — atualizado 08:15 BRT (6ª execução) ─────
+const TODAY = new Date();
+document.getElementById('topDate').textContent = TODAY.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+const agendaItems = [
+  {time:"14:30",title:"Médico",flags:[],prep:null,link:null,attendees:null},
+  {time:"15:00",title:"Channel Team Meeting",flags:["conflict"],prep:"Alinhamento semanal Channel SE LatAm — organizado por fxavier. Verificar agenda antes.",link:null,attendees:"fxavier + time LatAm SE"},
+  {time:"15:00",title:"LatAm SEs - Bi-Weekly",flags:["conflict"],prep:"⚠️ Conflito direto com Channel Team Meeting — ambas às 15:00. Decidir qual priorizar.",link:"https://tenable.zoom.us/j/2833289929",attendees:"adutto + 13 SEs LatAm"},
+  {time:"16:00",title:"Channel & SP-PR Teams",flags:["conflict"],prep:"30 min com moswaldo, lsawada, driera.",link:null,attendees:"moswaldo, lsawada, driera"},
+  {time:"16:00",title:"Aula Espanhol",flags:["conflict"],prep:"⚠️ Conflito com Channel & SP-PR Teams — ambas às 16:00.",link:"https://us06web.zoom.us/j/81043324094",attendees:null},
+  {time:"17:00",title:"Canais Brasil Sync Meeting",flags:[],prep:"Sync semanal de canais com Moswaldo.",link:"https://tenable.zoom.us/j/93443839493",attendees:"moswaldo"},
+];
+
+const weekData = [
+  {day:"Ter",date:"16/06",isToday:true,events:[
+    {t:"14:30",n:"Médico (pessoal)",type:"p"},
+    {t:"15:00",n:"⚠️ Channel Team Meeting",type:"i",u:true},
+    {t:"15:00",n:"⚠️ LatAm SEs Bi-Weekly",type:"i",u:true},
+    {t:"16:00",n:"⚠️ Channel & SP-PR Teams",type:"i",u:true},
+    {t:"16:00",n:"⚠️ Aula Espanhol",type:"p",u:true},
+    {t:"17:00",n:"Canais Brasil Sync",type:"i"},
+  ]},
+  {day:"Qua",date:"17/06",isToday:false,events:[
+    {t:"—",n:"Visita Tdec in-loco (dia todo)",type:"e"},
+    {t:"11:00",n:"VM→EM Webinar",type:"i"},
+    {t:"12:00",n:"SE T1 Enablement",type:"i"},
+    {t:"13:00",n:"Guardian Webinar",type:"i"},
+    {t:"16:00",n:"Identity Exposure OH",type:"i"},
+  ]},
+  {day:"Qui",date:"18/06",isToday:false,events:[
+    {t:"10:00",n:"Ocupado",type:"i"},
+    {t:"12:00",n:"SE All Hands",type:"i"},
+    {t:"14:00",n:"Tenable Day TDec",type:"e"},
+    {t:"17:00",n:"CCR OT — Alinhamento",type:"i"},
+    {t:"17:15",n:"Hexa Happy Hour",type:"i"},
+    {t:"18:00",n:"ExposureCon POA",type:"e"},
+  ]},
+  {day:"Sex",date:"19/06",isToday:false,events:[
+    {t:"08:00",n:"Aula",type:"p"},
+    {t:"14:00",n:"Aula Espanhol",type:"p"},
+  ]},
+  {day:"Seg",date:"22/06",isToday:false,events:[
+    {t:"10:00",n:"Brazil Weekly Call",type:"i"},
+    {t:"11:00",n:"Channel SE Team Mtg",type:"i"},
+    {t:"14:00",n:"Brazil SE's Semanal",type:"i"},
+    {t:"14:00",n:"Cloud Security OH",type:"i"},
+    {t:"16:00",n:"Aula Espanhol",type:"p"},
+    {t:"18:00",n:"Aula Zuma",type:"p"},
+  ]},
+];
+
+const emailItems = [
+  {priority:"medium",from:"Jefferson.carvalho@teletex.com",subject:"[EXTERNAL] TENABLE | Treinamento para Certificação",summary:"5 analistas Teletex precisam confirmar registro no Tenable University com partner ID 298935. Marcelo instruiu em 11/06 — sem resposta em 5 dias.",history:"Jefferson enviou lista de 5 e-mails em 10/06 (naiara.silva, marcelo.martins, pedro.silva, tomas.graeff, rafael.rodrigues @teletex.com). Marcelo respondeu pedindo partner ID 298935 para registro via Teletex.",action:"r"},
+  {priority:"low",from:"prime@tenable.com",subject:"Asset Digest | Get Updated On All Things New in Assets",summary:"Digest semanal de novidades em assets Tenable (7-14 Jun). Conteúdo: plays CrowdStrike, atualizações de dashboard.",history:"Newsletter recorrente semanal.",action:"a"},
+  {priority:"low",from:"no-reply@happeo.com",subject:"Daily Digest: One.Tenable",summary:"Celebração do Juneteenth e nova liderança executiva no Black@Tenable.",history:"Newsletter interna diária.",action:"a"},
+];
+
+let actionItems = [
+  // ── 🆕 NOVOS DO DIA ──
+  {id:"task-20260616-001",title:"ACTAR — Enviar docs Hexa/MCP/AI portfolio para Paula",priority:"high",dueDate:"HOJE",status:"open",source:"granola",partner:"ACTAR",customer:null,tags:["partner","follow-up","ai-security"],summary:"Compromisso assumido ontem (15/06) na reunião ACTAR AI Security. Enviar documentação do Hexa, MCP docs e portfolio de AI para Paula Matos. Também: adicionar contatos ACTAR ao grupo de WhatsApp.",inherited:false},
+  {id:"task-20260616-002",title:"AEB/Future — Engajar SE para roadmap Tenable One",priority:"high",dueDate:"20/06",status:"open",source:"granola",partner:"Future",customer:"AEB",tags:["partner","follow-up","tenable-one"],summary:"Compromisso de ontem (15/06). Engajar SE (Matheus ou Zaparoli) com Talles para apresentar roadmap TONE ao cliente AEB. Leandro (Future) deve contatar cliente esta semana.",inherited:false},
+  {id:"task-20260616-003",title:"Teletex — Verificar registro analistas com partner ID 298935",priority:"medium",dueDate:"18/06",status:"open",source:"gmail",partner:"Teletex",customer:null,tags:["partner","enablement","certificacao"],summary:"5 analistas Teletex devem registrar no Tenable University com partner ID 298935. Sem confirmação desde instrução de 11/06 (5 dias).",inherited:false},
+  // ── HIGH ──
+  {id:"task-20260612-001",title:"AEB/Future — Validar migração para TONE (1.050 licenças)",priority:"high",dueDate:"HOJE",status:"open",source:"gmail",partner:"Future / TD Synnex",customer:"AEB",tags:["partner","follow-up"],summary:"📌 HERDADO. Reunião 15/06 realizada — consolidar próximos passos com parceiro.",inherited:true},
+  {id:"task-20260609-003",title:"NFR AI Exposure — Confirmar com Jason Clark",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partner:null,customer:null,tags:["internal","follow-up"],summary:"📌 HERDADO. VENCIDO. Thread resolvida por Rob+Seif. Confirmar se Jason precisa de algo mais.",inherited:true},
+  {id:"task-20260609-005",title:"Mythos Update — Ler comunicado confidencial (CRO)",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partner:null,customer:null,tags:["internal","confidential"],summary:"📌 HERDADO. VENCIDO. Comunicado confidencial do CRO Dino. Ler e arquivar.",inherited:true},
+  {id:"task-20260607-001",title:"Intercom (Egito) — Licença NFR expirada",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partner:"Intercom",customer:null,tags:["partner","follow-up","nfr"],summary:"📌 HERDADO. VENCIDO. Verificar status da licença NFR no portal.",inherited:true},
+  {id:"task-20260603-001",title:"Atualizar templates certificação (A/B/C + Guardian)",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partner:null,customer:null,tags:["internal","enablement"],summary:"📌 HERDADO. VENCIDO. Moswaldo aguardando templates para outreach.",inherited:true},
+  {id:"task-20260603-004",title:"UNES — Comitê de aprovação (atrasado desde 09/06)",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partner:null,customer:"UNES",tags:["follow-up","pipeline"],summary:"📌 HERDADO. VENCIDO há 7 dias. Contatar parceiro urgentemente.",inherited:true},
+  {id:"task-20260603-002",title:"GitHub PAT — Migrar para fine-grained token",priority:"high",dueDate:"VENCIDO",status:"open",source:"slack",partner:null,customer:null,tags:["internal","admin"],summary:"📌 HERDADO. VENCIDO. Tokens clássicos serão desabilitados.",inherited:true},
+  {id:"task-20260602-001",title:"Completar MDF Training obrigatório no Prime",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partner:null,customer:null,tags:["internal","enablement"],summary:"📌 HERDADO. VENCIDO. Completar MDF Training no Prime > Required Trainings.",inherited:true},
+  {id:"task-20260601-001",title:"Confirmar credenciais demo Dfense Security",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partner:"Dfense Security",customer:null,tags:["partner","follow-up","demo"],summary:"📌 HERDADO. VENCIDO. Dfense Security aguarda credenciais demo Tenable One.",inherited:true},
+  {id:"task-20260601-005",title:"CNA — Enviar e-mail formal para Thales",priority:"high",dueDate:null,status:"open",source:"granola",partner:"CNA",customer:null,tags:["partner","follow-up"],summary:"📌 HERDADO. E-mail Thales: licença 0.5/identidade + troca admin Luciano → Gabriel.",inherited:true},
+  {id:"task-20260601-006",title:"OLX — Responder Daniel Sant'Anna (deal reg vencido)",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partner:"e-Safer",customer:"OLX",tags:["partner","follow-up"],summary:"📌 HERDADO. VENCIDO. Responder Daniel com contexto competitivo.",inherited:true},
+  // ── MEDIUM ──
+  {id:"task-20260609-001",title:"BNDES/Kryptus — Segmentar relatórios PDF por tags",priority:"medium",dueDate:null,status:"open",source:"slack+granola",partner:"Kryptus",customer:"BNDES",tags:["follow-up","prep"],summary:"📌 HERDADO. Ticket fechado, novo plano: segmentar PDFs por tags. Investigar permissões GSEQ Manager.",inherited:true},
+  {id:"task-20260609-002",title:"NetSafe Corp — Verificar credenciais demo Tenable One",priority:"medium",dueDate:"VENCIDO",status:"open",source:"gmail",partner:"NetSafe Corp",customer:null,tags:["partner","follow-up","demo"],summary:"📌 HERDADO. VENCIDO. Verificar se Paulo Sousa recebeu credenciais demo.",inherited:true},
+  {id:"task-20260609-004",title:"NFR OT Exposure (Mtechpro) — Confirmar recebimento",priority:"medium",dueDate:"VENCIDO",status:"open",source:"gmail",partner:"Mtechpro",customer:null,tags:["partner","follow-up","nfr"],summary:"📌 HERDADO. VENCIDO. Confirmar com Brendan recebimento da licença OT.",inherited:true},
+  {id:"task-20260607-002",title:"CGI NFR License upgrade — Acompanhar resolução",priority:"medium",dueDate:null,status:"open",source:"gmail",partner:"CGI",customer:null,tags:["partner","follow-up","nfr"],summary:"📌 HERDADO. CGI precisa mais assets NFR para validar ASM antes de PO.",inherited:true},
+  {id:"task-20260603-003",title:"NetSecure SP — Confirmar participação (HOJE 16/jun)",priority:"medium",dueDate:"HOJE",status:"open",source:"granola",partner:null,customer:null,tags:["partner","enablement"],summary:"📌 HERDADO. ⚠️ EVENTO É HOJE — confirmar participação do time channel urgente.",inherited:true},
+  {id:"task-20260603-005",title:"TJRJ — Acompanhar avaliação da contraproposta",priority:"medium",dueDate:null,status:"open",source:"granola",partner:null,customer:"TJRJ",tags:["follow-up","pipeline"],summary:"📌 HERDADO. TJRJ: contraproposta enviada, aguardando avaliação.",inherited:true},
+  {id:"task-20260603-006",title:"SEFAZ Acre — Resolver bloqueio de crédito R$12k",priority:"medium",dueDate:null,status:"open",source:"granola",partner:null,customer:"SEFAZ Acre",tags:["follow-up","pipeline"],summary:"📌 HERDADO. Bloqueio de crédito R$12k do parceiro.",inherited:true},
+  {id:"task-20260603-007",title:"CSPM deal R$35k — Obter doc classificação IAM",priority:"medium",dueDate:null,status:"open",source:"granola",partner:null,customer:null,tags:["follow-up","pipeline"],summary:"📌 HERDADO. IAM Foundation vs CIEM bloqueando deal — pegar doc com Chris Edison.",inherited:true},
+  {id:"task-20260602-002",title:"Acompanhar PoC Anima Educação (e-Safer)",priority:"medium",dueDate:null,status:"open",source:"gmail",partner:"e-Safer",customer:"Anima Educação",tags:["partner","follow-up"],summary:"📌 HERDADO. Verificar se há ação pendente de Marcelo.",inherited:true},
+  {id:"task-20260602-003",title:"Submeter despesas midyear",priority:"medium",dueDate:"30/06",status:"open",source:"granola",partner:null,customer:null,tags:["internal","admin"],summary:"📌 HERDADO. Submeter despesas antes de 30/06 (14 dias restantes).",inherited:true},
+  {id:"task-20260602-004",title:"Atualizar Guardian Program (adicionar/remover)",priority:"medium",dueDate:null,status:"open",source:"granola",partner:null,customer:null,tags:["internal","admin"],summary:"📌 HERDADO. Guardian: adicionar novos, remover Cristina Rios (Wexar).",inherited:true},
+  {id:"task-20260602-005",title:"BB EntraID — Acompanhar configuração de roles",priority:"medium",dueDate:null,status:"open",source:"granola",partner:null,customer:"Banco do Brasil",tags:["follow-up"],summary:"📌 HERDADO. BB: roles, AD, redirect URL. Reativar require assignment antes de produção.",inherited:true},
+  {id:"task-20260601-009",title:"CNA — Recriar conexão AD com restrição de OUs",priority:"medium",dueDate:null,status:"open",source:"granola",partner:"CNA",customer:null,tags:["partner","follow-up"],summary:"📌 HERDADO. Após e-mail Thales: recriar AD CNA com OUs restritas.",inherited:true},
+  {id:"task-20260601-010",title:"NBC Bank — Agendar follow-up técnico",priority:"medium",dueDate:null,status:"open",source:"granola",partner:null,customer:"NBC Bank",tags:["follow-up"],summary:"📌 HERDADO. Agendar follow-up técnico (Tenable.sc, Log4j, VPN, AI/ML).",inherited:true},
+  // ── LOW ──
+  {id:"task-20260607-003",title:"Ler email Dino — recursos CrowdStrike battlecard",priority:"low",dueDate:null,status:"open",source:"gmail",partner:null,customer:null,tags:["enablement","internal"],summary:"📌 HERDADO. Email Dino: wins e materiais vs CrowdStrike.",inherited:true},
+  {id:"task-20260607-004",title:"Demo One/Claude — Enablement com parceiros",priority:"low",dueDate:null,status:"open",source:"gmail",partner:"Arrow",customer:null,tags:["enablement","partner"],summary:"📌 HERDADO. Claude+T1 já funciona. Oportunidade de enablement técnico.",inherited:true},
+  {id:"task-20260601-014",title:"Verificar cobertura parceiros Exposure Con26",priority:"low",dueDate:null,status:"open",source:"gmail",partner:null,customer:null,tags:["enablement","partner"],summary:"📌 HERDADO. Mobilizar parceiros BSB/POA/CWB para preencher vagas.",inherited:true},
+  {id:"task-20260603-008",title:"Embraer — Investigar domain scanning não autorizado",priority:"low",dueDate:null,status:"open",source:"granola",partner:null,customer:"Embraer",tags:["follow-up"],summary:"📌 HERDADO. Investigar domain scanning via Coral Logics.",inherited:true},
+  {id:"task-20260613-001",title:"RSVP — ToT Exposure Edition SP (24/09)",priority:"low",dueDate:"24/09",status:"open",source:"gmail",partner:null,customer:null,tags:["enablement"],summary:"📌 HERDADO. Confirmar presença no evento São Paulo, 24/09.",inherited:true},
+  {id:"task-20260613-002",title:"RSVP — Channel SE Team Meeting (recorrente)",priority:"low",dueDate:"VENCIDO",status:"open",source:"gmail",partner:null,customer:null,tags:["internal"],summary:"📌 HERDADO. Confirmar presença no novo convite recorrente.",inherited:true},
+  // ── DONE ──
+  {id:"task-20260601-013",title:"Preparar dúvidas MDF para AMA session (09/jun)",priority:"low",dueDate:"09/06",status:"done",source:"calendar",partner:null,customer:null,tags:["internal","prep"],summary:"Done — evento AMA MDF (09/06) já ocorreu.",inherited:true},
+  {id:"task-20260601-012",title:"Revisar T1 Spring Enablement Guide (10/jun)",priority:"low",dueDate:"10/06",status:"done",source:"calendar",partner:null,customer:null,tags:["enablement"],summary:"Done — call SE T1 Enablement (10/06) já ocorreu.",inherited:true},
+  {id:"task-20260601-008",title:"Usar deck VM→EM no Canais Brasil Sync (02/jun)",priority:"medium",dueDate:"02/06",status:"done",source:"gmail",partner:null,customer:null,tags:["enablement","partner"],summary:"Done — apresentado no Canais Brasil Sync 02/06.",inherited:true},
+  {id:"task-20260601-011",title:"Prep visita Tdec in-loco (03/jun)",priority:"medium",dueDate:"03/06",status:"done",source:"calendar",partner:"iBliss",customer:"Grupo CCR",tags:["partner","prep"],summary:"Done — visita Tdec in-loco 03/06 concluída.",inherited:true},
+];
+
+const slackItems = [];
+
+const motives = [
+  "O parceiro que você capacitou hoje fecha o deal que você <strong>não conseguiria sozinho amanhã.</strong>",
+  "Em cybersecurity, <strong>visibilidade não é opcional — é o ponto de partida.</strong> Cada parceiro capacitado hoje protege centenas de organizações amanhã.",
+  "Channel sales é sobre <strong>multiplicar impacto através de outros.</strong> Cada enablement que você entrega tem efeito cascata no ecossistema.",
+  "<strong>O exposure gap existe porque ninguém estava olhando.</strong> Você é o que faz a diferença entre saber e descobrir tarde demais.",
+  "<strong>O canal que você nutre hoje</strong> é a vantagem competitiva que nenhum adversário consegue copiar amanhã.",
+  "Você nunca vai sair vitorioso de uma situação se permanecer negativo o tempo todo. — <strong>Charles Chaplin</strong>",
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let showHist = false;
+let af = 'all';
+let tf = 'all';
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderAll(){renderBanner();renderStats();renderMotive();renderAgenda();renderEmails();renderWeek();renderActions();renderSlack();}
+
+function renderBanner(){
+  const conflicts = agendaItems.filter(a=>a.flags.includes('conflict'));
+  const newToday = actionItems.filter(a=>!a.inherited&&a.status==='open');
+  const hi = actionItems.filter(a=>a.priority==='high'&&a.status==='open'&&!a.inherited);
+  const items=[
+    ...conflicts.slice(0,2).map(a=>`⚡ ${a.time} ${a.title} (conflito)`),
+    ...newToday.map(a=>a.title),
+    ...hi.slice(0,2).map(a=>a.title)
+  ].filter((v,i,a)=>a.indexOf(v)===i).slice(0,6);
+  if(!items.length){document.getElementById('pbanner').style.display='none';return;}
+  document.getElementById('pbanner').style.display='flex';
+  document.getElementById('pitems').innerHTML=items.map(i=>`<span class="ppill">${i}</span>`).join('');
+}
+
+function renderStats(){
+  const open=actionItems.filter(a=>a.status==='open').length;
+  const hi=actionItems.filter(a=>a.priority==='high'&&a.status==='open').length;
+  const inh=actionItems.filter(a=>a.inherited&&a.status==='open').length;
+  const newT=actionItems.filter(a=>!a.inherited&&a.status==='open').length;
+  document.getElementById('stats').innerHTML=[
+    {icon:"📅",val:agendaItems.length,lbl:"Reuniões hoje",d:"⚠️ 2 conflitos: 15h e 16h"},
+    {icon:"📬",val:emailItems.length,lbl:"E-mails relevantes",d:"1 ação: follow-up Teletex"},
+    {icon:"✅",val:open,lbl:"Actions abertas",d:`${hi} high | ${newT} novos hoje | ${inh} herdadas`},
+    {icon:"💬",val:slackItems.filter(s=>s.unread).length,lbl:"Slack pendente",d:"✅ Sem menções urgentes"},
+  ].map(s=>`<div class="scard"><span class="sicon">${s.icon}</span><div><div class="sval">${s.val}</div><div class="slbl">${s.lbl}</div>${s.d?`<div class="sdelta">${s.d}</div>`:''}</div></div>`).join('');
+}
+
+function renderMotive(){
+  document.getElementById('motive').innerHTML=motives[TODAY.getDay()%motives.length];
+}
+
+function renderAgenda(){
+  document.getElementById('agCnt').textContent=agendaItems.length;
+  if(!agendaItems.length){
+    document.getElementById('agBody').innerHTML='<div style="text-align:center;padding:24px 0;color:var(--tm);font-size:12px">🌅 Sem reuniões hoje.</div>';
+    return;
+  }
+  const fh={urgent:'<span class="flag f-urgent">🔴 Urgente</span>',ext:'<span class="flag f-ext">👥 Externo</span>',back:'<span class="flag f-back">⚡ Back-to-back</span>',prep:'<span class="flag f-prep">📋 Prep</span>',conflict:'<span class="flag f-conflict">⚠️ Conflito</span>'};
+  document.getElementById('agBody').innerHTML=agendaItems.map(a=>`
+    <div class="ai">
+      <div class="aitime">${a.time}</div>
+      <div style="flex:1">
+        <div class="ainame">${a.title}</div>
+        <div class="aimeta">
+          ${a.link?`<a class="alink" href="${a.link}" target="_blank">🔗 Entrar</a>`:''}
+          ${a.attendees?`<span style="font-size:11px;color:var(--tm)">${a.attendees}</span>`:''}
+          ${a.flags.map(f=>fh[f]||'').join('')}
+        </div>
+        ${a.prep?`<div class="aprep">📋 ${a.prep}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function renderEmails(){
+  document.getElementById('emCnt').textContent=emailItems.length;
+  const al={r:'↩ Responder',a:'🗂 Arquivar',w:'⏳ Aguardar'};
+  const ac={r:'ea-r',a:'ea-a',w:'ea-w'};
+  document.getElementById('emBody').innerHTML=emailItems.map(e=>`
+    <div class="ei">
+      <div class="edot d${e.priority.charAt(0)}"></div>
+      <div style="flex:1">
+        <div class="efrom">${e.from}</div>
+        <div class="esubj">${e.subject}</div>
+        <div class="esum">${e.summary}</div>
+        ${showHist&&e.history?`<div class="ehist"><span class="ehlbl">📚 Histórico: </span>${e.history}</div>`:''}
+        <span class="eact ${ac[e.action]}">${al[e.action]}</span>
+      </div>
+    </div>`).join('');
+}
+
+function renderWeek(){
+  let tot=0;
+  document.getElementById('wkGrid').innerHTML=weekData.map(d=>{
+    tot+=d.events.length;
+    return `<div class="dcol">
+      <div class="dhdr${d.isToday?' today':''}">
+        <div class="dname">${d.day}</div>
+        <div class="ddate">${d.date}</div>
+      </div>
+      <div class="dbody">
+        ${!d.events.length?'<div class="dempty">—</div>':d.events.map(e=>`
+          <div class="dev ${e.u?'dev-u':e.type==='e'?'dev-e':e.type==='p'?'dev-p':'dev-i'}">
+            <span class="devtime">${e.t}</span>
+            <span class="devname">${e.n}</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('wkCnt').textContent=tot+' eventos';
+}
+
+function renderActions(){
+  const open=actionItems.filter(a=>a.status==='open').length;
+  document.getElementById('acCnt').textContent=open+' abertos';
+  let items=[...actionItems];
+  if(af==='open') items=items.filter(a=>a.status==='open');
+  if(af==='done') items=items.filter(a=>a.status==='done');
+  if(tf!=='all') items=items.filter(a=>a.tags.includes(tf));
+  const allTags=[...new Set(actionItems.flatMap(a=>a.tags))];
+  document.getElementById('ftabs').innerHTML=[{id:'all',lbl:'Todos'},...allTags.map(t=>({id:t,lbl:t}))].map(t=>`<button class="ftab ${tf===t.id?'active':''}" onclick="setTF('${t.id}')">${t.lbl}</button>`).join('');
+  const tc={partner:'at-p',enablement:'at-e','follow-up':'at-f',prep:'at-r'};
+  const groups=[
+    {p:'high',lbl:'HIGH PRIORITY',cls:'plbl-h',icon:'🔴'},
+    {p:'medium',lbl:'MEDIUM PRIORITY',cls:'plbl-m',icon:'🟡'},
+    {p:'low',lbl:'LOW PRIORITY',cls:'plbl-l',icon:'🟢'},
+  ].map(g=>({...g,items:items.filter(a=>a.priority===g.p)})).filter(g=>g.items.length);
+  document.getElementById('acBody').innerHTML=groups.map(g=>`
+    <div class="pg">
+      <div class="plbl ${g.cls}">${g.icon} ${g.lbl}</div>
+      ${g.items.map(a=>`
+        <div class="ait ${a.status==='done'?'done':!a.inherited?'new-today':''}" id="ai-${a.id}">
+          <div class="achk ${a.status==='done'?'chk':''}" onclick="tog('${a.id}')">${a.status==='done'?'✓':''}</div>
+          <div style="flex:1">
+            <div class="aititle">${!a.inherited?'<span class="new-badge">🆕 NOVO</span> ':a.inherited?'<span class="inh">📌 HERDADO</span> ':''}${a.title}</div>
+            <div class="aimeta2">
+              ${(a.partner||a.customer)?`<span class="atag at-p">${a.partner||a.customer}</span>`:''}
+              ${a.tags.map(t=>`<span class="atag ${tc[t]||''}">${t}</span>`).join('')}
+              <span class="asrc">📎 ${a.source}</span>
+              ${a.dueDate?`<span class="adue ${(a.dueDate==='HOJE'||a.dueDate==='VENCIDO'||a.dueDate==='VENCENDO HOJE')?'adue-u':''}">📅 ${a.dueDate}</span>`:''}
+            </div>
+            <div style="font-size:11px;color:var(--tm);margin-top:3px">${a.summary}</div>
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+function renderSlack(){
+  document.getElementById('slCnt').textContent=slackItems.filter(s=>s.unread).length+' não lidos';
+  if(!slackItems.length){
+    document.getElementById('slBody').innerHTML='<div style="text-align:center;padding:24px 0;color:var(--tm);font-size:12px">✅ Nenhuma menção pendente nos últimos 2 dias.</div>';
+    return;
+  }
+  document.getElementById('slBody').innerHTML=slackItems.map(s=>`
+    <div class="si">
+      <div class="savt">${s.ini}</div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span class="sch">${s.ch}</span>
+          ${s.unread?'<span class="sunrd">PENDENTE</span>':''}
+        </div>
+        <div class="ssndr">${s.sndr}</div>
+        <div class="stxt">${s.txt}</div>
+        <div class="stime">${s.time}</div>
+      </div>
+    </div>`).join('');
+}
+
+function tog(id){const a=actionItems.find(x=>x.id===id);if(a){a.status=a.status==='open'?'done':'open';renderActions();renderStats();renderBanner();}}
+function setAF(f){af=f;renderActions();}
+function setTF(t){tf=t;renderActions();}
+function toggleHist(){showHist=!showHist;renderEmails();}
+
+renderAll();
+</script>
+
+<!-- ░░ MROVERE hybrid layer — +task, persist-done, hide-completed ░░ -->
+<style>
+.ait{position:relative}
+.hx-actions{position:absolute;top:6px;right:6px;display:flex;gap:4px;opacity:0;transition:opacity .12s;z-index:5}
+.ait:hover .hx-actions{opacity:1}
+.hx-btn{border:none;border-radius:5px;font-size:10px;font-weight:700;padding:3px 8px;cursor:pointer;line-height:1.4}
+.hx-task{background:#00A1D5;color:#fff}.hx-task:hover{background:#0089b5}
+.hx-done{background:#00C48C;color:#04361f}.hx-done:hover{background:#00b07d}
+</style>
+<script>
+(function(){
+  "use strict";
+  var ORIGIN=location.origin, embedded=window.parent&&window.parent!==window, doneIds={}, master=null;
+  var origRender=window.renderActions;
+  function snap(){ if(!master&&typeof actionItems!=='undefined') master=actionItems.slice(); }
+  function filt(){ snap(); if(master) actionItems=master.filter(function(a){return !doneIds[a.id];}); }
+  function rerender(){ filt(); if(origRender) origRender(); decorate();
+    if(typeof renderStats==='function') renderStats(); if(typeof renderBanner==='function') renderBanner(); }
+  function decorate(){
+    var body=document.getElementById('acBody'); if(!body) return;
+    var els=body.querySelectorAll('.ait');
+    for(var i=0;i<els.length;i++){ (function(el){
+      if(el.querySelector('.hx-actions')) return;
+      var id=el.id.replace(/^ai-/,'');
+      var w=document.createElement('div'); w.className='hx-actions';
+      var t=document.createElement('button'); t.className='hx-btn hx-task'; t.textContent='＋ task';
+      t.onclick=function(e){e.stopPropagation();toTask(id);};
+      var d=document.createElement('button'); d.className='hx-btn hx-done'; d.textContent='✓ concluir';
+      d.onclick=function(e){e.stopPropagation();markDone(id);};
+      w.appendChild(t); w.appendChild(d); el.appendChild(w);
+    })(els[i]); }
+  }
+  function markDone(id){ doneIds[id]=true; post({type:'brief-done',id:id}); rerender(); }
+  function toTask(id){ var it=(master||[]).find(function(a){return a.id===id;});
+    if(!it&&typeof actionItems!=='undefined') it=actionItems.find(function(a){return a.id===id;});
+    if(it){ doneIds[id]=true; post({type:'brief-to-task',item:it}); rerender(); } }
+  window.tog=function(id){ markDone(id); };
+  function post(m){ if(embedded){ try{ parent.postMessage(m,ORIGIN); }catch(e){} } }
+  window.addEventListener('message',function(e){ if(e.origin!==ORIGIN) return;
+    if(e.data&&e.data.type==='brief-state'){ doneIds=e.data.doneIds||{}; rerender(); } });
+  function boot(){ snap(); post({type:'brief-ready'}); if(!embedded) rerender(); }
+  if(document.readyState!=='loading') boot(); else document.addEventListener('DOMContentLoaded',boot);
+})();
+</script>
+
+</body>
+</html>
