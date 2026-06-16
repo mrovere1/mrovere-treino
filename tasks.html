@@ -509,8 +509,12 @@ textarea.inp{resize:vertical;min-height:52px}
 const CFG_URL   = 'mrovere_tasks_endpoint';
 const CFG_TOKEN = 'mrovere_tasks_token';
 
-let endpoint = localStorage.getItem(CFG_URL)   || '';
-let token    = localStorage.getItem(CFG_TOKEN) || '';
+// When embedded in the portal, the endpoint comes from the Firebase profile
+// (via postMessage) and is NOT read from / written to localStorage.
+const EMBEDDED = window.parent && window.parent !== window;
+
+let endpoint = EMBEDDED ? '' : (localStorage.getItem(CFG_URL)   || '');
+let token    = EMBEDDED ? '' : (localStorage.getItem(CFG_TOKEN) || '');
 
 let dirty  = false;
 let saving = false;
@@ -540,6 +544,7 @@ async function apiPost(payload) {
 // ── Setup flow
 
 function openSetup() {
+  if (EMBEDDED) return; // no manual URL entry inside the portal
   document.getElementById('setup-url').value   = endpoint;
   document.getElementById('setup-token').value = token;
   document.getElementById('setup-cancel').style.display = endpoint ? '' : 'none';
@@ -594,8 +599,8 @@ async function connectFromSetup() {
   }
 }
 
-async function init() {
-  if (!endpoint) { setConn('warn', 'Não conectado'); openSetup(); return; }
+// Core load: uses current endpoint/token globals, renders the app.
+async function loadFromEndpoint() {
   setConn('connecting', 'Conectando…');
   try {
     const data = await apiGet();
@@ -607,13 +612,63 @@ async function init() {
     document.getElementById('setup-screen').classList.add('hidden');
     document.getElementById('main-app').classList.remove('hidden');
     renderTasks();
+    return true;
   } catch (e) {
     setConn('warn', 'Falha na conexão');
+    return false;
+  }
+}
+
+function init() {
+  return EMBEDDED ? initEmbedded() : initStandalone();
+}
+
+// Standalone (direct /tasks.html): endpoint from localStorage + manual setup.
+async function initStandalone() {
+  if (!endpoint) { setConn('warn', 'Não conectado'); openSetup(); return; }
+  const ok = await loadFromEndpoint();
+  if (!ok) {
     openSetup();
     const msg = document.getElementById('setup-msg');
-    msg.textContent = 'Não foi possível conectar: ' + e.message;
+    msg.textContent = 'Não foi possível conectar: verifique a URL.';
     msg.className = 'setup-msg err';
   }
+}
+
+// Embedded (inside the portal): endpoint arrives from the Firebase profile.
+function initEmbedded() {
+  document.getElementById('setup-screen').classList.add('hidden');
+  document.getElementById('main-app').classList.remove('hidden');
+  setConn('connecting', 'Conectando…');
+
+  window.addEventListener('message', async (event) => {
+    if (event.origin !== window.location.origin) return;
+    if (event.data?.type !== 'tasks-config') return;
+    endpoint = event.data.endpoint || '';
+    token    = event.data.token || '';
+    if (!endpoint) {
+      showEmbeddedMessage('Configure o campo <code>tasksEndpoint</code> no seu perfil para usar este módulo.');
+      return;
+    }
+    const ok = await loadFromEndpoint();
+    if (!ok) {
+      showEmbeddedMessage('Não foi possível conectar ao Google Drive. Verifique o endpoint do Apps Script no seu perfil.');
+    }
+  });
+
+  // Tell the portal we're ready to receive the per-user config.
+  try { window.parent.postMessage({ type: 'tasks-ready' }, window.location.origin); } catch {}
+}
+
+function showEmbeddedMessage(msg) {
+  document.getElementById('main-app').classList.add('hidden');
+  const s = document.getElementById('setup-screen');
+  s.classList.remove('hidden');
+  s.innerHTML = `<div class="setup-screen"><div class="setup-card" style="text-align:center">
+    <div class="setup-icon">🔗</div>
+    <div class="setup-title">Channel SE Tasks</div>
+    <div class="setup-desc">${msg}</div>
+  </div></div>`;
 }
 
 // ── Save
