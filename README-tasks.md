@@ -38,7 +38,26 @@ A URL do app da Web já é secreta. Para reforçar:
 2. Reimplante (Implantar → Gerenciar implantações → editar → Nova versão)
 3. No app, cole o mesmo valor no campo **Token**
 
-> ⚠️ A URL e o token **não** ficam no repositório — só no navegador (`localStorage`) e na planilha.
+> ⚠️ A URL e o token **não** ficam no repositório.
+
+---
+
+## 👤 Visibilidade e endpoint por usuário (no portal)
+
+Dentro do portal (`#/mrovere-tasks`), a URL **não** vem do `localStorage` — vem do **perfil Firebase** do usuário. Isso atrela o endpoint ao login e esconde o módulo dos demais usuários (sem precisar de role nova).
+
+| Campo em `users/{uid}` (Firestore) | Função |
+|---|---|
+| `tasksEndpoint` | URL do app da Web; **sem ela o módulo não aparece** |
+| `tasksToken` | token opcional (se `SECRET` no `Code.gs`) |
+
+- `src/roles.js`: `mrovere-tasks` tem `requiresProfileFlag: "tasksEndpoint"` → só aparece para quem tem o campo.
+- `src/tasks-dashboard.js`: injeta `tasksEndpoint`/`tasksToken` no iframe via `postMessage` (same-origin).
+- `tasks.html`: em modo embedded ignora `localStorage` e usa o endpoint do portal.
+
+**Setup (1x, Firebase Console):** Firestore → `users/{uid}` → adicionar `tasksEndpoint` (string) com a URL. Conferir regra de leitura por dono: `allow read: if request.auth != null && request.auth.uid == uid;`
+
+> Acesso direto a `/tasks.html` (fora do portal) continua usando a tela de conexão manual + `localStorage`.
 
 ---
 
