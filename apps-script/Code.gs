@@ -130,10 +130,31 @@ function json_(obj) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+// Returns the most recent "attention-today-updated.html" from Drive (runs as you).
+// Requires the Drive scope — reauthorize when redeploying after adding this.
+function getLatestBrief_() {
+  var it = DriveApp.getFilesByName('attention-today-updated.html');
+  var newest = null;
+  while (it.hasNext()) {
+    var f = it.next();
+    if (!newest || f.getLastUpdated() > newest.getLastUpdated()) newest = f;
+  }
+  if (!newest) return null;
+  return {
+    name: newest.getName(),
+    id: newest.getId(),
+    modified: newest.getLastUpdated().toISOString(),
+    html: newest.getBlob().getDataAsString('UTF-8')
+  };
+}
+
 function doGet(e) {
   try {
     if (SECRET && (!e || !e.parameter || e.parameter.token !== SECRET)) {
       return json_({ ok: false, error: 'unauthorized' });
+    }
+    if (e && e.parameter && e.parameter.action === 'brief') {
+      return json_({ ok: true, brief: getLatestBrief_() });
     }
     return json_({ ok: true, ...readData_() });
   } catch (err) {
