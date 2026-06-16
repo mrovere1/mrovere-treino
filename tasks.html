@@ -612,11 +612,12 @@ async function connectFromSetup() {
     usedOverride = true;   // manual URL now wins over the profile config
     tasks       = data.tasks       || [];
     briefChecks = data.briefChecks || {};
-    normalizeTasks();
+    const repaired = normalizeTasks();
     msg.textContent = 'Conectado ✓';
     msg.className = 'setup-msg ok';
     setConn('ok', 'Drive conectado');
-    setDirty(false);
+    setDirty(repaired > 0);
+    if (repaired > 0) toast(`${repaired} task(s) antiga(s) corrigida(s) — clique em Salvar no Drive`);
     document.getElementById('setup-screen').classList.add('hidden');
     document.getElementById('main-app').classList.remove('hidden');
     renderTasks();
@@ -636,9 +637,10 @@ async function loadFromEndpoint() {
     const data = await apiGet();
     tasks       = data.tasks       || [];
     briefChecks = data.briefChecks || {};
-    normalizeTasks();
+    const repaired = normalizeTasks();
     setConn('ok', 'Drive conectado');
-    setDirty(false);
+    setDirty(repaired > 0);
+    if (repaired > 0) toast(`${repaired} task(s) antiga(s) corrigida(s) — clique em Salvar no Drive`);
     document.getElementById('setup-screen').classList.add('hidden');
     document.getElementById('main-app').classList.remove('hidden');
     renderTasks();
@@ -813,13 +815,33 @@ function esc(s) {
 }
 
 // Ensure every loaded task has a coherent status (back-compat with old records)
+const VALID_STATUS = ['new', 'active', 'resurfaced', 'done'];
+
 function normalizeTasks() {
+  let repaired = 0;
   tasks.forEach(t => {
+    // Legacy repair: rows saved BEFORE the 'status' column was inserted are
+    // shifted by one field — status holds the real title, title holds the
+    // real description, description holds the old 'done', etc. Realign them.
+    if (t.status && !VALID_STATUS.includes(String(t.status))) {
+      const realTitle = String(t.status || '');
+      const realDesc  = (typeof t.title === 'string') ? t.title : '';
+      const wasDone   = (t.description === true || String(t.description).toLowerCase() === 'true');
+      const oldDoneAt = (typeof t.done === 'string' && t.done.includes('-')) ? t.done : null;
+      t.title       = realTitle;
+      t.description = realDesc;
+      t.done        = wasDone;
+      t.doneAt      = wasDone ? (oldDoneAt || new Date().toISOString()) : null;
+      t.status      = wasDone ? 'done' : 'active';
+      repaired++;
+    }
     if (!t.status) t.status = t.done ? 'done' : 'active';
     if (t.status === 'done') t.done = true;
     if (t.done && t.status !== 'done') t.status = 'done';
+    if (typeof t.description !== 'string') t.description = '';
     if (t.parentId === undefined || t.parentId === null) t.parentId = '';
   });
+  return repaired;
 }
 
 // Keep status ↔ done in sync
