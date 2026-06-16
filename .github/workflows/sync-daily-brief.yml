@@ -1,0 +1,52 @@
+name: Sync daily brief from Google Drive
+
+# Publica o "attention-today-updated.html" mais recente do Drive (via Apps Script),
+# injeta a camada híbrida e commita em data/briefs/attention-today.html.
+# Roda no schedule e também manualmente (workflow_dispatch).
+#
+# Secrets necessários no repo:
+#   APPS_SCRIPT_URL    — URL do web app do Apps Script (…/exec)
+#   APPS_SCRIPT_TOKEN  — opcional, só se você definiu SECRET no Code.gs
+
+on:
+  schedule:
+    - cron: "0 12 * * *"   # 09:00 America/Sao_Paulo
+    - cron: "0 14 * * *"   # 11:00 America/Sao_Paulo (caso o brief saia mais tarde)
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Forçar publicação mesmo sem mudança"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Publish daily brief
+        env:
+          APPS_SCRIPT_URL: ${{ secrets.APPS_SCRIPT_URL }}
+          APPS_SCRIPT_TOKEN: ${{ secrets.APPS_SCRIPT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+        run: |
+          if [ "${{ inputs.force }}" = "true" ]; then
+            python scripts/publish_brief.py --force
+          else
+            python scripts/publish_brief.py
+          fi
