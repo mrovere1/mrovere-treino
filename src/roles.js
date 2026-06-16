@@ -23,9 +23,12 @@ export const MODULE_DEFINITIONS = [
   {
     route: "mrovere-tasks",
     title: "MROVERE Tasks",
-    description: "Claude and Slack task feeds with a local action tracker.",
+    description: "Personal Channel SE task tracker and daily briefs (Google Drive).",
     icon: "TK",
-    visibility: ["admin"]
+    visibility: ["admin"],
+    // Only shown to users whose Firestore profile has this field set.
+    // Ties both menu visibility AND the Apps Script endpoint to the identity.
+    requiresProfileFlag: "tasksEndpoint"
   },
   {
     route: "admin",
@@ -62,7 +65,16 @@ export function getRoleLabel(userContext) {
 
 export function getAvailableModules(userContext) {
   const role = userContext?.role;
-  return MODULE_DEFINITIONS.filter((module) => module.visibility.includes(role));
+  return MODULE_DEFINITIONS.filter((module) => {
+    if (!module.visibility.includes(role)) {
+      return false;
+    }
+    // Per-user gate: module only appears when the profile field is present.
+    if (module.requiresProfileFlag && !userContext?.profile?.[module.requiresProfileFlag]) {
+      return false;
+    }
+    return true;
+  });
 }
 
 export function canAccessRoute(userContext, route) {
