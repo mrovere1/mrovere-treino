@@ -11,7 +11,7 @@ export async function renderTasksDashboard(container, userContext) {
     <div style="height:calc(100vh - 140px);min-height:640px;overflow:hidden;border-radius:6px;border:1px solid var(--line)">
       <iframe
         id="tasks-frame"
-        src="/tasks.html"
+        src="/tasks.html?v=${Date.now()}"
         style="width:100%;height:100%;border:none;display:block"
         title="Channel SE Tasks"
       ></iframe>
