@@ -130,6 +130,13 @@ function json_(obj) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+// Rode esta função UMA vez no editor (ela aparece no seletor de funções) para
+// conceder a permissão do Drive. Permita pop-ups em script.google.com.
+function authorizeDrive() {
+  var b = getLatestBrief_();
+  Logger.log(b ? ('OK: ' + b.name + ' (' + b.modified + ')') : 'Permissão concedida (nenhum brief encontrado ainda).');
+}
+
 // Returns the most recent "attention-today-updated.html" from Drive (runs as you).
 // Requires the Drive scope — reauthorize when redeploying after adding this.
 function getLatestBrief_() {
