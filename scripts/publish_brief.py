@@ -25,9 +25,17 @@ import argparse
 import base64
 import os
 import sys
+import time
 from urllib.parse import quote
 
 import requests
+
+# Retry para flakiness transitória do Apps Script: o /exec redireciona para
+# script.googleusercontent.com/macros/echo, que esporadicamente devolve 404/5xx
+# mesmo com a config correta (instabilidade do lado do Google).
+BRIEF_RETRIES = 3
+BRIEF_BACKOFF = 5  # segundos: 5s, 10s, 20s (dobra a cada tentativa)
+RETRY_STATUS = {404, 429, 500, 502, 503, 504}
 
 try:
     from dotenv import load_dotenv
@@ -96,16 +104,34 @@ def fetch_brief_html() -> str:
     if token:
         full += "&token=" + quote(token)
 
-    resp = requests.get(full, timeout=90, allow_redirects=True)
-    resp.raise_for_status()
-    data = resp.json()
-    if not data.get("ok"):
-        sys.exit(f"❌ Apps Script retornou erro: {data.get('error')}")
-    brief = data.get("brief")
-    if not brief or not brief.get("html"):
-        sys.exit("❌ Nenhum 'attention-today-updated.html' encontrado no Drive.")
-    print(f"   Drive: {brief['name']} (modificado {brief.get('modified')})")
-    return brief["html"]
+    last_err = None
+    for attempt in range(1, BRIEF_RETRIES + 1):
+        try:
+            resp = requests.get(full, timeout=90, allow_redirects=True)
+            if resp.status_code in RETRY_STATUS:
+                raise requests.exceptions.HTTPError(
+                    f"{resp.status_code} no Apps Script", response=resp
+                )
+            resp.raise_for_status()
+            data = resp.json()
+        except (requests.exceptions.RequestException, ValueError) as e:
+            # ValueError = JSON inválido (Apps Script devolveu HTML de erro)
+            last_err = e
+            if attempt < BRIEF_RETRIES:
+                wait = BRIEF_BACKOFF * (2 ** (attempt - 1))
+                print(f"   ⚠️  tentativa {attempt}/{BRIEF_RETRIES} falhou ({e}); "
+                      f"retry em {wait}s…")
+                time.sleep(wait)
+                continue
+            sys.exit(f"❌ Apps Script indisponível após {BRIEF_RETRIES} tentativas: {last_err}")
+
+        if not data.get("ok"):
+            sys.exit(f"❌ Apps Script retornou erro: {data.get('error')}")
+        brief = data.get("brief")
+        if not brief or not brief.get("html"):
+            sys.exit("❌ Nenhum 'attention-today-updated.html' encontrado no Drive.")
+        print(f"   Drive: {brief['name']} (modificado {brief.get('modified')})")
+        return brief["html"]
 
 
 def inject_layer(html: str) -> str:
