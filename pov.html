@@ -265,7 +265,10 @@ async function api(path, opts={}){
   if(!state.endpoint){ throw new Error('Endpoint não configurado. Clique em Config.'); }
   const headers = Object.assign({'Content-Type':'application/json'}, opts.headers||{});
   if(state.token){ headers['Authorization'] = 'Bearer '+state.token; }
-  const res = await fetch(state.endpoint + path, Object.assign({}, opts, {headers}));
+  // Normaliza o endpoint: aceita com ou sem o sufixo /pov (os paths já incluem /pov),
+  // evitando URL duplicada tipo .../pov/pov/customers.
+  const base = state.endpoint.replace(/\/+$/,'').replace(/\/pov$/i,'');
+  const res = await fetch(base + path, Object.assign({}, opts, {headers}));
   if(!res.ok){
     let msg = res.status+' '+res.statusText;
     try{ const j = await res.json(); if(j.detail) msg = j.detail; }catch(_){}
