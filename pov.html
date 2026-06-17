@@ -80,6 +80,8 @@
     border:1px solid var(--gray);background:transparent;color:var(--gray-light);font-size:11px;
     line-height:1;padding:0;vertical-align:middle;cursor:pointer}
   .help-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .ev-link{color:var(--blue);cursor:pointer}
+  .ev-link:hover{color:var(--accent)}
   .item .lbl .d{font-size:12px;color:var(--gray-light);margin-top:2px}
   .item .typ{font-size:11px;color:var(--gray-light);width:48px;text-align:right}
   .manual-ctl{display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap}
@@ -196,6 +198,18 @@
   </div>
 </div>
 
+<!-- Evidence drill-down modal -->
+<div class="overlay" id="evOverlay">
+  <div class="modal" style="width:520px">
+    <h2 id="evTitle">Evidência</h2>
+    <div id="evMeta" class="muted" style="font-size:12px;margin-bottom:10px"></div>
+    <ul id="evList" style="margin:0;padding-left:18px;max-height:50vh;overflow:auto;font-size:13px;line-height:1.7"></ul>
+    <div class="actions">
+      <button class="btn" onclick="closeModal('evOverlay')">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -231,6 +245,19 @@ function openHelp(key){
   const wrap = document.getElementById('helpDocWrap'); const a = document.getElementById('helpDoc');
   if(h.doc){ a.href = h.doc; wrap.style.display='block'; } else { wrap.style.display='none'; }
   show('helpOverlay');
+}
+function openEvidence(key){
+  const ev = (state.currentEvidence||{})[key] || {};
+  const sample = Array.isArray(ev.sample) ? ev.sample : [];
+  const total = ev.sample_total != null ? ev.sample_total : sample.length;
+  const item = (state.currentPov && state.currentPov.items.find(i=>i.template_key===key)) || {};
+  document.getElementById('evTitle').textContent = item.label || 'Evidência';
+  document.getElementById('evMeta').textContent = total > sample.length
+    ? `Mostrando ${sample.length} de ${total} (amostra)` : `${sample.length} item(ns)`;
+  document.getElementById('evList').innerHTML = sample.length
+    ? sample.map(s=>`<li>${esc(s)}</li>`).join('')
+    : '<li class="muted">Sem itens para exibir.</li>';
+  show('evOverlay');
 }
 let state = { endpoint:'', token:'', customers:[], povs:[], currentCustomer:'', currentPov:null };
 
@@ -389,6 +416,7 @@ function sparkline(snaps){
 function renderDetail(pov, snaps){
   const s = pov.summary||{progress_pct:0,by_phase:[]};
   const ev = pov.evidence||{};
+  state.currentEvidence = ev;
   const phases = (s.by_phase||[]).map(p=>`
     <div class="pline"><span class="pname">${esc(p.phase)}</span>
       <div class="bar"><span style="width:${p.pct}%"></span></div>
@@ -451,10 +479,16 @@ function renderItem(povId, it, ev){
     </div>`;
   }
   const helpBtn = HELP[it.template_key] ? `<button class="help-btn" onclick="openHelp('${it.template_key}')" title="Como fazer">?</button>` : '';
+  // Evidência clicável quando há amostra de itens (auto).
+  const evObj = auto ? (ev[it.template_key]||{}) : {};
+  const hasSample = auto && Array.isArray(evObj.sample) && evObj.sample.length>0;
+  const detailHtml = hasSample
+    ? `<a class="ev-link" onclick="openEvidence('${it.template_key}')" title="Ver detalhe">${esc(detail)} ▸</a>`
+    : `${esc(detail)}${(!auto&&it.evidence_link)?` · <a href="${esc(it.evidence_link)}" target="_blank">link</a>`:''}`;
   return `<div class="item">
     ${pill}
     <div class="lbl"><div class="t">${esc(it.label)} ${helpBtn}</div>
-      <div class="d">${esc(detail)}${(!auto&&it.evidence_link)?` · <a href="${esc(it.evidence_link)}" target="_blank">link</a>`:''}</div>
+      <div class="d">${detailHtml}</div>
       ${ctl}</div>
     <div class="typ">${auto?'auto':'manual'}</div>
   </div>`;
