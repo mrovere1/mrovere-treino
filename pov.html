@@ -207,20 +207,20 @@ const PILL_TXT = {pass:'OK', fail:'Pendente', error:'Erro', pending:'—'};
 // Edite os textos e preencha o campo `doc` com o link da documentação Tenable
 // de cada passo. Itens sem `doc` mostram só a dica.
 const HELP = {
-  scanner_linked: {tip:"Em Settings → Sensors → Nessus Scanners, copie a linking key e linke o scanner. Ele fica Online em ~10-15 min após baixar a base de plugins.", doc:""},
-  agents_linked: {tip:"Instale o Nessus Agent nos hosts de teste e linke com a mesma linking key (Settings → Sensors → Linked Agents). Confirme o status Online.", doc:""},
-  agents_grouped: {tip:"Em Settings → Sensors → Agent Groups, crie um grupo e use 'Assign Agents' para adicionar os agentes — scans por agente miram grupos.", doc:""},
-  service_account: {tip:"Crie uma conta de serviço (Windows/Linux/Mac) com privilégios para scan credenciado e teste o acesso (SSH 22 / SMB 139-445).", doc:""},
-  network_rules: {tip:"Garanta que o Nessus alcança cloud.tenable.com e sensor.cloud.tenable.com, e os alvos nas portas necessárias; EDR/AV não pode bloquear os processos do Nessus.", doc:""},
-  scan_created: {tip:"Em Scans → Create Scan, use o template Basic Network Scan (ou Basic Agent Scan p/ agentes); defina alvos (IP/CIDR) e nome.", doc:""},
-  scan_completed: {tip:"Salve e execute (Save & Launch) ou aguarde o agendamento; confirme que o scan concluiu na página Scans.", doc:""},
-  scan_scheduled: {tip:"Configure a recorrência do scan (schedule) para coletas contínuas durante a POV.", doc:""},
-  credentialed_scan: {tip:"Adicione credenciais (SSH/Windows) ao scan e valide pelo plugin 19506 (Nessus Scan Information → 'Credentialed checks: yes').", doc:""},
-  findings_present: {tip:"Veja Findings — a lista cumulativa de vulnerabilidades/misconfigs ativas. Vazio? Confirme que um scan concluiu com sucesso.", doc:""},
-  assets_discovered: {tip:"Confira a página Assets — os hosts avaliados aparecem como assets licenciados.", doc:""},
-  vpr_available: {tip:"O VPR (1-10) é atualizado diariamente; use-o para priorizar além do CVSS na página Findings.", doc:""},
-  dashboard_reviewed: {tip:"Crie/abra um dashboard a partir dos templates e revise os KPIs com o cliente.", doc:""},
-  report_generated: {tip:"Gere e exporte um report (Reports) para os stakeholders.", doc:""}
+  scanner_linked: {tip:"Em Settings → Sensors → Nessus Scanners, copie a linking key e linke o scanner. Ele fica Online em ~10-15 min após baixar a base de plugins.", doc:"https://docs.tenable.com/vulnerability-management/Content/Scanners/LinkAScanner.htm"},
+  agents_linked: {tip:"Instale o Nessus Agent nos hosts de teste e linke com a mesma linking key (Settings → Sensors → Linked Agents). Confirme o status Online.", doc:"https://docs.tenable.com/agent/Content/InstallNessusAgent.htm"},
+  agents_grouped: {tip:"Em Settings → Sensors → Agent Groups, crie um grupo e use 'Assign Agents' para adicionar os agentes — scans por agente miram grupos.", doc:"https://docs.tenable.com/vulnerability-management/Content/Agents/AgentGroups.htm"},
+  service_account: {tip:"Crie uma conta de serviço (Windows/Linux/Mac) com privilégios para scan credenciado e teste o acesso (SSH 22 / SMB 139-445).", doc:"https://docs.tenable.com/vulnerability-management/Content/Credentials/CredentialedChecks.htm"},
+  network_rules: {tip:"Garanta que o Nessus alcança cloud.tenable.com e sensor.cloud.tenable.com, e os alvos nas portas necessárias; EDR/AV não pode bloquear os processos do Nessus.", doc:"https://docs.tenable.com/vulnerability-management/Content/GetStarted/Requirements.htm"},
+  scan_created: {tip:"Em Scans → Create Scan, use o template Basic Network Scan (ou Basic Agent Scan p/ agentes); defina alvos (IP/CIDR) e nome.", doc:"https://docs.tenable.com/vulnerability-management/Content/Scans/CreateScan.htm"},
+  scan_completed: {tip:"Salve e execute (Save & Launch) ou aguarde o agendamento; confirme que o scan concluiu na página Scans.", doc:"https://docs.tenable.com/vulnerability-management/Content/Scans/LaunchScan.htm"},
+  scan_scheduled: {tip:"Configure a recorrência do scan (schedule) para coletas contínuas durante a POV.", doc:"https://docs.tenable.com/vulnerability-management/Content/Scans/ScheduleScan.htm"},
+  credentialed_scan: {tip:"Adicione credenciais (SSH/Windows) ao scan e valide pelo plugin 19506 (Nessus Scan Information → 'Credentialed checks: yes').", doc:"https://docs.tenable.com/nessus/Content/CredentialedChecksOnWindows.htm"},
+  findings_present: {tip:"Veja Findings — a lista cumulativa de vulnerabilidades/misconfigs ativas. Vazio? Confirme que um scan concluiu com sucesso.", doc:"https://docs.tenable.com/vulnerability-management/Content/Findings/Findings.htm"},
+  assets_discovered: {tip:"Confira a página Assets — os hosts avaliados aparecem como assets licenciados.", doc:"https://docs.tenable.com/vulnerability-management/Content/Assets/Assets.htm"},
+  vpr_available: {tip:"O VPR (1-10) é atualizado diariamente; use-o para priorizar além do CVSS na página Findings.", doc:"https://docs.tenable.com/vulnerability-management/best-practices/security/Content/VulnerabilityPriorityRating.htm"},
+  dashboard_reviewed: {tip:"Crie/abra um dashboard a partir dos templates e revise os KPIs com o cliente.", doc:"https://docs.tenable.com/vulnerability-management/Content/Dashboards/Dashboards.htm"},
+  report_generated: {tip:"Gere e exporte um report (Reports) para os stakeholders.", doc:"https://docs.tenable.com/vulnerability-management/Content/Reports/Reports.htm"}
 };
 function openHelp(key){
   const h = HELP[key] || {tip:"Sem dica cadastrada para este item.", doc:""};
