@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>POV Tracker — Tenable Channel SE</title>
+<style>
+  :root{
+    --bg:#1E2426; --bg-alt:#192124; --panel:#2B2F31; --text:#FFFFFF;
+    --accent:#E7FF00; --gray:#44494B; --gray-light:#CCCCCC;
+    --blue:#4EA5FF; --green:#71FFC6; --purple:#BB8FF2; --orange:#FF8837; --red:#FF6B6B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:'Aeonik','Inter','Helvetica Neue',sans-serif;font-weight:300;line-height:1.45}
+  h1,h2,h3{font-weight:400;margin:0}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--blue)}
+  .hexa{display:inline-block;width:22px;height:22px;background:var(--accent);
+    clip-path:polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0% 50%);vertical-align:middle;margin-right:8px}
+  /* top bar */
+  .topbar{display:flex;justify-content:space-between;align-items:center;
+    padding:16px 24px;border-bottom:2px solid var(--accent);background:var(--bg-alt)}
+  .topbar h1{font-size:20px;display:flex;align-items:center}
+  .chip{font-size:12px;padding:5px 12px;border:1px solid var(--gray);background:transparent;
+    color:var(--gray-light);border-radius:2px}
+  .chip.ok{border-color:var(--green);color:var(--green)}
+  .chip.off{border-color:var(--orange);color:var(--orange)}
+  /* layout */
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 24px 60px}
+  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+  select,input,textarea{background:var(--bg-alt);color:var(--text);border:1px solid var(--gray);
+    padding:8px 10px;font-family:inherit;font-size:14px;border-radius:2px}
+  select:focus,input:focus,textarea:focus{outline:none;border-color:var(--accent)}
+  .btn{background:transparent;border:1px solid var(--gray);color:var(--text);padding:8px 14px;
+    font-size:13px;border-radius:2px}
+  .btn:hover{border-color:var(--gray-light)}
+  .btn.primary{background:var(--accent);color:var(--bg);border-color:var(--accent);font-weight:500}
+  .btn.primary:hover{filter:brightness(1.05)}
+  .btn.sm{padding:5px 10px;font-size:12px}
+  .muted{color:var(--gray-light)}
+  .grow{flex:1}
+  /* cards */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+  .pov-card{background:var(--bg-alt);border:1px solid var(--gray);padding:16px 18px;cursor:pointer;
+    transition:border-color .12s}
+  .pov-card:hover{border-color:var(--accent)}
+  .pov-card .row{display:flex;justify-content:space-between;align-items:center}
+  .pov-card h3{font-size:16px}
+  .badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:2px;background:var(--gray);
+    color:var(--text)}
+  .badge.vm{background:var(--blue);color:var(--bg)}
+  .pct{font-size:30px;font-weight:400;color:var(--accent)}
+  .bar{background:var(--gray);height:8px;width:100%;margin-top:6px}
+  .bar>span{display:block;height:100%;background:var(--accent)}
+  /* detail */
+  .detail{background:var(--bg-alt);border:1px solid var(--gray);padding:22px 24px;margin-top:8px}
+  .detail .head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+  .metrics{display:flex;gap:26px;align-items:center;margin:18px 0;flex-wrap:wrap}
+  .ring{--p:0;width:96px;height:96px;border-radius:50%;display:grid;place-items:center;
+    background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--gray) 0)}
+  .ring>div{width:74px;height:74px;border-radius:50%;background:var(--bg-alt);display:grid;place-items:center;
+    font-size:22px;color:var(--accent)}
+  .phases{flex:1;min-width:240px}
+  .phases .pline{display:flex;align-items:center;gap:10px;margin:5px 0;font-size:13px}
+  .phases .pline .bar{flex:1}
+  .phases .pname{width:170px;color:var(--gray-light)}
+  .phases .pval{width:84px;text-align:right;color:var(--gray-light)}
+  .spark{margin-left:auto}
+  /* checklist */
+  .phase-group{margin-top:18px}
+  .phase-title{font-size:13px;color:var(--accent);border-bottom:1px solid var(--gray);
+    padding-bottom:6px;margin-bottom:6px}
+  .item{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid #23292b}
+  .pill{display:inline-block;min-width:64px;text-align:center;padding:3px 8px;font-size:11px;
+    border-radius:2px;color:var(--bg);font-weight:500}
+  .item .lbl{flex:1}
+  .item .lbl .t{font-size:14px}
+  .help-btn{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;
+    border:1px solid var(--gray);background:transparent;color:var(--gray-light);font-size:11px;
+    line-height:1;padding:0;vertical-align:middle;cursor:pointer}
+  .help-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .item .lbl .d{font-size:12px;color:var(--gray-light);margin-top:2px}
+  .item .typ{font-size:11px;color:var(--gray-light);width:48px;text-align:right}
+  .manual-ctl{display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap}
+  .manual-ctl input[type=text]{font-size:12px;padding:5px 8px}
+  .note-in{width:230px}.link-in{width:170px}
+  /* modal */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;place-items:center;z-index:50}
+  .overlay.show{display:grid}
+  .modal{background:var(--bg-alt);border:1px solid var(--gray);padding:24px;width:440px;max-width:92vw}
+  .modal h2{font-size:18px;margin-bottom:14px}
+  .field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+  .field label{font-size:12px;color:var(--gray-light)}
+  .modal .actions{display:flex;justify-content:flex-end;gap:10px;margin-top:8px}
+  .empty{color:var(--gray-light);padding:40px;text-align:center;border:1px dashed var(--gray)}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--panel);
+    border:1px solid var(--gray);padding:10px 18px;border-radius:2px;font-size:13px;display:none;z-index:60}
+  .toast.show{display:block}
+  .toast.err{border-color:var(--red);color:var(--red)}
+  .foot{margin-top:40px;color:var(--gray-light);font-size:11px;border-top:1px solid var(--gray);padding-top:12px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1><span class="hexa"></span>POV Tracker</h1>
+  <div>
+    <span id="connChip" class="chip off">Sem conexão</span>
+    <button class="btn sm" onclick="openConfig()">Config</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="toolbar">
+    <label class="muted" for="customerSel">Cliente:</label>
+    <select id="customerSel" onchange="onCustomerChange()"><option value="">— selecione —</option></select>
+    <button class="btn sm" onclick="loadCustomers()">↻</button>
+    <div class="grow"></div>
+    <button class="btn sm" onclick="openCustomerModal()">+ Cliente</button>
+    <button class="btn sm" onclick="openPovModal()">+ POV</button>
+  </div>
+
+  <div id="listView">
+    <div class="cards" id="povCards"></div>
+    <div id="listEmpty" class="empty" style="display:none">Selecione um cliente para ver as POVs, ou crie uma nova.</div>
+  </div>
+
+  <div id="detailView" style="display:none"></div>
+
+  <div class="foot">Gerado por Iris / Tenable Channel SE — confidencial · MVP Tenable VM</div>
+</div>
+
+<!-- Config modal -->
+<div class="overlay" id="configOverlay">
+  <div class="modal">
+    <h2>Conexão com o backend</h2>
+    <div class="field"><label>Endpoint (ex.: https://mcp.mrovere.com/pov)</label>
+      <input id="cfgEndpoint" type="text" placeholder="https://mcp.mrovere.com/pov"></div>
+    <div class="field"><label>Bearer token</label>
+      <input id="cfgToken" type="password" placeholder="token do SE"></div>
+    <p class="muted" style="font-size:12px">No portal, endpoint e token são injetados pelo seu perfil. Aqui (standalone) ficam salvos só neste navegador.</p>
+    <div class="actions">
+      <button class="btn" onclick="closeModal('configOverlay')">Cancelar</button>
+      <button class="btn primary" onclick="saveConfig()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Customer modal -->
+<div class="overlay" id="customerOverlay">
+  <div class="modal">
+    <h2>Novo cliente</h2>
+    <div class="field"><label>Nome</label><input id="custName" type="text" placeholder="ACME Corp"></div>
+    <div class="field"><label>Base URL</label><input id="custBase" type="text" value="https://cloud.tenable.com"></div>
+    <div class="field"><label>Access Key (read-only recomendado)</label><input id="custAK" type="password"></div>
+    <div class="field"><label>Secret Key</label><input id="custSK" type="password"></div>
+    <p class="muted" style="font-size:12px">As keys são cifradas no servidor e nunca retornam ao app.</p>
+    <div class="actions">
+      <button class="btn" onclick="closeModal('customerOverlay')">Cancelar</button>
+      <button class="btn primary" onclick="createCustomer()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- POV modal -->
+<div class="overlay" id="povOverlay">
+  <div class="modal">
+    <h2>Nova POV</h2>
+    <div class="field"><label>Cliente</label><select id="povCust"></select></div>
+    <div class="field"><label>Título</label><input id="povTitle" type="text" placeholder="POV VM — ACME"></div>
+    <div class="field"><label>Produto</label><select id="povProduct"><option value="VM">Tenable VM</option></select></div>
+    <div class="field"><label>Parceiro</label><input id="povPartner" type="text"></div>
+    <div class="field"><label>SE responsável</label><input id="povSE" type="text"></div>
+    <div style="display:flex;gap:10px">
+      <div class="field grow"><label>Início</label><input id="povStart" type="date"></div>
+      <div class="field grow"><label>Alvo de término</label><input id="povEnd" type="date"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="closeModal('povOverlay')">Cancelar</button>
+      <button class="btn primary" onclick="createPov()">Criar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Help modal -->
+<div class="overlay" id="helpOverlay">
+  <div class="modal">
+    <h2 id="helpTitle">Ajuda</h2>
+    <p id="helpTip" class="muted" style="font-size:14px;line-height:1.55;color:var(--text)"></p>
+    <div id="helpDocWrap" style="margin-top:14px;display:none">
+      <a id="helpDoc" href="#" target="_blank" rel="noopener" class="btn primary sm" style="text-decoration:none">Abrir documentação ↗</a>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="closeModal('helpOverlay')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ---------------- state & connection ----------------
+const PILL = {pass:'#71FFC6', fail:'#FF8837', error:'#FF6B6B', pending:'#CCCCCC'};
+const PILL_TXT = {pass:'OK', fail:'Pendente', error:'Erro', pending:'—'};
+
+// ---------------- ajuda por item (dicas + link de doc) ----------------
+// Edite os textos e preencha o campo `doc` com o link da documentação Tenable
+// de cada passo. Itens sem `doc` mostram só a dica.
+const HELP = {
+  scanner_linked: {tip:"Em Settings → Sensors → Nessus Scanners, copie a linking key e linke o scanner. Ele fica Online em ~10-15 min após baixar a base de plugins.", doc:""},
+  agents_linked: {tip:"Instale o Nessus Agent nos hosts de teste e linke com a mesma linking key (Settings → Sensors → Linked Agents). Confirme o status Online.", doc:""},
+  agents_grouped: {tip:"Em Settings → Sensors → Agent Groups, crie um grupo e use 'Assign Agents' para adicionar os agentes — scans por agente miram grupos.", doc:""},
+  service_account: {tip:"Crie uma conta de serviço (Windows/Linux/Mac) com privilégios para scan credenciado e teste o acesso (SSH 22 / SMB 139-445).", doc:""},
+  network_rules: {tip:"Garanta que o Nessus alcança cloud.tenable.com e sensor.cloud.tenable.com, e os alvos nas portas necessárias; EDR/AV não pode bloquear os processos do Nessus.", doc:""},
+  scan_created: {tip:"Em Scans → Create Scan, use o template Basic Network Scan (ou Basic Agent Scan p/ agentes); defina alvos (IP/CIDR) e nome.", doc:""},
+  scan_completed: {tip:"Salve e execute (Save & Launch) ou aguarde o agendamento; confirme que o scan concluiu na página Scans.", doc:""},
+  scan_scheduled: {tip:"Configure a recorrência do scan (schedule) para coletas contínuas durante a POV.", doc:""},
+  credentialed_scan: {tip:"Adicione credenciais (SSH/Windows) ao scan e valide pelo plugin 19506 (Nessus Scan Information → 'Credentialed checks: yes').", doc:""},
+  findings_present: {tip:"Veja Findings — a lista cumulativa de vulnerabilidades/misconfigs ativas. Vazio? Confirme que um scan concluiu com sucesso.", doc:""},
+  assets_discovered: {tip:"Confira a página Assets — os hosts avaliados aparecem como assets licenciados.", doc:""},
+  vpr_available: {tip:"O VPR (1-10) é atualizado diariamente; use-o para priorizar além do CVSS na página Findings.", doc:""},
+  dashboard_reviewed: {tip:"Crie/abra um dashboard a partir dos templates e revise os KPIs com o cliente.", doc:""},
+  report_generated: {tip:"Gere e exporte um report (Reports) para os stakeholders.", doc:""}
+};
+function openHelp(key){
+  const h = HELP[key] || {tip:"Sem dica cadastrada para este item.", doc:""};
+  const item = (state.currentPov && state.currentPov.items.find(i=>i.template_key===key)) || {};
+  document.getElementById('helpTitle').textContent = item.label || 'Ajuda';
+  document.getElementById('helpTip').textContent = h.tip;
+  const wrap = document.getElementById('helpDocWrap'); const a = document.getElementById('helpDoc');
+  if(h.doc){ a.href = h.doc; wrap.style.display='block'; } else { wrap.style.display='none'; }
+  show('helpOverlay');
+}
+let state = { endpoint:'', token:'', customers:[], povs:[], currentCustomer:'', currentPov:null };
+
+const DEFAULT_ENDPOINT = 'https://mcp.mrovere.com/pov';
+function loadConn(){
+  // endpoint de produção já vem por padrão — basta colar o token em Config.
+  state.endpoint = localStorage.getItem('povEndpoint') || DEFAULT_ENDPOINT;
+  state.token = localStorage.getItem('povToken') || '';
+}
+function saveConn(){
+  localStorage.setItem('povEndpoint', state.endpoint);
+  localStorage.setItem('povToken', state.token);
+}
+function setConnChip(){
+  const chip = document.getElementById('connChip');
+  if(state.endpoint){ chip.className='chip ok'; chip.textContent='Conectado'; }
+  else { chip.className='chip off'; chip.textContent='Sem conexão'; }
+}
+
+// Portal injection: parent envia {type:'pov-config', endpoint, token}
+window.addEventListener('message', (e)=>{
+  const d = e.data || {};
+  if(d.type==='pov-config' || d.type==='endpoint'){
+    if(d.endpoint || d.url){ state.endpoint = (d.endpoint||d.url).replace(/\/$/,''); }
+    if(d.token!==undefined){ state.token = d.token; }
+    saveConn(); setConnChip(); loadCustomers();
+  }
+});
+
+// ---------------- api helper ----------------
+async function api(path, opts={}){
+  if(!state.endpoint){ throw new Error('Endpoint não configurado. Clique em Config.'); }
+  const headers = Object.assign({'Content-Type':'application/json'}, opts.headers||{});
+  if(state.token){ headers['Authorization'] = 'Bearer '+state.token; }
+  const res = await fetch(state.endpoint + path, Object.assign({}, opts, {headers}));
+  if(!res.ok){
+    let msg = res.status+' '+res.statusText;
+    try{ const j = await res.json(); if(j.detail) msg = j.detail; }catch(_){}
+    throw new Error(msg);
+  }
+  const ct = res.headers.get('content-type')||'';
+  return ct.includes('application/json') ? res.json() : res.text();
+}
+
+// ---------------- toast ----------------
+let toastT;
+function toast(msg, isErr){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show'+(isErr?' err':'');
+  clearTimeout(toastT); toastT = setTimeout(()=>{ t.className='toast'; }, 3200);
+}
+
+// ---------------- customers ----------------
+async function loadCustomers(){
+  setConnChip();
+  if(!state.endpoint) return;
+  try{
+    const data = await api('/pov/customers');
+    state.customers = data.customers || [];
+    const sel = document.getElementById('customerSel');
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">— todos / selecione —</option>' +
+      state.customers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+    sel.value = cur;
+    const psel = document.getElementById('povCust');
+    psel.innerHTML = state.customers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+    loadPovs();
+  }catch(e){ toast(e.message, true); }
+}
+
+function onCustomerChange(){ state.currentCustomer = document.getElementById('customerSel').value; loadPovs(); }
+
+async function createCustomer(){
+  const body = {
+    name: val('custName'), base_url: val('custBase') || 'https://cloud.tenable.com',
+    access_key: val('custAK'), secret_key: val('custSK')
+  };
+  if(!body.name || !body.access_key || !body.secret_key){ toast('Preencha nome e as keys.', true); return; }
+  try{
+    await api('/pov/customers', {method:'POST', body:JSON.stringify(body)});
+    closeModal('customerOverlay'); toast('Cliente criado.');
+    ['custName','custAK','custSK'].forEach(id=>document.getElementById(id).value='');
+    loadCustomers();
+  }catch(e){ toast(e.message, true); }
+}
+
+// ---------------- povs ----------------
+async function loadPovs(){
+  if(!state.endpoint) return;
+  try{
+    const q = state.currentCustomer ? ('?customer_id='+state.currentCustomer) : '';
+    const data = await api('/pov/povs'+q);
+    state.povs = data.povs || [];
+    renderCards();
+  }catch(e){ toast(e.message, true); }
+}
+
+function renderCards(){
+  showList();
+  const wrap = document.getElementById('povCards');
+  const empty = document.getElementById('listEmpty');
+  if(!state.povs.length){ wrap.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  wrap.innerHTML = state.povs.map(p=>{
+    const pct = (p.summary && p.summary.progress_pct) || 0;
+    return `<div class="pov-card" onclick="openPov(${p.id})">
+      <div class="row"><h3>${esc(p.title)}</h3><span class="badge vm">${esc(p.product)}</span></div>
+      <div class="muted" style="font-size:13px;margin:4px 0">${esc(p.customer_name)} · ${esc(p.partner||'—')}</div>
+      <div class="row" style="margin-top:10px;align-items:flex-end">
+        <span class="pct">${pct}%</span>
+        <span class="muted" style="font-size:12px">${esc(p.status)}</span>
+      </div>
+      <div class="bar"><span style="width:${pct}%"></span></div>
+    </div>`;
+  }).join('');
+}
+
+async function createPov(){
+  const body = {
+    customer_id: parseInt(val('povCust'),10), title: val('povTitle'), product: val('povProduct'),
+    partner: val('povPartner')||null, se_owner: val('povSE')||null,
+    start_date: val('povStart')||null, target_end_date: val('povEnd')||null
+  };
+  if(!body.customer_id || !body.title){ toast('Escolha o cliente e dê um título.', true); return; }
+  try{
+    const r = await api('/pov/povs', {method:'POST', body:JSON.stringify(body)});
+    closeModal('povOverlay'); toast('POV criada.');
+    document.getElementById('povTitle').value='';
+    await loadPovs(); openPov(r.id);
+  }catch(e){ toast(e.message, true); }
+}
+
+// ---------------- detail ----------------
+async function openPov(id){
+  try{
+    const pov = await api('/pov/povs/'+id);
+    let snaps = {snapshots:[]};
+    try{ snaps = await api('/pov/povs/'+id+'/snapshots?limit=40'); }catch(_){}
+    state.currentPov = pov;
+    renderDetail(pov, snaps.snapshots||[]);
+  }catch(e){ toast(e.message, true); }
+}
+
+function sparkline(snaps){
+  const pts = snaps.slice().reverse().map(s=> (s.summary && s.summary.progress_pct)||0 );
+  if(pts.length<2) return '';
+  const w=120,h=34,max=100;
+  const step = w/(pts.length-1);
+  const d = pts.map((v,i)=>`${i===0?'M':'L'}${(i*step).toFixed(1)},${(h-(v/max)*h).toFixed(1)}`).join(' ');
+  return `<svg class="spark" width="${w}" height="${h}"><path d="${d}" fill="none" stroke="#E7FF00" stroke-width="2"/></svg>`;
+}
+
+function renderDetail(pov, snaps){
+  const s = pov.summary||{progress_pct:0,by_phase:[]};
+  const ev = pov.evidence||{};
+  const phases = (s.by_phase||[]).map(p=>`
+    <div class="pline"><span class="pname">${esc(p.phase)}</span>
+      <div class="bar"><span style="width:${p.pct}%"></span></div>
+      <span class="pval">${p.done}/${p.total} · ${p.pct}%</span></div>`).join('');
+
+  // group items by phase
+  const byPhase = {};
+  pov.items.forEach(it=>{ (byPhase[it.phase]=byPhase[it.phase]||[]).push(it); });
+  const phaseOrder = (s.by_phase||[]).map(p=>p.phase);
+  Object.keys(byPhase).forEach(p=>{ if(!phaseOrder.includes(p)) phaseOrder.push(p); });
+
+  const groups = phaseOrder.map(phase=>{
+    const items = (byPhase[phase]||[]).map(it=>renderItem(pov.id, it, ev)).join('');
+    return `<div class="phase-group"><div class="phase-title">${esc(phase)}</div>${items}</div>`;
+  }).join('');
+
+  const last = pov.last_captured_at ? fmtDate(pov.last_captured_at) : 'nunca';
+
+  document.getElementById('detailView').innerHTML = `
+    <button class="btn sm" onclick="backToList()">← Voltar</button>
+    <div class="detail">
+      <div class="head">
+        <div>
+          <h2>${esc(pov.title)}</h2>
+          <div class="muted" style="margin-top:4px">${esc(pov.customer_name)} · Tenable ${esc(pov.product)} ·
+            Parceiro: ${esc(pov.partner||'—')} · SE: ${esc(pov.se_owner||'—')}</div>
+          <div class="muted" style="font-size:12px;margin-top:2px">Início ${esc(pov.start_date||'—')} ·
+            Alvo ${esc(pov.target_end_date||'—')} · Última coleta: ${last}</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn primary sm" id="refreshBtn" onclick="refreshPov(${pov.id})">Atualizar evidências</button>
+          <button class="btn sm" onclick="openReport(${pov.id},'exec')">Report exec</button>
+          <button class="btn sm" onclick="openReport(${pov.id},'tech')">Report técnico</button>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="ring" style="--p:${s.progress_pct}"><div>${s.progress_pct}%</div></div>
+        <div class="phases">${phases||'<span class="muted">Sem dados ainda — clique em Atualizar evidências.</span>'}</div>
+        ${sparkline(snaps)}
+      </div>
+      ${groups}
+    </div>`;
+  showDetail();
+}
+
+function renderItem(povId, it, ev){
+  const auto = it.type==='auto';
+  const status = auto ? ((ev[it.template_key]||{}).status||'pending') : (it.manual_status||'pending');
+  const detail = auto ? ((ev[it.template_key]||{}).detail||'') : (it.manual_note||'');
+  const pill = `<span class="pill" style="background:${PILL[status]||PILL.pending}">${PILL_TXT[status]||'—'}</span>`;
+  let ctl = '';
+  if(!auto){
+    const checked = it.manual_status==='pass';
+    ctl = `<div class="manual-ctl">
+      <button class="btn sm" onclick="toggleManual(${povId},${it.id},'${checked?'':'pass'}')">${checked?'✓ Concluído':'Marcar concluído'}</button>
+      <input class="note-in" type="text" placeholder="nota / evidência" value="${esc(it.manual_note||'')}"
+        onchange="saveManual(${povId},${it.id},'note',this.value)">
+      <input class="link-in" type="text" placeholder="link" value="${esc(it.evidence_link||'')}"
+        onchange="saveManual(${povId},${it.id},'link',this.value)">
+    </div>`;
+  }
+  const helpBtn = HELP[it.template_key] ? `<button class="help-btn" onclick="openHelp('${it.template_key}')" title="Como fazer">?</button>` : '';
+  return `<div class="item">
+    ${pill}
+    <div class="lbl"><div class="t">${esc(it.label)} ${helpBtn}</div>
+      <div class="d">${esc(detail)}${(!auto&&it.evidence_link)?` · <a href="${esc(it.evidence_link)}" target="_blank">link</a>`:''}</div>
+      ${ctl}</div>
+    <div class="typ">${auto?'auto':'manual'}</div>
+  </div>`;
+}
+
+async function refreshPov(id){
+  const btn = document.getElementById('refreshBtn');
+  if(btn){ btn.disabled=true; btn.textContent='Coletando…'; }
+  try{
+    await api('/pov/povs/'+id+'/refresh', {method:'POST'});
+    toast('Evidências atualizadas.');
+    await openPov(id);
+  }catch(e){ toast(e.message, true); if(btn){btn.disabled=false;btn.textContent='Atualizar evidências';} }
+}
+
+async function toggleManual(povId, itemId, newStatus){
+  try{
+    await api(`/pov/povs/${povId}/items/${itemId}`, {method:'PATCH', body:JSON.stringify({manual_status:newStatus})});
+    await openPov(povId);
+  }catch(e){ toast(e.message, true); }
+}
+async function saveManual(povId, itemId, field, value){
+  const body = field==='note' ? {manual_note:value} : {evidence_link:value};
+  try{ await api(`/pov/povs/${povId}/items/${itemId}`, {method:'PATCH', body:JSON.stringify(body)}); toast('Salvo.'); }
+  catch(e){ toast(e.message, true); }
+}
+
+// Report: fetch com Bearer e abre via blob (URL direta não carrega o header de auth)
+async function openReport(id, tone){
+  try{
+    const html = await api(`/pov/povs/${id}/report?tone=${tone}`);
+    const blob = new Blob([html], {type:'text/html'});
+    window.open(URL.createObjectURL(blob), '_blank');
+  }catch(e){ toast(e.message, true); }
+}
+
+// ---------------- view switching ----------------
+function showList(){ document.getElementById('listView').style.display='block';
+  document.getElementById('detailView').style.display='none'; }
+function showDetail(){ document.getElementById('listView').style.display='none';
+  document.getElementById('detailView').style.display='block'; }
+function backToList(){ state.currentPov=null; loadPovs(); }
+
+// ---------------- modals & utils ----------------
+function openConfig(){ document.getElementById('cfgEndpoint').value=state.endpoint;
+  document.getElementById('cfgToken').value=state.token; show('configOverlay'); }
+function saveConfig(){ state.endpoint=val('cfgEndpoint').replace(/\/$/,''); state.token=val('cfgToken');
+  saveConn(); closeModal('configOverlay'); setConnChip(); loadCustomers(); }
+function openCustomerModal(){ show('customerOverlay'); }
+function openPovModal(){ if(!state.customers.length){ toast('Crie um cliente primeiro.', true); return; } show('povOverlay'); }
+function show(id){ document.getElementById(id).classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+function val(id){ return document.getElementById(id).value.trim(); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function fmtDate(iso){ try{ return new Date(iso).toLocaleString('pt-BR'); }catch(_){ return iso; } }
+
+// close modal on overlay click
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('show'); }));
+
+// ---------------- boot ----------------
+loadConn(); setConnChip();
+// avisa o parent que estamos prontos (portal injeta config em resposta)
+try{ if(window.parent && window.parent!==window){ window.parent.postMessage({type:'pov-ready'}, '*'); } }catch(_){}
+if(state.endpoint){ loadCustomers(); }
+</script>
+</body>
+</html>
