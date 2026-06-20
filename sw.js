@@ -1,4 +1,4 @@
-const CACHE_NAME = "mrovere-apps-cache-v2";
+const CACHE_NAME = "mrovere-apps-cache-v3";
 
 const APP_ASSETS = [
   "./",
@@ -24,6 +24,7 @@ const APP_ASSETS = [
   "./src/iris-dashboard.js",
   "./src/iris-storage.js",
   "./src/tasks-dashboard.js",
+  "./src/pov-dashboard.js",
   "./src/admin.js",
   "./data/partner/accreditation-requirements.json",
   "./data/iris/latest.sample.json",

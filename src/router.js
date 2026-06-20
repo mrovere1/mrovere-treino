@@ -17,6 +17,10 @@ export const ROUTE_META = {
     title: "MROVERE Tasks",
     subtitle: "Daily operational focus powered by local task feeds."
   },
+  "pov-tracker": {
+    title: "POV Tracker",
+    subtitle: "Customer evidence, milestones, ownership, and reports."
+  },
   admin: {
     title: "Admin",
     subtitle: "Manual user onboarding and Firestore user visibility."

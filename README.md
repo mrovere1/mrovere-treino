@@ -21,11 +21,13 @@ Main modules:
 - Partner Dashboard
 - IRIS Dashboard
 - MROVERE Tasks
+- POV Tracker
 - Admin
 
 Role behavior:
 
-- `admin` users can access Partner Dashboard, IRIS Dashboard, MROVERE Tasks, and Admin.
+- `admin` users can access all modules, including POV Tracker.
+- `se` users can access Home and POV Tracker. Backend ownership limits them to POVs they created.
 - `readonly` users can access Partner Dashboard and IRIS Dashboard only.
 - Users without a Firestore profile are blocked after authentication.
 - Users with `active !== true` are blocked and signed out.
@@ -120,6 +122,7 @@ Profile shape:
 Supported roles:
 
 - `admin`
+- `se`
 - `readonly`
 
 Full setup, profile creation, test steps, and Firestore rules are documented in [docs/setup-firebase.md](docs/setup-firebase.md).

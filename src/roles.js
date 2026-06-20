@@ -4,7 +4,14 @@ export const MODULE_DEFINITIONS = [
     title: "Home",
     description: "Portal overview and quick access to available modules.",
     icon: "HM",
-    visibility: ["admin", "readonly"]
+    visibility: ["admin", "se", "readonly"]
+  },
+  {
+    route: "pov-tracker",
+    title: "POV Tracker",
+    description: "Track Tenable POV execution, evidence, milestones, and reports.",
+    icon: "PV",
+    visibility: ["admin", "se"]
   },
   {
     route: "partner-dashboard",
@@ -52,7 +59,8 @@ const ROLE_ABILITIES = {
     "clear-tasks",
     "read-firestore-users"
   ]),
-  readonly: new Set(["view-dashboards"])
+  readonly: new Set(["view-dashboards"]),
+  se: new Set(["manage-own-povs"])
 };
 
 export function isAdmin(userContext) {
@@ -60,7 +68,10 @@ export function isAdmin(userContext) {
 }
 
 export function getRoleLabel(userContext) {
-  return userContext?.role === "admin" ? "Admin" : "Read only";
+  if (userContext?.role === "admin") {
+    return "Admin";
+  }
+  return userContext?.role === "se" ? "SE" : "Read only";
 }
 
 export function getAvailableModules(userContext) {

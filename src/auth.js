@@ -61,6 +61,7 @@ export async function resolveUserContext(firebaseUser) {
     name: profile.name || firebaseUser.email || "Unknown user",
     role: profile.role || "readonly",
     active: profile.active === true,
+    getIdToken: (forceRefresh = false) => firebaseUser.getIdToken(forceRefresh),
     profile
   };
 }

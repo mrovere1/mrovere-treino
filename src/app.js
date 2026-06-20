@@ -10,6 +10,7 @@ import {
 import { renderAdminModule } from "./admin.js";
 import { renderIrisDashboard } from "./iris-dashboard.js";
 import { renderPartnerDashboard } from "./partner-dashboard.js";
+import { renderPovDashboard } from "./pov-dashboard.js";
 import { canAccessRoute, getAvailableModules, getRoleLabel } from "./roles.js";
 import { ensureRoute, getCurrentRoute, getRouteMeta, navigateTo } from "./router.js";
 import { loadLocalData, saveLocalData } from "./storage.js";
@@ -35,6 +36,7 @@ const MODULE_RENDERERS = {
   "partner-dashboard": renderPartnerDashboard,
   "iris-dashboard": renderIrisDashboard,
   "mrovere-tasks": renderTasksDashboard,
+  "pov-tracker": renderPovDashboard,
   admin: renderAdminModule
 };
 

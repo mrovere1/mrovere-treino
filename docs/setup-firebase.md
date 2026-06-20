@@ -112,7 +112,7 @@ Equivalent JSON shape:
 Important:
 
 - The document ID must match the Firebase Authentication UID exactly.
-- `role` must be lowercase: `admin` or `readonly`.
+- `role` must be lowercase: `admin`, `se`, or `readonly`.
 - `active` must be a boolean value set to `true`, not the text `"true"`.
 - If this document is missing, the app will block login with the missing profile message.
 - If `active` is not `true`, the app will sign the user out.
@@ -137,6 +137,20 @@ Repeat the same manual process:
   "active": true
 }
 ```
+
+For a Channel SE who should use POV Tracker, set:
+
+```json
+{
+  "email": "se@example.com",
+  "name": "Channel SE",
+  "role": "se",
+  "active": true
+}
+```
+
+The backend derives POV ownership from the Firebase UID. Do not store POV
+Bearers, API endpoints, Tenable keys, or Firebase ID tokens in this profile.
 
 ## 8. Suggested Firestore rules
 
