@@ -93,6 +93,7 @@ Add these fields in the Firestore document editor:
 | `name` | string | `Admin User` |
 | `role` | string | `admin` |
 | `active` | boolean | `true` |
+| `povAccess` | boolean | `true` |
 | `createdAt` | timestamp | current date/time |
 | `updatedAt` | timestamp | current date/time |
 
@@ -104,6 +105,7 @@ Equivalent JSON shape:
   "name": "Admin User",
   "role": "admin",
   "active": true,
+  "povAccess": true,
   "createdAt": "server timestamp",
   "updatedAt": "server timestamp"
 }
@@ -114,6 +116,7 @@ Important:
 - The document ID must match the Firebase Authentication UID exactly.
 - `role` must be lowercase: `admin`, `se`, or `readonly`.
 - `active` must be a boolean value set to `true`, not the text `"true"`.
+- `povAccess` must be the boolean `true` for the POV Tracker to appear and accept the user.
 - If this document is missing, the app will block login with the missing profile message.
 - If `active` is not `true`, the app will sign the user out.
 
@@ -145,12 +148,41 @@ For a Channel SE who should use POV Tracker, set:
   "email": "se@example.com",
   "name": "Channel SE",
   "role": "se",
-  "active": true
+  "active": true,
+  "povAccess": true
 }
 ```
 
 The backend derives POV ownership from the Firebase UID. Do not store POV
 Bearers, API endpoints, Tenable keys, or Firebase ID tokens in this profile.
+Users without `povAccess: true` do not see the module and receive HTTP 403 if
+they try to call the POV API directly.
+
+### POV Tracker authentication fields
+
+The current POV Tracker does **not** use `povEndpoint` or `povToken` in the
+Firestore user profile.
+
+The portal obtains the signed-in user's short-lived Firebase ID token and sends
+it directly to the POV Tracker iframe. The POV backend validates that token and
+reads the user's own `users/{uid}` profile. Therefore, the only additional
+per-user field required for this module is:
+
+| Field | Type | Required value | Purpose |
+| --- | --- | --- | --- |
+| `povAccess` | boolean | `true` | Shows the POV Tracker menu and authorizes the backend API |
+
+Do not add these legacy fields:
+
+| Legacy field | Current status |
+| --- | --- |
+| `povEndpoint` | Deprecated; the portal uses the configured POV backend URL |
+| `povToken` | Deprecated; MCP Bearer tokens are not accepted by the POV application routes |
+
+The old `povEndpoint` + `povToken` model belonged to the previous standalone
+POV integration. Keeping a long-lived Bearer token in Firestore is neither
+required nor recommended. Existing MCP Bearer tokens remain restricted to MCP
+routes and do not grant POV Tracker access.
 
 ## 8. Suggested Firestore rules
 

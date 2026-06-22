@@ -11,7 +11,8 @@ export const MODULE_DEFINITIONS = [
     title: "POV Tracker",
     description: "Track Tenable POV execution, evidence, milestones, and reports.",
     icon: "PV",
-    visibility: ["admin", "se"]
+    visibility: ["admin", "se"],
+    requiresProfileFlag: "povAccess"
   },
   {
     route: "partner-dashboard",

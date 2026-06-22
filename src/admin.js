@@ -43,7 +43,7 @@ export async function renderAdminModule(container) {
             <li>Create the user in Firebase Authentication with email and password.</li>
             <li>Copy the generated UID from the Authentication user details.</li>
             <li>Create the Firestore document <code>users/{uid}</code>.</li>
-            <li>Set <code>name</code>, <code>email</code>, <code>role</code>, and <code>active</code>.</li>
+            <li>Set <code>name</code>, <code>email</code>, <code>role</code>, <code>active</code>, and module flags such as <code>povAccess</code>.</li>
             <li>Ask the user to sign in after the Firestore profile exists.</li>
           </ol>
         </section>
@@ -62,6 +62,7 @@ export async function renderAdminModule(container) {
                   <th>Email</th>
                   <th>Role</th>
                   <th>Status</th>
+                  <th>POV Tracker</th>
                   <th>UID</th>
                 </tr>
               </thead>
@@ -74,6 +75,7 @@ export async function renderAdminModule(container) {
                         <td>${escapeHtml(user.email || "-")}</td>
                         <td>${escapeHtml(user.role || "readonly")}</td>
                         <td>${user.active === true ? '<span class="pill success">Active</span>' : '<span class="pill danger">Inactive</span>'}</td>
+                        <td>${user.povAccess === true ? '<span class="pill success">Enabled</span>' : '<span class="pill danger">Disabled</span>'}</td>
                         <td><code>${escapeHtml(user.id)}</code></td>
                       </tr>
                     `
