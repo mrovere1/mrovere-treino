@@ -1257,6 +1257,9 @@ function createTaskFromBriefItem(item) {
   });
   if (item.id) briefDoneSet()[item.id] = true;   // dismiss from future reports
   setDirty(true);
+  renderTasks();
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab==='tasks'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id==='tab-tasks'));
   toast('Task criada a partir do brief ✓');
 }
 function parseBriefDue(d) {
