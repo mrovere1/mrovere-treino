@@ -8,6 +8,7 @@ import {
   watchAuthState
 } from "./auth.js";
 import { renderAdminModule } from "./admin.js";
+import { renderHomeDashboard } from "./home-dashboard.js";
 import { renderIrisDashboard } from "./iris-dashboard.js";
 import { renderPartnerDashboard } from "./partner-dashboard.js";
 import { renderPovDashboard } from "./pov-dashboard.js";
@@ -203,35 +204,7 @@ function renderShell() {
 }
 
 function renderHomeModule(container, userContext) {
-  const modules = getAvailableModules(userContext).filter(({ route }) => route !== "home");
-  container.innerHTML = `
-    <div class="content-stack">
-      <section class="home-hero panel">
-        <h2>Apps MROVERE</h2>
-        <p>
-          Use the portal to work across partner execution, IRIS analysis, and daily
-          operational follow-up with role-based access controls.
-        </p>
-      </section>
-      <section class="grid-cards">
-        ${modules
-          .map(
-            (module) => `
-              <article class="module-card">
-                <span class="pill">${module.title}</span>
-                <h3>${module.title}</h3>
-                <p>${module.description}</p>
-                <footer>
-                  <span class="muted">Available for ${userContext.role}</span>
-                  <a class="button primary" href="#/${module.route}">Open module</a>
-                </footer>
-              </article>
-            `
-          )
-          .join("")}
-      </section>
-    </div>
-  `;
+  renderHomeDashboard(container, userContext);
 }
 
 function restoreLastRoute() {

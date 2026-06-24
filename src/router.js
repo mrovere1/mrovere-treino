@@ -3,7 +3,7 @@ const DEFAULT_ROUTE = "home";
 export const ROUTE_META = {
   home: {
     title: "Home",
-    subtitle: "Select a module to continue."
+    subtitle: "Visão geral dos módulos e alertas do dia."
   },
   "partner-dashboard": {
     title: "Partner Dashboard",

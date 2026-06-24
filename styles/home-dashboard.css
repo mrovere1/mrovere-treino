@@ -1,0 +1,250 @@
+/* home-dashboard.css — global home dashboard */
+
+.hd-shell {
+  display: grid;
+  gap: 1.2rem;
+}
+
+/* ── topbar ─────────────────────────────────────────────── */
+
+.hd-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.hd-greeting {
+  font-size: 1.3rem;
+  margin: 0 0 0.2rem;
+}
+
+/* ── KPI hero ────────────────────────────────────────────── */
+
+.hd-kpis {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.hd-kpi {
+  padding: 1.25rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.hd-kpi-value {
+  font-size: 2.1rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+}
+
+.hd-kpi-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+.hd-kpi--warning .hd-kpi-value { color: var(--warning); }
+.hd-kpi--danger  .hd-kpi-value { color: var(--danger); }
+.hd-kpi--upcoming .hd-kpi-value { color: var(--data-blue); }
+
+/* ── module cards ────────────────────────────────────────── */
+
+.hd-modules {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.hd-module-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.2rem;
+  min-height: 190px;
+}
+
+.hd-module-card--locked {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.hd-module-card--error {
+  border-color: rgba(255, 107, 120, 0.28);
+}
+
+.hd-module-head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.hd-module-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+  border: 1px solid var(--line);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  flex: 0 0 auto;
+}
+
+.hd-module-title {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.hd-module-metrics {
+  display: grid;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.hd-metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.86rem;
+}
+
+.hd-metric-label { color: var(--text-muted); }
+
+.hd-metric-value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.hd-metric--warn   { color: var(--warning); }
+.hd-metric--danger { color: var(--danger); }
+
+.hd-open-btn {
+  margin-top: auto;
+  width: 100%;
+}
+
+/* ── attention / upcoming sections ──────────────────────── */
+
+.hd-section {
+  padding: 1.2rem;
+}
+
+.hd-section-head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.8rem;
+}
+
+.hd-section-head h3 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.hd-item-list {
+  display: grid;
+  gap: 2px;
+}
+
+.hd-list-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.4rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 130ms ease;
+  outline-offset: 2px;
+}
+
+.hd-list-item:hover {
+  background: rgba(231, 255, 0, 0.07);
+}
+
+.hd-list-item:focus-visible {
+  outline: 2px solid var(--accent);
+}
+
+.hd-list-badge {
+  min-width: 58px;
+  justify-content: center;
+  font-size: 0.73rem;
+  flex: 0 0 auto;
+}
+
+.hd-list-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.hd-list-title {
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hd-list-date {
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.hd-list-days {
+  font-size: 0.75rem;
+  flex: 0 0 auto;
+}
+
+/* ── skeleton shimmer ────────────────────────────────────── */
+
+.hd-skeleton {
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--line) 25%,
+    var(--bg-alt) 50%,
+    var(--line) 75%
+  );
+  background-size: 200% 100%;
+  animation: hd-shimmer 1.5s infinite;
+}
+
+@keyframes hd-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── responsive ──────────────────────────────────────────── */
+
+@media (max-width: 1080px) {
+  .hd-kpis,
+  .hd-modules {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .hd-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hd-modules {
+    grid-template-columns: 1fr;
+  }
+
+  .hd-topbar {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+}
