@@ -162,18 +162,18 @@ function _renderDashboard(results) {
         <button class="button secondary" id="hd-refresh-btn">Atualizar</button>
       </div>
 
-      <div class="hd-kpis">
-        ${_kpi(globalActive, "Itens ativos", "")}
-        ${_kpi(globalAttention, "Requer atenção", globalAttention > 0 ? "warning" : "")}
-        ${_kpi(globalOverdue, "Vencidos", globalOverdue > 0 ? "danger" : "")}
-        ${_kpi(globalUpcoming, "Próx. 7 dias", globalUpcoming > 0 ? "upcoming" : "")}
-      </div>
-
       <div class="hd-modules">
         ${_moduleCard(results.pov)}
         ${_moduleCard(results.tasks)}
         ${_moduleCard(results.partner)}
         ${_moduleCard(results.iris)}
+      </div>
+
+      <div class="hd-kpis">
+        ${_kpi(globalActive, "Itens ativos", "")}
+        ${_kpi(globalAttention, "Requer atenção", globalAttention > 0 ? "warning" : "")}
+        ${_kpi(globalOverdue, "Vencidos", globalOverdue > 0 ? "danger" : "")}
+        ${_kpi(globalUpcoming, "Próx. 7 dias", globalUpcoming > 0 ? "upcoming" : "")}
       </div>
 
       ${
@@ -332,9 +332,9 @@ function _metricRows(result) {
     case "partner-dashboard":
       return [
         { label: "Parceiros rastreados", value: m.total ?? 0 },
-        { label: "Acreditados", value: m.accredited ?? 0 },
+        { label: "EM Accreditation", value: m.accredited ?? 0 },
         { label: "Em progresso", value: m.inProgress ?? 0 },
-        { label: "Guardians", value: m.guardians ?? 0 }
+        { label: "Guardians completos", value: m.guardiansComplete ?? 0 }
       ];
     default:
       return [];
