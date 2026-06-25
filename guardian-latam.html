@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tenable Guardian Program — Partner Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:          #1a1a1a;
+    --bg-raised:   #242424;
+    --bg-card:     #2a2a2a;
+    --bg-hover:    #323232;
+    --border:      rgba(255,255,255,0.08);
+    --border-mid:  rgba(255,255,255,0.14);
+    --yellow:      #d4f000;
+    --yellow-dark: #a8c000;
+    --white:       #ffffff;
+    --grey-1:      #e0e0e0;
+    --grey-2:      #a0a0a0;
+    --grey-3:      #606060;
+    --grey-4:      #404040;
+    --success:     #00c896;
+    --warning:     #f5c020;
+    --danger:      #ff4040;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Work Sans', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--white);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── DEMO BAR ──────────────────────────────────────── */
+  .demo-bar {
+    background: #0d0d0d;
+    border-bottom: 1px solid rgba(212, 240, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 9px 16px;
+    font-size: 12px;
+    color: #888;
+    font-family: 'Work Sans', sans-serif;
+  }
+
+  .demo-bar strong { color: #bbb; }
+
+  .demo-toggle {
+    display: flex;
+    background: #1a1a1a;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .demo-toggle button {
+    padding: 4px 14px;
+    font-size: 11px;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+  }
+
+  .demo-toggle button.active {
+    background: var(--yellow);
+    color: #000;
+  }
+
+  /* ─── NAV ───────────────────────────────────────────── */
+  nav {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 48px;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  /* Tenable hex logo */
+  .logo-hex {
+    width: 32px;
+    height: 32px;
+  }
+
+  .logo-wordmark {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.3px;
+  }
+
+  .nav-links {
+    display: flex;
+    flex: 1;
+    list-style: none;
+    gap: 0;
+  }
+
+  .nav-links a {
+    display: block;
+    padding: 0 16px;
+    height: 64px;
+    line-height: 64px;
+    color: var(--grey-2);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.15s;
+    white-space: nowrap;
+  }
+
+  .nav-links a:hover { color: var(--white); }
+  .nav-links a.active { color: var(--white); position: relative; }
+  .nav-links a.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 16px;
+    right: 16px;
+    height: 2px;
+    background: var(--yellow);
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+  }
+
+  .nav-badge {
+    background: var(--yellow);
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: none;
+  }
+
+  .nav-user {
+    color: var(--grey-2);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* ─── HERO ──────────────────────────────────────────── */
+  .hero {
+    padding: 80px 80px 80px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-hex-deco {
+    position: absolute;
+    right: 80px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.12;
+    width: 320px;
+  }
+
+  .hero-eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--yellow);
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+    max-width: 700px;
+  }
+
+  .hero h1 .highlight {
+    background: var(--yellow);
+    color: #000;
+    padding: 0 8px;
+    display: inline;
+  }
+
+  .hero p {
+    font-size: 18px;
+    color: var(--grey-2);
+    max-width: 520px;
+    margin-bottom: 40px;
+    font-weight: 400;
+    line-height: 1.7;
+  }
+
+  .btn-group { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 28px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+    border: none;
+    letter-spacing: 0.2px;
+  }
+
+  .btn-yellow {
+    background: var(--yellow);
+    color: #000;
+  }
+  .btn-yellow:hover { background: #e0ff00; }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border-mid);
+    color: var(--grey-1);
+  }
+  .btn-outline:hover { border-color: rgba(255,255,255,0.4); color: var(--white); }
+
+  /* ─── SECTIONS ──────────────────────────────────────── */
+  section { padding: 72px 80px; }
+
+  .section-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--yellow);
+    margin-bottom: 14px;
+  }
+
+  h2 {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin-bottom: 14px;
+  }
+
+  .section-sub {
+    color: var(--grey-2);
+    font-size: 16px;
+    max-width: 580px;
+    margin-bottom: 56px;
+    font-weight: 400;
+    line-height: 1.7;
+  }
+
+  /* ─── PATHWAY ───────────────────────────────────────── */
+  .pathway-section {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pathway-track {
+    display: grid;
+    grid-template-columns: 1fr 48px 1fr 48px 1fr;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .pathway-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--grey-3);
+    font-size: 20px;
+    padding-top: 32px;
+  }
+
+  .pathway-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 36px 32px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+
+  .pathway-card:hover { border-color: var(--border-mid); }
+
+  .pathway-card.tier-guardian {
+    border-top: 3px solid rgba(255,255,255,0.3);
+  }
+
+  .pathway-card.tier-guardian-one {
+    border-top: 3px solid var(--yellow);
+  }
+
+  .tier-pill {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 4px 10px;
+    margin-bottom: 20px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-mid);
+    color: var(--grey-2);
+  }
+
+  .tier-pill.active-tier {
+    background: rgba(212,240,0,0.12);
+    border-color: rgba(212,240,0,0.3);
+    color: var(--yellow);
+  }
+
+  .pathway-card h3 {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+
+  .pathway-tagline {
+    font-size: 13px;
+    color: var(--grey-2);
+    margin-bottom: 28px;
+    font-style: italic;
+  }
+
+  .req-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--grey-3);
+    margin-bottom: 12px;
+  }
+
+  .req-list {
+    list-style: none;
+    margin-bottom: 24px;
+  }
+
+  .req-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .req-list li:last-child { border-bottom: none; }
+
+  .req-marker {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--grey-3);
+    padding-top: 2px;
+    flex-shrink: 0;
+    width: 16px;
+  }
+
+  .req-gate {
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--yellow);
+    display: block;
+    margin-bottom: 1px;
+  }
+
+  .req-detail {
+    font-size: 12px;
+    color: var(--grey-2);
+    font-weight: 400;
+    display: block;
+    margin-top: 2px;
+  }
+
+  .benefit-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .benefit-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border: 1px solid var(--border-mid);
+    color: var(--grey-2);
+    background: var(--bg-raised);
+  }
+
+  .benefit-tag.highlight {
+    border-color: rgba(212,240,0,0.3);
+    color: var(--yellow);
+    background: rgba(212,240,0,0.06);
+  }
+
+  .elite-label {
+    position: absolute;
+    top: 0;
+    right: 24px;
+    background: var(--yellow);
+    color: #000;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 3px 10px;
+  }
+
+  /* ─── DASHBOARD ─────────────────────────────────────── */
+  .dashboard-section {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Named SE card */
+  .se-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .se-avatar {
+    width: 44px;
+    height: 44px;
+    background: var(--bg-hover);
+    border: 1px solid var(--border-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .se-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--yellow); margin-bottom: 3px; }
+  .se-name { font-size: 15px; font-weight: 700; }
+  .se-role { font-size: 12px; color: var(--grey-2); }
+
+  .se-actions { margin-left: auto; display: flex; gap: 8px; }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: border-color 0.15s;
+  }
+  .icon-btn:hover { border-color: var(--border-mid); }
+
+  /* Metric cards */
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .metric-card {
+    background: var(--bg-card);
+    padding: 24px 28px;
+  }
+
+  .metric-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--grey-3);
+    margin-bottom: 10px;
+  }
+
+  .metric-value {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .metric-value.yellow { color: var(--yellow); }
+  .metric-value.white { color: var(--white); }
+  .metric-value.green { color: var(--success); }
+
+  .metric-change {
+    font-size: 12px;
+    color: var(--success);
+    font-weight: 600;
+  }
+  .metric-change.neutral { color: var(--grey-3); }
+  .metric-change.warn { color: var(--warning); }
+
+  /* Dashboard grid */
+  .dash-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .dash-card {
+    background: var(--bg-card);
+    padding: 28px 32px;
+  }
+
+  .dash-card-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--grey-3);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .dash-tag {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border: 1px solid rgba(212,240,0,0.3);
+    color: var(--yellow);
+    background: rgba(212,240,0,0.08);
+  }
+
+  /* Profile */
+  .profile-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .avatar {
+    width: 48px;
+    height: 48px;
+    background: var(--bg-hover);
+    border: 1px solid var(--border-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .profile-name { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+  .profile-co { font-size: 13px; color: var(--grey-2); }
+
+  .status-block {
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 15px;
+  }
+
+  .status-block.guardian {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-mid);
+  }
+
+  .status-block.guardian-one {
+    background: rgba(212,240,0,0.06);
+    border: 1px solid rgba(212,240,0,0.25);
+    color: var(--yellow);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--white);
+    flex-shrink: 0;
+  }
+
+  .status-dot.yellow { background: var(--yellow); }
+
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .meta-row:last-child { border-bottom: none; }
+  .meta-label { color: var(--grey-2); font-weight: 400; }
+  .meta-value { font-weight: 600; }
+  .meta-value.warn { color: var(--warning); }
+  .meta-value.yellow { color: var(--yellow); }
+
+  /* Gates */
+  .gate-item {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .gate-item:last-child { border-bottom: none; }
+
+  .gate-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .gate-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .gate-num {
+    width: 22px;
+    height: 22px;
+    background: var(--yellow);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .gate-status {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .gate-status.pass { background: rgba(0,200,150,0.1); color: var(--success); }
+  .gate-status.progress { background: rgba(245,192,32,0.1); color: var(--warning); }
+  .gate-status.pending { color: var(--grey-3); background: var(--bg-raised); }
+
+  .progress-wrap {
+    height: 3px;
+    background: var(--bg-hover);
+    margin: 8px 0;
+  }
+
+  .progress-fill {
+    height: 100%;
+    transition: width 1.2s cubic-bezier(0.16,1,0.3,1);
+  }
+  .progress-fill.green { background: var(--success); }
+  .progress-fill.yellow { background: var(--yellow); }
+  .progress-fill.zero { background: var(--grey-4); }
+
+  .gate-note {
+    font-size: 12px;
+    color: var(--grey-2);
+    margin-top: 4px;
+  }
+
+  .action-strip {
+    background: rgba(212,240,0,0.06);
+    border: 1px solid rgba(212,240,0,0.15);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .action-strip h4 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .action-strip p { font-size: 12px; color: var(--grey-2); }
+
+  /* Certs */
+  .cert-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .cert-item {
+    background: var(--bg-card);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .cert-icon {
+    font-size: 20px;
+    width: 36px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .cert-name { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
+  .cert-full { font-size: 11px; color: var(--grey-2); margin-top: 1px; }
+  .cert-check { margin-left: auto; font-size: 16px; flex-shrink: 0; }
+  .cert-item.locked { opacity: 0.55; }
+
+  /* ─── AI PROMPTS ────────────────────────────────────── */
+  .prompts-section {
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .prompts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .prompt-card {
+    background: var(--bg-card);
+    padding: 24px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .prompt-card:hover { background: var(--bg-hover); }
+
+  .prompt-cat {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--yellow);
+    margin-bottom: 10px;
+  }
+
+  .prompt-card h5 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -0.2px;
+    line-height: 1.4;
+  }
+
+  .prompt-text {
+    font-size: 12px;
+    color: var(--grey-2);
+    line-height: 1.7;
+    font-style: italic;
+    padding-left: 12px;
+    border-left: 2px solid var(--grey-4);
+    margin-bottom: 14px;
+  }
+
+  .copy-btn {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--grey-3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: 'Work Sans', sans-serif;
+    padding: 0;
+    transition: color 0.15s;
+  }
+
+  .copy-btn:hover { color: var(--yellow); }
+
+  /* ─── BENEFITS TABLE ────────────────────────────────── */
+  .benefits-section {
+    background: var(--bg);
+  }
+
+  .benefits-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .benefits-table th {
+    padding: 16px 20px;
+    text-align: left;
+    background: var(--bg-raised);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--grey-2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .benefits-table th.col-g1 { color: var(--white); }
+  .benefits-table th.col-g1-one { color: var(--yellow); }
+
+  .benefits-table td {
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--border);
+    color: var(--grey-1);
+    font-weight: 500;
+  }
+
+  .benefits-table tr:last-child td { border-bottom: none; }
+  .benefits-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  .benefits-table td:not(:first-child) { text-align: center; }
+  .benefits-table td.no { color: var(--grey-4); }
+  .benefits-table td.yes-g1 { font-weight: 700; color: var(--white); }
+  .benefits-table td.yes-g1one { font-weight: 700; color: var(--yellow); }
+
+  .tag-new {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(212,240,0,0.12);
+    color: var(--yellow);
+    border: 1px solid rgba(212,240,0,0.25);
+    padding: 1px 6px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .tag-2027 {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(255,255,255,0.05);
+    color: var(--grey-3);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .table-note {
+    font-size: 12px;
+    color: var(--grey-3);
+    margin-top: 14px;
+    line-height: 1.6;
+  }
+
+  /* ─── FOOTER ────────────────────────────────────────── */
+  footer {
+    background: var(--bg-raised);
+    border-top: 1px solid var(--border);
+    padding: 32px 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--grey-3);
+  }
+
+  footer a {
+    color: var(--grey-3);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  footer a:hover { color: var(--grey-2); }
+
+  /* ─── VIEW STATES ───────────────────────────────────── */
+  .only-public, .only-guardian, .only-g1 { display: none; }
+
+  body.view-public  .only-public  { display: block; }
+  body.view-guardian .only-guardian { display: block; }
+  body.view-g1 .only-g1 { display: block; }
+
+  .show-guardian { display: none; }
+  body.view-guardian .show-guardian,
+  body.view-g1 .show-guardian { display: block; }
+
+  body.view-public .dashboard-section { display: none; }
+
+  @media (max-width: 1100px) {
+    section, .hero { padding: 48px 32px; }
+    nav { padding: 0 24px; }
+    footer { padding: 28px 32px; }
+    .pathway-track { grid-template-columns: 1fr; }
+    .pathway-arrow { display: none; }
+    .metrics-row { grid-template-columns: 1fr 1fr; }
+    .dash-grid { grid-template-columns: 1fr; }
+    .cert-grid { grid-template-columns: 1fr 1fr; }
+    .prompts-grid { grid-template-columns: 1fr 1fr; }
+    .hero h1 { font-size: 48px; }
+  }
+</style>
+</head>
+<body class="view-guardian">
+
+<!-- DEMO BAR -->
+<div class="demo-bar">
+  <strong>Prototype:</strong> Toggle state to explore different portal views &nbsp;
+  <div class="demo-toggle">
+    <button onclick="setView('view-public', this)">Public / Non-Guardian</button>
+    <button onclick="setView('view-guardian', this)" class="active">Guardian (logged in)</button>
+    <button onclick="setView('view-g1', this)">Guardian One (logged in)</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <svg class="logo-hex" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" stroke="white" stroke-width="2.5" fill="none"/>
+      <polygon points="20,8 32,15 32,28 20,35 8,28 8,15" stroke="white" stroke-width="1.5" fill="none" opacity="0.5"/>
+      <polygon points="20,14 28,19 28,27 20,32 12,27 12,19" stroke="white" stroke-width="1" fill="none" opacity="0.3"/>
+    </svg>
+    <span class="logo-wordmark">tenable</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Distributors</a></li>
+    <li><a href="#">Deal Registration</a></li>
+    <li><a href="#">Education</a></li>
+    <li><a href="#" class="active">Guardian Program</a></li>
+    <li><a href="#">More</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="nav-badge" id="nav-badge">Guardian</span>
+    <span class="nav-user">Ana Silva</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <svg class="hero-hex-deco" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="160,10 280,80 280,240 160,310 40,240 40,80" stroke="white" stroke-width="3" fill="none"/>
+    <polygon points="160,40 260,100 260,220 160,280 60,220 60,100" stroke="white" stroke-width="2" fill="none"/>
+    <polygon points="160,70 240,120 240,200 160,250 80,200 80,120" stroke="white" stroke-width="1.5" fill="none"/>
+    <polygon points="160,100 220,140 220,180 160,220 100,180 100,140" stroke="white" stroke-width="1" fill="none"/>
+  </svg>
+
+  <div class="hero-eyebrow">Tenable Partner Program</div>
+  <h1>The <span class="highlight">Guardian</span><br> Program</h1>
+  <p>A two-tier framework recognizing Tenable's most capable partner SEs. Guardian is the knowledge benchmark. Guardian One is the delivery elite.</p>
+
+  <div class="btn-group">
+    <a href="#pathway" class="btn btn-yellow">Explore the pathway →</a>
+    <a href="#dashboard" class="btn btn-outline show-guardian" id="my-status-btn">My status</a>
+  </div>
+</div>
+
+<!-- PATHWAY -->
+<section class="pathway-section" id="pathway">
+  <div class="section-eyebrow">The Journey</div>
+  <h2>Three levels.<br>One direction.</h2>
+  <p class="section-sub">Every Guardian One starts as a Partner SE. The pathway is defined, the requirements are published, and the route is open to anyone who qualifies.</p>
+
+  <div class="pathway-track">
+
+    <!-- Step 1 -->
+    <div class="pathway-card">
+      <div class="tier-pill">Tier 1</div>
+      <h3>Partner SE</h3>
+      <p class="pathway-tagline">The starting point — product access and partner standing.</p>
+
+      <div class="req-section-label">Requirements</div>
+      <ul class="req-list">
+        <li>
+          <span class="req-marker">○</span>
+          <div>Gold or Platinum Medallion<span class="req-detail">Company-level Assure partner tier</span></div>
+        </li>
+        <li>
+          <span class="req-marker">○</span>
+          <div>Active SE or pre-sales role<span class="req-detail">Technical or technical sales function</span></div>
+        </li>
+      </ul>
+
+      <div class="benefit-tags">
+        <span class="benefit-tag">Partner portal</span>
+        <span class="benefit-tag">Training library</span>
+        <span class="benefit-tag">Deal registration</span>
+      </div>
+    </div>
+
+    <div class="pathway-arrow">→</div>
+
+    <!-- Step 2 -->
+    <div class="pathway-card tier-guardian">
+      <div class="tier-pill">Tier 2</div>
+      <h3>Tenable Guardian</h3>
+      <p class="pathway-tagline">Certified mastery. Knowledge validated, invitation earned.</p>
+
+      <div class="req-section-label">Requirements</div>
+      <ul class="req-list">
+        <li>
+          <span class="req-marker">●</span>
+          <div>TCSA — Tenable Certified Sales Associate<span class="req-detail">Core sales competency certification</span></div>
+        </li>
+        <li>
+          <span class="req-marker">●</span>
+          <div>TCSE — Tenable Certified Sales Engineer<span class="req-detail">Technical presales certification</span></div>
+        </li>
+        <li>
+          <span class="req-marker">●</span>
+          <div>TCDE — Tenable Certified Delivery Engineer<span class="req-detail">Deployment and delivery certification</span></div>
+        </li>
+        <li>
+          <span class="req-marker">●</span>
+          <div>Gold or Platinum company tier<span class="req-detail">Must be active at point of application</span></div>
+        </li>
+      </ul>
+
+      <div class="benefit-tags">
+        <span class="benefit-tag">Tier II support</span>
+        <span class="benefit-tag">SE-level training</span>
+        <span class="benefit-tag">Guardian badge</span>
+        <span class="benefit-tag">Quarterly calls</span>
+        <span class="benefit-tag">SE Summit</span>
+      </div>
+    </div>
+
+    <div class="pathway-arrow" style="color:var(--yellow)">→</div>
+
+    <!-- Step 3 -->
+    <div class="pathway-card tier-guardian-one">
+      <div class="elite-label">Elite</div>
+      <div class="tier-pill active-tier">Tier 3</div>
+      <h3>Guardian One</h3>
+      <p class="pathway-tagline">Not a certification. A delivery standard. All three gates required.</p>
+
+      <div class="req-section-label">Three gates — all required</div>
+      <ul class="req-list">
+        <li>
+          <span class="req-marker" style="color:var(--yellow)">1</span>
+          <div>
+            <span class="req-gate">Gate 1 — Revenue</span>
+            Territory quota threshold (prior 12 months)
+            <span class="req-detail">Primary commercial filter. The floor, not the ceiling.</span>
+          </div>
+        </li>
+        <li>
+          <span class="req-marker" style="color:var(--yellow)">2</span>
+          <div>
+            <span class="req-gate">Gate 2 — Specialist Certifications</span>
+            Domain certs — current, not historical
+            <span class="req-detail">Tenable One · OT Security · Cloud Security</span>
+          </div>
+        </li>
+        <li>
+          <span class="req-marker" style="color:var(--yellow)">3</span>
+          <div>
+            <span class="req-gate">Gate 3 — SE Panel Approval</span>
+            Field SE + Channel SE joint sign-off
+            <span class="req-detail">Gate 3 can fail even if Gates 1 &amp; 2 clear. That's by design.</span>
+          </div>
+        </li>
+      </ul>
+
+      <div class="benefit-tags">
+        <span class="benefit-tag highlight">Named Field SE</span>
+        <span class="benefit-tag highlight">Channel Out routing</span>
+        <span class="benefit-tag highlight">Guardian Summit</span>
+        <span class="benefit-tag highlight">Exclusive branding</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Non-guardian CTA -->
+  <div class="only-public" style="display:none">
+    <div style="margin-top:32px;padding:32px;background:var(--bg-card);border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:24px">
+      <div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:6px;">Ready to start your Guardian journey?</div>
+        <div style="font-size:14px;color:var(--grey-2)">Talk to your Channel SE about the certification pathway and what it takes to qualify.</div>
+      </div>
+      <a href="#" class="btn btn-yellow">Get started →</a>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section class="dashboard-section show-guardian" id="dashboard">
+  <div class="section-eyebrow">My Dashboard</div>
+  <h2 id="dash-heading">Your Guardian Status</h2>
+  <p class="section-sub">Track your certifications, delivery metrics, and progress toward Guardian One. Logging activity in SFDC unlocks Field SE support.</p>
+
+  <!-- Named SE -->
+  <div class="se-card">
+    <div class="se-avatar">SC</div>
+    <div>
+      <div class="se-label">Your Named Channel SE</div>
+      <div class="se-name">Marcelo Rovere</div>
+      <div class="se-role">Channel Systems Engineer, LATAM</div>
+    </div>
+    <div class="se-actions">
+      <div class="icon-btn" title="Email">✉</div>
+      <div class="icon-btn" title="Calendar">📅</div>
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="metric-label">Partner Revenue (12mo)</div>
+      <div class="metric-value yellow">US$94k</div>
+      <div class="metric-change">↑ 18% vs prior year</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">POCs Delivered (YTD)</div>
+      <div class="metric-value white">7</div>
+      <div class="metric-change neutral">Log a new POC →</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Demos Conducted (YTD)</div>
+      <div class="metric-value white">14</div>
+      <div class="metric-change">+3 this quarter</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">SFDC Activity Score</div>
+      <div class="metric-value green">82<span style="font-size:18px;font-weight:400;color:var(--grey-3)">/100</span></div>
+      <div class="metric-change">Field SE access active ✓</div>
+    </div>
+  </div>
+
+  <!-- Dash grid -->
+  <div class="dash-grid">
+    <!-- Profile -->
+    <div class="dash-card">
+      <div class="dash-card-label">
+        Profile
+        <span class="dash-tag" id="tier-tag">Guardian</span>
+      </div>
+
+      <div class="profile-row">
+        <div class="avatar">AS</div>
+        <div>
+          <div class="profile-name">Ana Silva</div>
+          <div class="profile-co">Partner LATAM</div>
+        </div>
+      </div>
+
+      <div class="status-block guardian" id="status-block">
+        <div class="status-dot"></div>
+        <span>Tenable Guardian</span>
+      </div>
+
+      <div class="meta-row">
+        <span class="meta-label">Status since</span>
+        <span class="meta-value">March 2023</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Company tier</span>
+        <span class="meta-value">Platinum</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">TCSE renewal</span>
+        <span class="meta-value warn">Aug 2026 ⚠</span>
+      </div>
+      <div class="meta-row only-g1">
+        <span class="meta-label">Guardian One since</span>
+        <span class="meta-value yellow">October 2026</span>
+      </div>
+      <div class="meta-row only-g1">
+        <span class="meta-label">Summit 2026</span>
+        <span class="meta-value yellow">Invited ★</span>
+      </div>
+    </div>
+
+    <!-- Gates panel -->
+    <div class="dash-card">
+
+      <!-- Guardian: progress toward G1 -->
+      <div class="only-guardian">
+        <div class="dash-card-label">
+          Progress to Guardian One
+          <span class="dash-tag">3 Gates</span>
+        </div>
+
+        <div class="gate-item">
+          <div class="gate-header">
+            <div class="gate-title"><div class="gate-num">1</div>Revenue Threshold</div>
+            <div class="gate-status pass">✓ Cleared</div>
+          </div>
+          <div style="font-size:13px;color:var(--grey-2)">US$94k NB — above US$40k threshold</div>
+          <div class="progress-wrap"><div class="progress-fill green" style="width:0%" data-target="94"></div></div>
+          <div class="gate-note">135% of minimum threshold · Next review Q4 2026</div>
+        </div>
+
+        <div class="gate-item">
+          <div class="gate-header">
+            <div class="gate-title"><div class="gate-num">2</div>Specialist Certifications</div>
+            <div class="gate-status progress">In Progress — 2 of 3</div>
+          </div>
+          <div style="font-size:13px;color:var(--grey-2)">Active domain certs required</div>
+          <div class="progress-wrap"><div class="progress-fill yellow" style="width:0%" data-target="67"></div></div>
+          <div class="gate-note">Tenable One ✓ · OT Security ✓ · Cloud Security — not yet completed</div>
+        </div>
+
+        <div class="gate-item">
+          <div class="gate-header">
+            <div class="gate-title"><div class="gate-num">3</div>SE Panel Approval</div>
+            <div class="gate-status pending">Pending Gate 2</div>
+          </div>
+          <div style="font-size:13px;color:var(--grey-2)">Field SE + Channel SE joint sign-off</div>
+          <div class="progress-wrap"><div class="progress-fill zero" style="width:100%"></div></div>
+          <div class="gate-note">Opens once Gates 1 &amp; 2 are cleared · Marcelo Rovere will initiate</div>
+        </div>
+
+        <div class="action-strip">
+          <div>
+            <h4>One cert away from Gate 2</h4>
+            <p>Complete Cloud Security Specialist to unlock the SE panel review.</p>
+          </div>
+          <a href="#" class="btn btn-yellow" style="white-space:nowrap;font-size:13px">Start cert →</a>
+        </div>
+      </div>
+
+      <!-- Guardian One: active status -->
+      <div class="only-g1">
+        <div class="dash-card-label">
+          Guardian One Status
+          <span class="dash-tag" style="background:rgba(212,240,0,0.15);border-color:rgba(212,240,0,0.35)">★ Active</span>
+        </div>
+
+        <div class="gate-item">
+          <div class="gate-header">
+            <div class="gate-title"><div class="gate-num">1</div>Revenue</div>
+            <div class="gate-status pass">✓ Active</div>
+          </div>
+          <div class="progress-wrap"><div class="progress-fill green" style="width:0%" data-target="100"></div></div>
+          <div class="gate-note">Next quarterly review: Q4 2026</div>
+        </div>
+
+        <div class="gate-item">
+          <div class="gate-header">
+            <div class="gate-title"><div class="gate-num">2</div>Specialist Certs</div>
+            <div class="gate-status pass">✓ 3 of 3 Active</div>
+          </div>
+          <div class="progress-wrap"><div class="progress-fill green" style="width:0%" data-target="100"></div></div>
+          <div class="gate-note">Tenable One ✓ · OT Security ✓ · Cloud Security ✓ · TCSE renews Aug 2026</div>
+        </div>
+
+        <div class="gate-item">
+          <div class="gate-header">
+            <div class="gate-title"><div class="gate-num">3</div>SE Panel</div>
+            <div class="gate-status pass">✓ Approved Oct 2026</div>
+          </div>
+          <div class="progress-wrap"><div class="progress-fill green" style="width:0%" data-target="100"></div></div>
+          <div class="gate-note">Approved by Marcelo Rovere (CSE) + Camila Torres (Field SE)</div>
+        </div>
+
+        <div style="margin-top:20px;padding:16px 20px;background:rgba(245,192,32,0.05);border:1px solid rgba(245,192,32,0.15)">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--warning);margin-bottom:6px">Maintain your status</div>
+          <div style="font-size:13px;color:var(--grey-2);line-height:1.6">Activity thresholds reviewed quarterly. Two misses trigger a formal review. Three misses: title and all benefits removed. Log all POCs, demos, and registrations in SFDC.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Certifications -->
+  <div style="font-size:14px;font-weight:700;letter-spacing:-0.2px;margin-bottom:14px;text-transform:uppercase;font-size:11px;letter-spacing:2px;color:var(--grey-3)">Certifications</div>
+  <div class="cert-grid">
+    <div class="cert-item">
+      <div class="cert-icon">🎓</div>
+      <div>
+        <div class="cert-name">TCSA</div>
+        <div class="cert-full">Sales Associate · Expires Dec 2026</div>
+      </div>
+      <div class="cert-check">✅</div>
+    </div>
+    <div class="cert-item">
+      <div class="cert-icon">🎓</div>
+      <div>
+        <div class="cert-name">TCSE</div>
+        <div class="cert-full" style="color:var(--warning)">Sales Engineer · Expires Aug 2026 ⚠</div>
+      </div>
+      <div class="cert-check" style="color:var(--warning)">⚠</div>
+    </div>
+    <div class="cert-item">
+      <div class="cert-icon">🎓</div>
+      <div>
+        <div class="cert-name">TCDE</div>
+        <div class="cert-full">Delivery Engineer · Expires Jan 2027</div>
+      </div>
+      <div class="cert-check">✅</div>
+    </div>
+    <div class="cert-item">
+      <div class="cert-icon">⭐</div>
+      <div>
+        <div class="cert-name">Tenable One Specialist</div>
+        <div class="cert-full">Exposure Management · Expires Mar 2027</div>
+      </div>
+      <div class="cert-check">✅</div>
+    </div>
+    <div class="cert-item">
+      <div class="cert-icon">⭐</div>
+      <div>
+        <div class="cert-name">OT Security Specialist</div>
+        <div class="cert-full">Operational Technology · Expires Sep 2026</div>
+      </div>
+      <div class="cert-check">✅</div>
+    </div>
+    <div class="cert-item locked" id="cloud-cert-row">
+      <div class="cert-icon">☁</div>
+      <div>
+        <div class="cert-name">Cloud Security Specialist</div>
+        <div class="cert-full" style="color:var(--yellow)">Required for Gate 2 → Guardian One</div>
+      </div>
+      <div class="cert-check" id="cloud-check">⬜</div>
+    </div>
+  </div>
+</section>
+
+<!-- AI PROMPTS -->
+<section class="prompts-section">
+  <div class="section-eyebrow">Guardian Prompt Library</div>
+  <h2>AI prompts built<br>for partner SEs</h2>
+  <p class="section-sub">Paste these into your AI of choice to accelerate conversations, build expansion cases, and prepare for technical challenges. Updated by the Guardian program team.</p>
+
+  <div class="prompts-grid">
+    <div class="prompt-card">
+      <div class="prompt-cat">Deal strategy</div>
+      <h5>Build the VM-to-EM expansion case</h5>
+      <div class="prompt-text">"My customer [Company] recently renewed their Tenable VM license. They have [X] assets, primarily on-prem with some cloud. Help me build the business case for expanding to Tenable One — including how to frame the ROI conversation and what discovery questions will reveal their exposure gaps."</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">⧉ Copy prompt</button>
+    </div>
+    <div class="prompt-card">
+      <div class="prompt-cat">POC preparation</div>
+      <h5>Design a POC success criteria document</h5>
+      <div class="prompt-text">"I'm running a 30-day Tenable One POC with [Customer]. Their key concern is [concern]. Draft a POC success criteria document with 5 measurable outcomes, a week-by-week activity plan, and suggested stakeholder check-ins."</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">⧉ Copy prompt</button>
+    </div>
+    <div class="prompt-card">
+      <div class="prompt-cat">Technical positioning</div>
+      <h5>Handle the "we already have a scanner" objection</h5>
+      <div class="prompt-text">"A prospect says they already use [Competitor] and don't see why they'd switch. Help me build a technical differentiation talking track that focuses on breadth of coverage (IT, OT, cloud, identity) and business risk context, not just feature comparisons."</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">⧉ Copy prompt</button>
+    </div>
+    <div class="prompt-card">
+      <div class="prompt-cat">Discovery</div>
+      <h5>OT/ICS environment discovery questions</h5>
+      <div class="prompt-text">"I have a meeting with the OT/ICS security lead at a manufacturing company. Give me 10 discovery questions that will surface their current visibility gaps, regulatory pressure (NIS2, IEC 62443, LGPD), and why agent-based scanning is impractical in their environment."</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">⧉ Copy prompt</button>
+    </div>
+    <div class="prompt-card">
+      <div class="prompt-cat">RFP / Proposal</div>
+      <h5>Respond to an exposure management RFP section</h5>
+      <div class="prompt-text">"I'm responding to an RFP that asks: '[paste question]'. The customer is in [industry]. Using Tenable's positioning around Exposure Management and Tenable One, draft a compelling 200-word technical response that addresses the question and highlights our differentiation."</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">⧉ Copy prompt</button>
+    </div>
+    <div class="prompt-card">
+      <div class="prompt-cat">Exec conversations</div>
+      <h5>Translate a scan report into a CISO briefing</h5>
+      <div class="prompt-text">"I have Tenable scan results showing [X critical, Y high vulns] across [Z] assets. My audience is a CISO who doesn't want technical detail. Write a 5-minute verbal briefing that translates these findings into business risk language, with 3 prioritized actions."</div>
+      <button class="copy-btn" onclick="copyPrompt(this)">⧉ Copy prompt</button>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS TABLE -->
+<section class="benefits-section">
+  <div class="section-eyebrow">Program Benefits</div>
+  <h2>What each tier unlocks</h2>
+  <p class="section-sub">Guardian One benefits requiring active SFDC logging: Named Field SE, Channel Out routing. If it's not logged, the resource doesn't unlock.</p>
+
+  <table class="benefits-table">
+    <thead>
+      <tr>
+        <th style="width:38%">Benefit</th>
+        <th>Partner SE</th>
+        <th class="col-g1">Guardian</th>
+        <th class="col-g1-one">Guardian One ★</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Partner portal &amp; deal registration</td>
+        <td class="yes-g1">✓</td><td class="yes-g1">✓</td><td class="yes-g1one">✓</td>
+      </tr>
+      <tr>
+        <td>Training library</td>
+        <td class="yes-g1">✓</td><td class="yes-g1">✓</td><td class="yes-g1one">✓</td>
+      </tr>
+      <tr>
+        <td>Tier II engineering support</td>
+        <td class="no">—</td><td class="yes-g1">✓</td><td class="yes-g1one">✓</td>
+      </tr>
+      <tr>
+        <td>SE-level training program</td>
+        <td class="no">—</td><td class="yes-g1">✓</td><td class="yes-g1one">✓</td>
+      </tr>
+      <tr>
+        <td>Guardian badge &amp; branding</td>
+        <td class="no">—</td><td class="yes-g1">✓</td><td class="yes-g1one">✓ + Guardian One mark</td>
+      </tr>
+      <tr>
+        <td>Quarterly update calls</td>
+        <td class="no">—</td><td class="yes-g1">✓</td><td class="yes-g1one">✓</td>
+      </tr>
+      <tr>
+        <td>SE Summit</td>
+        <td class="no">—</td><td class="yes-g1">✓</td><td class="yes-g1one">✓</td>
+      </tr>
+      <tr>
+        <td>Named Field SE <span class="tag-new">New</span></td>
+        <td class="no">—</td><td class="no">—</td><td class="yes-g1one">★ Named individual</td>
+      </tr>
+      <tr>
+        <td>Channel Out opportunity routing <span class="tag-new">New</span></td>
+        <td class="no">—</td><td class="no">—</td><td class="yes-g1one">★ Direct routing</td>
+      </tr>
+      <tr>
+        <td>Guardian Summit - invitation only <span class="tag-new">Oct 2026</span></td>
+        <td class="no">—</td><td class="no">—</td><td class="yes-g1one">★ Invited</td>
+      </tr>
+      <tr>
+        <td>Service delivery partnership <span class="tag-2027">2027</span></td>
+        <td class="no">—</td><td class="no">—</td><td style="color:var(--grey-3)">Planned</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>© 2026 Tenable, Inc. All rights reserved.</div>
+  <div style="display:flex;gap:28px">
+    <a href="#">Guardian Program</a>
+    <a href="#">Partner Portal</a>
+    <a href="mailto:latam-partners@tenable.com">latam-partners@tenable.com</a>
+  </div>
+</footer>
+
+<script>
+  function setView(cls, btn) {
+    document.body.className = cls;
+    document.querySelectorAll('.demo-toggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const badge = document.getElementById('nav-badge');
+    const tierTag = document.getElementById('tier-tag');
+    const statusBlock = document.getElementById('status-block');
+    const dashHeading = document.getElementById('dash-heading');
+    const cloudRow = document.getElementById('cloud-cert-row');
+    const cloudCheck = document.getElementById('cloud-check');
+
+    if (cls === 'view-public') {
+      badge.style.display = 'none';
+    } else if (cls === 'view-guardian') {
+      badge.style.display = 'inline-block';
+      badge.textContent = 'Guardian';
+      badge.style.background = 'var(--white)';
+      badge.style.color = '#000';
+      tierTag.textContent = 'Guardian';
+      statusBlock.className = 'status-block guardian';
+      statusBlock.innerHTML = '<div class="status-dot"></div><span>Tenable Guardian</span>';
+      dashHeading.textContent = 'Your Guardian Status';
+      cloudRow.className = 'cert-item locked';
+      cloudCheck.textContent = '⬜';
+      cloudRow.querySelector('.cert-full').style.color = 'var(--yellow)';
+      cloudRow.querySelector('.cert-full').textContent = 'Required for Gate 2 → Guardian One';
+    } else if (cls === 'view-g1') {
+      badge.style.display = 'inline-block';
+      badge.textContent = 'Guardian One';
+      badge.style.background = 'var(--yellow)';
+      badge.style.color = '#000';
+      tierTag.textContent = 'Guardian One';
+      statusBlock.className = 'status-block guardian-one';
+      statusBlock.innerHTML = '<div class="status-dot yellow"></div><span>Tenable Guardian One</span>';
+      dashHeading.textContent = 'Your Guardian One Status';
+      cloudRow.className = 'cert-item';
+      cloudCheck.textContent = '✅';
+      cloudRow.querySelector('.cert-full').style.color = '';
+      cloudRow.querySelector('.cert-full').textContent = 'Cloud Security · Expires Apr 2027';
+    }
+
+    // re-animate progress bars
+    document.querySelectorAll('.progress-fill[data-target]').forEach(bar => {
+      const t = bar.getAttribute('data-target');
+      bar.style.width = '0%';
+      requestAnimationFrame(() => setTimeout(() => bar.style.width = t + '%', 100));
+    });
+  }
+
+  function copyPrompt(btn) {
+    const text = btn.parentElement.querySelector('.prompt-text').textContent.trim();
+    navigator.clipboard.writeText(text).catch(() => {});
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✓ Copied';
+    btn.style.color = 'var(--success)';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; }, 1600);
+  }
+
+  // Initial animation
+  setTimeout(() => {
+    document.querySelectorAll('.progress-fill[data-target]').forEach(bar => {
+      const t = bar.getAttribute('data-target');
+      bar.style.width = '0%';
+      requestAnimationFrame(() => setTimeout(() => bar.style.width = t + '%', 150));
+    });
+  }, 400);
+
+  // Init badge
+  document.getElementById('nav-badge').style.display = 'inline-block';
+</script>
+</body>
+</html>

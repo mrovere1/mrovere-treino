@@ -24,6 +24,12 @@ Main modules:
 - POV Tracker
 - Admin
 
+Reference pages:
+
+- Guardian visual reference: `guardian-visual-reference.html`
+- Guardian LATAM demo: `guardian-latam.html`
+- Guardian implementation notes: `docs/guardian-visual-reference.md`
+
 Role behavior:
 
 - `admin` users can access all modules, including POV Tracker.
@@ -137,6 +143,14 @@ Repository files involved:
 - `index.html`: app entry point.
 - `manifest.webmanifest`: PWA metadata.
 - `sw.js`: service worker with conservative caching.
+- `guardian-visual-reference.html`: standalone visual reference for Guardian-style pages.
+- `guardian-latam.html`: standalone LATAM Guardian Program page prototype.
+
+Public reference URLs after GitHub Pages rebuild:
+
+- `https://www.mrovere.com/guardian-visual-reference.html`
+- `https://www.mrovere.com/guardian-latam.html`
+- `https://www.mrovere.com/docs/guardian-visual-reference.md`
 
 Expected domain configuration:
 

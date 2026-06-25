@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guardian Visual Reference - Tenable LATAM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #1a1a1a;
+        --bg-raised: #242424;
+        --bg-card: #2a2a2a;
+        --bg-hover: #323232;
+        --border: rgba(255, 255, 255, 0.08);
+        --border-mid: rgba(255, 255, 255, 0.14);
+        --yellow: #d4f000;
+        --yellow-dark: #a8c000;
+        --white: #ffffff;
+        --grey-1: #e0e0e0;
+        --grey-2: #a0a0a0;
+        --grey-3: #606060;
+        --success: #00c896;
+        --warning: #f5c020;
+        --danger: #ff4040;
+        --font-sans: "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--white);
+        font-family: var(--font-sans);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        min-height: 64px;
+        padding: 0 40px;
+        border-bottom: 1px solid var(--border);
+        background: rgba(26, 26, 26, 0.96);
+        backdrop-filter: blur(14px);
+      }
+
+      .nav-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-right: 48px;
+      }
+
+      .logo-hex {
+        width: 32px;
+        height: 32px;
+      }
+
+      .logo-wordmark {
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+      }
+
+      .nav-links {
+        display: flex;
+        flex: 1;
+        gap: 0;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .nav-links a {
+        display: block;
+        height: 64px;
+        padding: 0 16px;
+        color: var(--grey-2);
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 64px;
+        white-space: nowrap;
+      }
+
+      .nav-links a.active,
+      .nav-links a:hover {
+        color: var(--white);
+      }
+
+      .nav-links a.active {
+        position: relative;
+      }
+
+      .nav-links a.active::after {
+        position: absolute;
+        right: 16px;
+        bottom: 0;
+        left: 16px;
+        height: 2px;
+        background: var(--yellow);
+        content: "";
+      }
+
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--grey-2);
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .nav-badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 3px 10px;
+        border-radius: 3px;
+        background: var(--yellow);
+        color: #000;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .hero {
+        position: relative;
+        min-height: 520px;
+        overflow: hidden;
+        padding: 80px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .hero-hex-deco {
+        position: absolute;
+        top: 50%;
+        right: 80px;
+        width: 320px;
+        opacity: 0.12;
+        transform: translateY(-50%);
+      }
+
+      .eyebrow {
+        margin-bottom: 24px;
+        color: var(--yellow);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 740px;
+        margin-bottom: 24px;
+        font-size: 72px;
+        font-weight: 800;
+        letter-spacing: -2px;
+        line-height: 1;
+      }
+
+      h1 .highlight {
+        display: inline;
+        padding: 0 8px;
+        background: var(--yellow);
+        color: #000;
+      }
+
+      .hero-copy {
+        max-width: 580px;
+        margin-bottom: 36px;
+        color: var(--grey-2);
+        font-size: 18px;
+        line-height: 1.7;
+      }
+
+      .btn-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 48px;
+        padding: 13px 28px;
+        border: 1px solid transparent;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 0.2px;
+      }
+
+      .btn-yellow {
+        background: var(--yellow);
+        color: #000;
+      }
+
+      .btn-outline {
+        border-color: var(--border-mid);
+        color: var(--grey-1);
+      }
+
+      section {
+        padding: 72px 80px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      h2 {
+        margin-bottom: 14px;
+        font-size: 42px;
+        font-weight: 800;
+        letter-spacing: -1px;
+        line-height: 1.1;
+      }
+
+      .section-sub {
+        max-width: 760px;
+        margin-bottom: 44px;
+        color: var(--grey-2);
+        font-size: 16px;
+        line-height: 1.7;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1px;
+        border: 1px solid var(--border);
+        background: var(--border);
+      }
+
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1px;
+        border: 1px solid var(--border);
+        background: var(--border);
+      }
+
+      .card {
+        min-height: 100%;
+        padding: 28px 32px;
+        background: var(--bg-card);
+      }
+
+      .card-label {
+        margin-bottom: 16px;
+        color: var(--grey-3);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      .card h3 {
+        margin-bottom: 8px;
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+      }
+
+      .card p {
+        margin-bottom: 0;
+        color: var(--grey-2);
+        font-size: 14px;
+      }
+
+      .token {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 10px 0;
+        color: var(--grey-2);
+        font-size: 13px;
+      }
+
+      .swatch {
+        width: 34px;
+        height: 34px;
+        border: 1px solid var(--border-mid);
+      }
+
+      .metric-value {
+        margin-bottom: 8px;
+        font-size: 36px;
+        font-weight: 800;
+        letter-spacing: -1px;
+        line-height: 1;
+      }
+
+      .yellow {
+        color: var(--yellow);
+      }
+
+      .green {
+        color: var(--success);
+      }
+
+      .status-block {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        border: 1px solid rgba(212, 240, 0, 0.25);
+        background: rgba(212, 240, 0, 0.06);
+        color: var(--yellow);
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--yellow);
+      }
+
+      .prompt-card {
+        padding: 28px 32px;
+        border: 1px solid var(--border);
+        background: var(--bg-card);
+      }
+
+      .prompt-cat {
+        margin-bottom: 18px;
+        color: var(--yellow);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      .prompt-card h3 {
+        margin-bottom: 14px;
+        font-size: 20px;
+        line-height: 1.2;
+      }
+
+      .prompt-text {
+        color: var(--grey-2);
+        font-size: 14px;
+      }
+
+      .code-block {
+        overflow: auto;
+        padding: 20px;
+        border: 1px solid var(--border);
+        background: #111;
+        color: var(--grey-1);
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 13px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+      }
+
+      footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 32px 80px;
+        background: var(--bg-raised);
+        color: var(--grey-3);
+        font-size: 13px;
+      }
+
+      footer a {
+        color: var(--grey-2);
+      }
+
+      @media (max-width: 1100px) {
+        nav {
+          padding: 0 24px;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .hero,
+        section {
+          padding: 48px 32px;
+        }
+
+        .hero {
+          min-height: auto;
+        }
+
+        .hero-hex-deco {
+          right: 24px;
+          width: 220px;
+        }
+
+        h1 {
+          font-size: 48px;
+        }
+
+        h2 {
+          font-size: 32px;
+        }
+
+        .grid-3,
+        .grid-4 {
+          grid-template-columns: 1fr;
+        }
+
+        footer {
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 28px 32px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a class="nav-logo" href="#top" aria-label="Tenable Guardian visual reference">
+        <svg class="logo-hex" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" stroke="white" stroke-width="2.5" fill="none" />
+          <polygon points="20,8 32,15 32,28 20,35 8,28 8,15" stroke="white" stroke-width="1.5" fill="none" opacity="0.5" />
+          <polygon points="20,14 28,19 28,27 20,32 12,27 12,19" stroke="white" stroke-width="1" fill="none" opacity="0.3" />
+        </svg>
+        <span class="logo-wordmark">tenable</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#visual-dna" class="active">Visual DNA</a></li>
+        <li><a href="#tokens">Tokens</a></li>
+        <li><a href="#components">Components</a></li>
+        <li><a href="#states">States</a></li>
+        <li><a href="#tooling">Tooling</a></li>
+      </ul>
+      <div class="nav-right">
+        <span class="nav-badge">Reference</span>
+        <span>LATAM</span>
+      </div>
+    </nav>
+
+    <main id="top">
+      <div class="hero">
+        <svg class="hero-hex-deco" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <polygon points="160,10 280,80 280,240 160,310 40,240 40,80" stroke="white" stroke-width="3" fill="none" />
+          <polygon points="160,40 260,100 260,220 160,280 60,220 60,100" stroke="white" stroke-width="2" fill="none" />
+          <polygon points="160,70 240,120 240,200 160,250 80,200 80,120" stroke="white" stroke-width="1.5" fill="none" />
+          <polygon points="160,100 220,140 220,180 160,220 100,180 100,140" stroke="white" stroke-width="1" fill="none" />
+        </svg>
+        <div class="eyebrow">Tenable LATAM visual reference</div>
+        <h1>Guardian <span class="highlight">Design</span><br /> System</h1>
+        <p class="hero-copy">
+          Canonical visual reference for building Guardian Program pages, dashboards, prompts, and partner-facing experiences inside Apps MROVERE.
+        </p>
+        <div class="btn-row">
+          <a class="btn btn-yellow" href="./guardian-latam.html">Open live LATAM demo</a>
+          <a class="btn btn-outline" href="./docs/guardian-visual-reference.md">Read implementation notes</a>
+        </div>
+      </div>
+
+      <section id="visual-dna">
+        <div class="eyebrow">Visual DNA</div>
+        <h2>Dark operational, high-contrast Tenable.</h2>
+        <p class="section-sub">
+          Use a matte dark background, sharp rectangular surfaces, subtle white borders, Work Sans typography, and Tenable yellow only for active navigation, status, calls to action, and premium Guardian One cues.
+        </p>
+        <div class="grid-3">
+          <article class="card">
+            <div class="card-label">Navigation</div>
+            <h3>Sticky top menu</h3>
+            <p>Hex logo, lowercase wordmark, compact tabs, active underline, badge on the right.</p>
+          </article>
+          <article class="card">
+            <div class="card-label">Hero</div>
+            <h3>Oversized headline</h3>
+            <p>Use one yellow highlight block inside the headline and a faint hex motif on the right.</p>
+          </article>
+          <article class="card">
+            <div class="card-label">Surface</div>
+            <h3>Dense card grids</h3>
+            <p>Cards are square-edged, quiet, and information-first. Avoid marketing-style floating cards.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="tokens">
+        <div class="eyebrow">Tokens</div>
+        <h2>Color, typography, spacing.</h2>
+        <p class="section-sub">These tokens are the portable contract for recreating the Guardian look in any builder or coding tool.</p>
+        <div class="grid-3">
+          <article class="card">
+            <div class="card-label">Core colors</div>
+            <div class="token"><span class="swatch" style="background:#1a1a1a"></span><span>--bg: #1a1a1a</span></div>
+            <div class="token"><span class="swatch" style="background:#2a2a2a"></span><span>--bg-card: #2a2a2a</span></div>
+            <div class="token"><span class="swatch" style="background:#d4f000"></span><span>--yellow: #d4f000</span></div>
+            <div class="token"><span class="swatch" style="background:#a0a0a0"></span><span>--grey-2: #a0a0a0</span></div>
+          </article>
+          <article class="card">
+            <div class="card-label">Typography</div>
+            <h3>Work Sans</h3>
+            <p>Use 800/900 for hero and section headings, 700/800 for labels and badges, 400/500 for body text. Do not use negative letter spacing outside display headlines.</p>
+          </article>
+          <article class="card">
+            <div class="card-label">Spacing</div>
+            <h3>Large bands</h3>
+            <p>Sections use 72px vertical padding on desktop, 48px on tablet/mobile. Cards use 28px to 32px internal padding.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="components">
+        <div class="eyebrow">Components</div>
+        <h2>Reusable Guardian blocks.</h2>
+        <p class="section-sub">Copy these patterns when creating new LATAM partner pages, dashboards, AI prompt libraries, or enablement hubs.</p>
+        <div class="grid-4">
+          <article class="card">
+            <div class="card-label">Partner revenue</div>
+            <div class="metric-value yellow">US$94k</div>
+            <p>Use yellow for commercial proof points and Guardian One qualification progress.</p>
+          </article>
+          <article class="card">
+            <div class="card-label">POCs delivered</div>
+            <div class="metric-value">7</div>
+            <p>Use white metrics for neutral activity counters.</p>
+          </article>
+          <article class="card">
+            <div class="card-label">SFDC score</div>
+            <div class="metric-value green">82<span style="font-size:18px;color:var(--grey-3)">/100</span></div>
+            <p>Use green only for active or cleared operational status.</p>
+          </article>
+          <article class="card">
+            <div class="card-label">Status</div>
+            <div class="status-block"><span class="status-dot"></span><span>Tenable Guardian One</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="states">
+        <div class="eyebrow">States</div>
+        <h2>Public, Guardian, Guardian One.</h2>
+        <p class="section-sub">The reference implementation uses body-level state classes so a single page can expose different content based on user status.</p>
+        <div class="grid-3">
+          <article class="card">
+            <div class="card-label">view-public</div>
+            <h3>Public / Non-Guardian</h3>
+            <p>Show program overview, pathway, benefits, and CTA. Hide personal dashboard and gated status panels.</p>
+          </article>
+          <article class="card">
+            <div class="card-label">view-guardian</div>
+            <h3>Guardian</h3>
+            <p>Show user dashboard, certification status, and progress toward Guardian One gates.</p>
+          </article>
+          <article class="card">
+            <div class="card-label">view-g1</div>
+            <h3>Guardian One</h3>
+            <p>Show active Guardian One badge, cleared gates, summit status, and maintenance requirements.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="tooling">
+        <div class="eyebrow">Tooling handoff</div>
+        <h2>How to ask tools to use this style.</h2>
+        <p class="section-sub">
+          Point design or coding tools to this page and ask them to follow the tokens and structure below. The live LATAM demo is the complete reference implementation.
+        </p>
+        <div class="grid-3">
+          <article class="prompt-card">
+            <div class="prompt-cat">Prompt seed</div>
+            <h3>Visual replication</h3>
+            <p class="prompt-text">
+              Build this in the Guardian visual style: dark #1a1a1a background, Work Sans, Tenable hex logo, sticky top nav, yellow #d4f000 active states, square dark cards, oversized hero headline with one yellow highlight.
+            </p>
+          </article>
+          <article class="prompt-card">
+            <div class="prompt-cat">Source pages</div>
+            <h3>Reference URLs</h3>
+            <p class="prompt-text">
+              Visual reference: /guardian-visual-reference.html. Full LATAM demo: /guardian-latam.html. Implementation notes: /docs/guardian-visual-reference.md.
+            </p>
+          </article>
+          <article class="prompt-card">
+            <div class="prompt-cat">Do not drift</div>
+            <h3>Design constraints</h3>
+            <p class="prompt-text">
+              Do not add gradients, rounded marketing cards, beige palettes, decorative blobs, or oversized explanatory UI text. Keep the experience operational and direct.
+            </p>
+          </article>
+        </div>
+        <div class="code-block" style="margin-top:28px">Core page links after GitHub Pages publish:
+https://www.mrovere.com/guardian-visual-reference.html
+https://www.mrovere.com/guardian-latam.html
+https://www.mrovere.com/docs/guardian-visual-reference.md</div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Guardian visual reference - Apps MROVERE - Tenable LATAM</span>
+      <a href="mailto:latam-partners@tenable.com">latam-partners@tenable.com</a>
+    </footer>
+  </body>
+</html>
