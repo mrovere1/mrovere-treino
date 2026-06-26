@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hexa AI — Prompt Cookbook by Capability</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --pure-black: #192124;
+    --soft-black: #1E2426;
+    --white: #FFFFFF;
+    --highlight: #E7FF00;
+    --bg: var(--pure-black);
+    --bg-card: var(--soft-black);
+    --bg-card-hover: #252D30;
+    --bg-elevated: #232A2D;
+    --bg-prompt: #161C1F;
+    --text: var(--white);
+    --text-secondary: #A0AEB5;
+    --text-dim: #5C6B72;
+    --border: rgba(255,255,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .gradient-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--highlight), #38BDF8 60%, #8B5CF6);
+  }
+
+  .header {
+    padding: 2.5rem 3rem 1.5rem;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  .header-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--highlight);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .header-logo { height: 22px; width: auto; }
+  .header-hexa { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.12em; }
+  .header h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.3rem; color: var(--white); }
+  .header p { color: var(--text-secondary); font-size: 0.95rem; }
+
+  .container { max-width: 1500px; margin: 0 auto; padding: 0 3rem 3rem; }
+
+  .stats-strip {
+    display: flex; gap: 1px; background: var(--border);
+    border-radius: 16px; overflow: hidden; margin-bottom: 2rem;
+  }
+  .stat-cell { flex: 1; background: var(--bg-card); padding: 1.2rem 1rem; text-align: center; transition: background 0.2s; }
+  .stat-cell:hover { background: var(--bg-elevated); }
+  .stat-num { font-size: 2rem; font-weight: 800; line-height: 1; margin-bottom: 0.3rem; }
+  .stat-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); }
+
+  .categories-bar {
+    display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 2rem;
+  }
+  .cat-chip {
+    padding: 0.5rem 1rem; border-radius: 8px;
+    font-size: 0.78rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    background: var(--bg-card); color: var(--text-secondary);
+    border: 1px solid var(--border);
+    user-select: none;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .cat-chip:hover { background: var(--bg-elevated); color: var(--text); }
+  .cat-chip.active {
+    color: var(--pure-black);
+    border-color: transparent;
+  }
+  .cat-chip svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .cat-chip .cat-count { opacity: 0.6; font-weight: 800; font-size: 0.7rem; }
+
+  .category-banner {
+    border-radius: 14px; background: var(--bg-card);
+    display: flex; align-items: center; gap: 1.2rem;
+    opacity: 0; transform: translateY(-8px);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none; max-height: 0; overflow: hidden;
+    padding: 0 1.8rem; margin-bottom: 0;
+  }
+  .category-banner.visible {
+    opacity: 1; transform: translateY(0); pointer-events: all;
+    max-height: 120px; padding: 1.2rem 1.8rem; margin-bottom: 1.5rem;
+  }
+  .category-banner-icon { flex-shrink: 0; }
+  .category-banner-icon svg { width: 36px; height: 36px; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+  .category-banner-title { font-weight: 700; font-size: 1.15rem; margin-bottom: 0.15rem; }
+  .category-banner-desc { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; }
+
+  .cards-container {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 1rem; margin-bottom: 2rem;
+  }
+  .uc-card {
+    background: var(--bg-card); border-radius: 14px;
+    position: relative; overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--border); cursor: default;
+  }
+  .uc-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; background: var(--accent); border-radius: 3px 0 0 3px;
+    transition: width 0.2s;
+  }
+  .uc-card:hover {
+    border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+    transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  }
+  .uc-card:hover::before { width: 4px; }
+
+  .card-body { padding: 1.2rem 1.4rem; }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; gap: 0.5rem; }
+  .card-name { font-weight: 700; font-size: 1rem; line-height: 1.3; flex: 1; }
+
+  .card-tags { display: flex; gap: 0.3rem; margin-bottom: 0.6rem; flex-wrap: wrap; align-items: center; }
+  .mini-tag {
+    font-size: 0.65rem; font-weight: 600; padding: 0.12rem 0.5rem;
+    border-radius: 4px; text-transform: uppercase; letter-spacing: 0.04em;
+    display: inline-flex; align-items: center; gap: 0.3rem;
+  }
+  .mini-tag svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .mini-tag.cat-tag { color: white; }
+
+  .card-desc { color: var(--text-secondary); font-size: 0.85rem; line-height: 1.55; }
+
+  .prompts-toggle {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.7rem 1.4rem;
+    background: rgba(255,255,255,0.02);
+    border-top: 1px solid var(--border);
+    cursor: pointer; transition: background 0.2s;
+    user-select: none;
+  }
+  .prompts-toggle:hover { background: rgba(255,255,255,0.05); }
+  .prompts-toggle svg {
+    width: 16px; height: 16px; stroke: var(--accent);
+    fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    transition: transform 0.3s;
+  }
+  .prompts-toggle.open svg { transform: rotate(90deg); }
+  .prompts-toggle-label {
+    font-size: 0.78rem; font-weight: 600; color: var(--accent);
+    letter-spacing: 0.02em;
+  }
+  .prompts-toggle-count {
+    font-size: 0.68rem; color: var(--text-dim); font-weight: 500;
+    margin-left: auto;
+  }
+
+  .prompts-drawer {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-prompt);
+    border-top: 1px solid transparent;
+  }
+  .prompts-drawer.open {
+    border-top-color: var(--border);
+  }
+  .prompts-inner { padding: 0.8rem 1.4rem 1rem; }
+
+  .prompt-item {
+    margin-bottom: 0.8rem;
+    position: relative;
+    padding-left: 1.6rem;
+  }
+  .prompt-item:last-child { margin-bottom: 0; }
+
+  .prompt-bullet {
+    position: absolute; left: 0; top: 0.35rem;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent); opacity: 0.5;
+  }
+
+  .prompt-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 0.65rem 0.9rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    position: relative;
+  }
+  .prompt-text::before {
+    content: '>';
+    position: absolute;
+    left: -1.2rem; top: 0.65rem;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.75rem;
+    opacity: 0.6;
+  }
+
+  .empty { text-align: center; padding: 4rem 2rem; color: var(--text-dim); }
+  .empty-icon { margin-bottom: 0.8rem; }
+  .empty-icon svg { width: 48px; height: 48px; stroke: var(--text-dim); fill: none; stroke-width: 1.5; }
+  .empty-text { font-size: 1rem; }
+
+  .uc-card { animation: cardIn 0.3s ease both; }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 900px) {
+    .header, .container { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .cards-container { grid-template-columns: 1fr; }
+    .categories-bar { gap: 0.3rem; }
+  }
+</style>
+</head>
+<body>
+<div class="gradient-bar"></div>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-eyebrow">
+        <img src="https://static.tenable.com/press/logos/TenableLogo_White_RGB.svg" alt="Tenable" class="header-logo" />
+        <span class="header-hexa">Hexa AI</span>
+      </div>
+      <h1>Prompt Cookbook</h1>
+      <p>Real-world use cases and ready-to-use prompts organized by capability &middot; May 2026</p>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="stats-strip" id="stats"></div>
+  <div class="categories-bar" id="categoriesBar"></div>
+  <div class="category-banner" id="categoryBanner"></div>
+  <div class="cards-container" id="cards"></div>
+  <div class="empty" id="empty" style="display:none">
+    <div class="empty-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+    <div class="empty-text">No use cases match this filter</div>
+  </div>
+</div>
+
+<script>
+const ICONS = {
+  crosshair: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M22 12h-4"/><path d="M6 12H2"/><path d="M12 6V2"/><path d="M12 22v-4"/></svg>',
+  radar: '<svg viewBox="0 0 24 24"><path d="M19.07 4.93A10 10 0 0 0 6.99 3.34"/><path d="M4 6h.01"/><path d="M2.29 9.62A10 10 0 1 0 21.31 8.35"/><path d="M16.24 7.76A6 6 0 1 0 8.23 16.67"/><path d="M12 18h.01"/><path d="M17.99 11.66A6 6 0 0 1 15.77 16.67"/><circle cx="12" cy="12" r="2"/></svg>',
+  shield: '<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  'bar-chart': '<svg viewBox="0 0 24 24"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>',
+  cpu: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M20 9h3"/><path d="M20 14h3"/><path d="M1 9h3"/><path d="M1 14h3"/></svg>',
+  rocket: '<svg viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>',
+  'git-branch': '<svg viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>',
+  zap: '<svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+  chevron_right: '<svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>',
+};
+
+const CATEGORIES = [
+  {"id": "assets", "name": "Asset Intelligence", "icon": "crosshair", "color": "#E7FF00", "desc": "Understand your environment. Discover, tag, and track assets across your attack surface."},
+  {"id": "scans", "name": "Scan Operations", "icon": "radar", "color": "#80E868", "desc": "Configure, run, and optimize vulnerability scans for maximum coverage and efficiency."},
+  {"id": "exposure", "name": "Exposure Intelligence", "icon": "shield", "color": "#A78BFA", "desc": "Investigate vulnerabilities, contextualize findings, and perform multi-step risk analysis with ACR scores and exposure metrics."},
+  {"id": "dashboards", "name": "Dashboards & Reporting", "icon": "bar-chart", "color": "#FB923C", "desc": "Build dashboards, generate executive reports, prepare audit evidence, and create board-level risk briefings."},
+  {"id": "agents", "name": "Agent Fleet", "icon": "cpu", "color": "#34D399", "desc": "Monitor and manage Nessus Agent health, groups, and operational status at scale."},
+  {"id": "mobilization", "name": "Mobilization & Remediation", "icon": "rocket", "color": "#F472B6", "desc": "End-to-end remediation orchestration: from discovery through tagging, scanning, verification, and Jira ticketing."},
+  {"id": "attack-paths", "name": "Attack Path Analysis", "icon": "git-branch", "color": "#38BDF8", "desc": "Leverage attack path mapping to understand how exposures chain to reach critical assets."},
+  {"id": "signals", "name": "Exposure Signals", "icon": "zap", "color": "#F87171", "desc": "Define and detect risk combinations where multiple exposure factors compound into outsized risk."}
+];
+
+const UCS = [
+  {"n": "Asset Tagging", "c": "assets", "desc": "Suggest and apply tag schemas based on asset metadata, scan source, network segments, installed software, and existing tagging patterns. Tag by OS, business unit, owner, or custom criteria.", "prompts": [{"text": "Find all Windows Server 2019 assets and tag them by business unit based on their subnet: 10.1.x for Finance, 10.2.x for Engineering, 10.3.x for HR."}, {"text": "Using the attached file, tag assets in my environment."}, {"text": "Tag all assets with CISA KEV vulnerabilities."}]},
+  {"n": "Asset Lifecycle Verification", "c": "assets", "desc": "Verify asset decommission readiness: check scan history, agent status, vulnerability state, and activity logs. Tag confirmed decommissions to exclude from SLA reporting.", "prompts": [{"text": "Find all assets that haven't been scanned in over 90 days. Are they truly offline or just falling through the cracks? Check their agent status and last activity."}, {"text": "I need a decommission readiness verdict for each asset on this list: SAFE (not seen in 30+ days, no agent), CAUTION (still has active agent or recent activity), or BLOCK (recent scan results, likely still live)."}]},
+  {"n": "Attack Surface Observation", "c": "assets", "desc": "Continuously redefine what's in scope by detecting daily changes: new assets entering the environment, OS changes, and assets appearing in unexpected segments.", "prompts": [{"text": "Search for all assets first seen in the last 24 hours. These are net-new additions to our environment. For each, show IP, hostname, OS, and how it was discovered (agent, network scan, or cloud connector)."}, {"text": "Find assets whose operating system changed in the last 7 days. That could indicate reimaging or unauthorized changes. Show the before and after."}, {"text": "Tag all newly discovered assets as 'AttackSurface:New-2026-04' and create a targeted scan for any that haven't been credentialed-scanned yet."}, {"text": "Give me a daily attack surface change summary: how many new assets discovered (by source) and any anomalies like new assets in unexpected subnets or unusual OS types."}]},
+  {"n": "Asset Inquiry", "c": "assets", "desc": "Search and retrieve asset information, activity logs, and associated vulnerability details.", "prompts": [{"text": "Look up everything we know about 10.4.22.187: OS, last scan, installed software, open vulns, and activity over the past 30 days."}, {"text": "Find all assets running end-of-life operating systems. Show me hostname, IP, OS version, and when they were last scanned."}, {"text": "How many assets do we have total? Break it down by OS family, scan source (agent vs. network), and whether they've been scanned in the last 7 days."}, {"text": "Show me all assets in the 10.50.x.x range that have never been credentialed-scanned."}]},
+  {"n": "Cross-Platform Asset Tagging", "c": "assets", "desc": "Use Exposure Management queries to identify assets by source or attribute, then create tags in TVM to bridge visibility across platforms.", "prompts": [{"text": "Show me all assets with asset class device with source servicenow and source not tenable vulnerability management. Then create tags in TVM using asset IP addresses."}]},
+  {"n": "Scan Management", "c": "scans", "desc": "Create, configure, launch, pause, resume, and stop scans. Configure scan policies. Schedule and manage scan operations.", "prompts": [{"text": "List all active scans and show me which ones are currently running, how long they've been going, and their completion percentage."}, {"text": "The scan 'DMZ-External-Daily' has been running for 6 hours, which is double the normal time. Show me the progress and identify which hosts are causing delays."}, {"text": "Pause all running scans immediately. We have a change freeze for the next 4 hours."}, {"text": "Create a one-time emergency scan targeting 10.4.22.0/24 for CVE-2026-3891. Use the 'Critical Vuln Check' policy and launch it now."}]},
+  {"n": "Scan Coverage & Hygiene", "c": "scans", "desc": "Analyze scanning coverage gaps, stale scan results, and assessment blind spots. Identify assets that haven't been scanned or have only partial (unauthenticated) results.", "prompts": [{"text": "Which assets in my environment have never been scanned? And which ones were last scanned more than 30 days ago? Break it down by network segment."}, {"text": "How many of my scans are getting credentialed results vs. unauthenticated? Show me the credential success rate by scan and identify which targets are failing authentication."}, {"text": "Compare my agent-based scan coverage against my network scan coverage. Which assets are only seen by agents? Which are only hit by network scans? Where do I have both?"}, {"text": "Run a scan hygiene check: any scans that have been failing silently, any policies that haven't been used in 6 months, any scan schedules that overlap and compete for the same targets."}]},
+  {"n": "Scan Optimization & Consolidation", "c": "scans", "desc": "Define and refine the boundaries of your scanning program. Identify overlapping scan targets, redundant policies, and coverage gaps.", "prompts": [{"text": "List every scan with its target ranges, policy, schedule, and folder. Identify any target IPs that appear in multiple scans. Where are we double-scanning?"}, {"text": "Which scans regularly exceed 4 hours? Which ones have gotten progressively slower over the last 5 runs?"}, {"text": "Find orphaned scans: schedules disabled and hasn't run in 60+ days, or scans in personal/test folders that aren't part of our standard config."}, {"text": "Give me a consolidation recommendation: which scans can be merged, which should be retired, and how should scan windows be redistributed? Estimate the total scan time reduction."}]},
+  {"n": "Scan Time Analysis", "c": "scans", "desc": "Review average scan duration per asset using plugin 19506 to identify slow-scanning hosts that may indicate configuration issues or resource contention.", "prompts": [{"text": "Review the average scan time per asset. Identify assets running longer than the average. Use plugin 19506 to extract scan times for windows servers."}]},
+  {"n": "Risky Open Ports", "c": "scans", "desc": "Identify high-risk open ports in your environment by combining management port detection, internet exposure, and vulnerable service correlation.", "prompts": [{"text": "What are the most risky ports that we have open in our environment? I consider high risk ports being: management ports like SSH and RDP, open to the internet, and running a vulnerable service on the port."}]},
+  {"n": "Vulnerability Inquiry", "c": "exposure", "desc": "Search and retrieve vulnerability details, plugin information, asset-vulnerability associations, and remediation guidance.", "prompts": [{"text": "Tell me everything about CVE-2026-33186. How many assets are affected? What's the remediation?"}, {"text": "Search for all critical vulnerabilities with known exploits that were published in the last 30 days."}, {"text": "CISA just added CVE-2026-1234, CVE-2026-1235, and CVE-2026-1236 to the KEV catalog. For each: do we detect it, how many assets affected, and what's the fix?"}, {"text": "Pull the plugin output for plugin 12345 on host 10.4.22.187. I need to see exactly what version was detected."}]},
+  {"n": "Credential Guard Exposure", "c": "exposure", "desc": "Identify Windows assets where Credential Guard is not enabled and cross-reference with administrator logons to find credential theft exposure.", "prompts": [{"text": "Show me all Windows devices Windows Credential Guard Status. Identify administrators logged into devices where Credential Guard is not enabled."}]},
+  {"n": "Risky Logged-In Users", "c": "exposure", "desc": "Review logged-in users across assets, distinguish unique vs. generic accounts, and assign risk scores based on privilege level and activity.", "prompts": [{"text": "Review logged in users. Identify unique and generic accounts. Assign risk score to each user."}]},
+  {"n": "Dangerous Downloaded Files", "c": "exposure", "desc": "Analyze the Windows User Download Folder Files plugin output to identify risky downloads, check if downloaders are local administrators, and correlate with installed software.", "prompts": [{"text": "Review the Windows User Download Folder Files plugin and rate files by risk."}, {"text": "Which of these users are local administrators?"}, {"text": "Can we find any of the downloaded files in installed software?"}]},
+  {"n": "AI Software Inventory Context", "c": "exposure", "desc": "Explain the purpose and risk context of software detected by the Artificial Intelligence plugin family, turning raw detections into actionable intelligence.", "prompts": [{"text": "Explain the use of each software identified in the Artificial Intelligence plugin family."}]},
+  {"n": "Unauthorized Remote Management Tools", "c": "exposure", "desc": "Detect unauthorized remote access and management tools installed across assets to identify potential persistence mechanisms used by threat actors.", "prompts": [{"text": "I'm worried about threat actors leveraging remote management/access tools to maintain persistence. Find any unauthorized remote management tools installed across my environment."}]},
+  {"n": "SMB Share Exposure Audit", "c": "exposure", "desc": "Identify assets with SMB shares accessible to Everyone or Authenticated Users using specific plugins to surface lateral movement and data exfiltration risks.", "prompts": [{"text": "Using plugins 42411, 60119, 10395, 23973 and any extras - Can you look into all of the assets with SMB shares exposed and list out what shares are accessible to everyone or authenticated users."}]},
+  {"n": "Severity Recast", "c": "exposure", "desc": "Recast the severity of a vulnerability when compensating controls exist, adjusting risk scores to reflect actual business exposure rather than raw CVSS.", "prompts": [{"text": "Help me recast the severity of a vulnerability. We have compensating controls in place and want to lower the effective risk rating."}]},
+  {"n": "Exposure Analysis", "c": "exposure", "desc": "Multi-step analytical reasoning over your environment's security posture. Chain vulnerability search, asset exposure checks, and risk correlation into prioritized, CISO-ready outputs.", "prompts": [{"text": "Give me a security posture self-assessment: credential scan coverage percentage, top 5 worst network segments by critical vuln density, and the 3 things I should fix first this week."}, {"text": "A new zero-day just dropped: CVE-2026-9999. Chain the full response: do we detect it, how many assets are affected, which ones are internet-facing, what's the blast radius, and what's the remediation plan?"}, {"text": "I'm briefing the CISO in 10 minutes. Give me a high-confidence summary: overall risk posture, biggest exposure changes this week, and whether we're trending better or worse."}]},
+  {"n": "EOL Operating System Risk Assessment", "c": "exposure", "desc": "Identify end-of-life operating systems, categorize by subnet, assess co-located critical assets, and generate executive-ready remediation plans.", "prompts": [{"text": "Categorise EOL operating systems tagged assets by subnet."}, {"text": "Do I have critical assets with ACR >8 in these subnets?"}, {"text": "Create an executive report to highlight the risks of EOL Operating systems. Recommend actions to mitigate the risk."}]},
+  {"n": "Patch Tuesday Reboot Compliance", "c": "exposure", "desc": "Analyze server reboot patterns and compare Windows reboots with Microsoft Patch Tuesday dates to identify servers not rebooted since patch deployment.", "prompts": [{"text": "Report on the last time servers were rebooted, separate Windows and Linux. Analyse reboot patterns and compare Windows reboots with Microsoft Patch Tuesday dates."}]},
+  {"n": "Dashboard Creation", "c": "dashboards", "desc": "Create dashboards from Tenable-provided templates or custom specifications. Add, configure, and delete widgets. Apply context filters to dashboards.", "prompts": [{"text": "Create a dashboard called 'CISO Weekly Risk View' with: severity breakdown pie chart, top 10 riskiest assets, critical vulns aging past SLA, and week-over-week trend."}, {"text": "Build a patch Tuesday tracking dashboard: show all Microsoft vulns detected this month, affected asset count by OS, and remediation progress."}, {"text": "Create a dashboard for our PCI scope showing vulnerability counts by severity, scan coverage %, and mean time to remediate critical findings."}, {"text": "I need a scan operations dashboard: scan success/failure rates, average scan duration by policy, agent fleet health, and coverage gaps."}]},
+  {"n": "Dashboard Management", "c": "dashboards", "desc": "List, update, and delete existing dashboards and widgets.", "prompts": [{"text": "List all my dashboards. Which ones haven't been modified in 6 months? They're probably stale. Show me so I can clean up."}, {"text": "Update the 'Executive Risk' dashboard. Add a new widget showing our month-over-month trend for critical vulnerabilities."}, {"text": "Apply a context filter for 'Region:EMEA' to the 'Global Risk Posture' dashboard so my EU team has a localized view."}]},
+  {"n": "Audit Evidence Preparation", "c": "dashboards", "desc": "Gather compliance evidence for audits: scan coverage proof, policy configuration details, scan cadence history, and remediation posture for PCI, SOC 2, or CIS controls.", "prompts": [{"text": "We have a PCI DSS audit next week. List all scan policies configured for PCI compliance: credentialed scanning, appropriate plugin families enabled. Confirm which scans use those policies and whether they've been running on schedule."}, {"text": "Pull scan history for all PCI-scoped scans over the past 90 days. How many successful runs? Any gaps longer than 7 days between runs? Any failed runs that weren't re-run?"}, {"text": "Show me the current vulnerability posture for our PCI in-scope assets: total critical and high vulns, and our mean time to remediate for criticals over the past quarter."}, {"text": "Prepare a CIS compliance evidence summary: which scan policies align to CIS benchmarks, what's our scan cadence, and what does our remediation trend look like over the last 90 days? Format as an evidence matrix I can hand to the auditor."}]},
+  {"n": "Executive Risk Briefing", "c": "dashboards", "desc": "Build executive-ready risk briefings: vulnerability severity breakdowns, top risks, trend analysis, and narrative summaries for CISO weekly updates.", "prompts": [{"text": "Build my weekly executive risk briefing: pull current vulnerability counts by severity, identify the top 10 most prevalent critical vulnerabilities, and the top 10 most exposed assets. Create a dashboard called 'Executive Risk Briefing: Week of April 7' with severity breakdown and top-risk widgets."}, {"text": "Write a 5-sentence narrative summary for the CISO's weekly email: overall posture trend, most significant new risk this week, top remediation win, SLA compliance percentage for criticals, and one recommended action for leadership."}, {"text": "Compare our vulnerability posture this month vs. last month. How many new critical vulns appeared? How many were remediated? What's the net change?"}, {"text": "I need a board-ready risk summary. Show total asset count, scan coverage percentage, critical vuln density per 100 assets, mean time to remediate, and our overall SLA compliance rate. Keep it to 5 key metrics with trend arrows."}]},
+  {"n": "Nessus Agent Fleet Management", "c": "agents", "desc": "Monitor and manage Nessus Agent health at scale: identify offline agents, stale check-ins, empty groups, and restart unhealthy agents.", "prompts": [{"text": "Run a full Nessus Agent fleet health check. List all agents and categorize by status: online, offline, unknown. Flag any agents that haven't checked in within 48 hours."}, {"text": "List all agent groups and their member counts. Flag any groups with 0 agents (those might be orphaned). Also identify agents running outdated plugin sets more than 7 days old."}, {"text": "We have 15 agents showing as online but they haven't run a scan in over a week. Restart them and confirm they come back healthy."}, {"text": "Give me a fleet summary: total agents, online percentage, offline percentage, agents by group, and agents needing attention. Format it so I can paste it into our weekly ops review."}]},
+  {"n": "Agent Health Report by Tag", "c": "agents", "desc": "Create an agent health status report grouped by tag category to quickly identify which business units or environments have unhealthy agents.", "prompts": [{"text": "Create an agent health report grouped by tag category."}]},
+  {"n": "Zero-Day Rapid Response", "c": "mobilization", "desc": "End-to-end incident response when a critical CVE drops: plugin search, environment exposure check, targeted scan, tagging, and tracking dashboard in a single conversation.", "prompts": [{"text": "A critical RCE vulnerability was disclosed in OpenSSH (CVE-2026-XXXX). Check if any assets in our environment already have this vulnerability detected. If not, create a one-time scan to assess my assets for this vulnerability."}, {"text": "We're exposed to CVE-2026-XXXX on 47 assets. Create a targeted credentialed scan called 'CVE-2026-XXXX OpenSSH RCE Response' scoped to all Linux assets on 172.16.0.0/12."}, {"text": "Create a tag 'Incident:CVE-2026-XXXX-OpenSSH' and apply it to every asset where this vulnerability is confirmed. Then build a dashboard showing affected assets by severity, OS, and remediation status."}]},
+  {"n": "Zero-Day Blast Radius Containment", "c": "mobilization", "desc": "Rapidly scope and isolate assets exposed to an active zero-day: search plugins for known CVEs, map exposure, create quarantine tags, and produce a containment action matrix.", "prompts": [{"text": "Search the Tenable Plugins database using the known CVEs for top 10 Zero-day vulnerabilities. Retrieve Plugin IDs, map exposed assets, create a tag IncidentResponse:URGENT_CONTAINMENT, apply to all affected assets, and produce a containment action matrix."}]},
+  {"n": "SLA Compliance Tracking", "c": "mobilization", "desc": "Track remediation SLA compliance across the vulnerability portfolio. Identify breaches, tag overdue assets, and build executive-ready compliance dashboards.", "prompts": [{"text": "Run my SLA compliance check. Our remediation SLAs are: Critical 7 days, High 30 days, Medium 90 days. Pull all open vulnerabilities and identify any that have breached their SLA. List affected assets with hostnames, IPs, and OS."}, {"text": "Tag all SLA-breaching assets as 'SLA:Critical-Breach', 'SLA:High-Breach', or 'SLA:Medium-Breach' based on severity. Then build a compliance dashboard with SLA compliance rate by severity and a top-10 assets with the most breaches."}, {"text": "Which vulnerabilities are within 48 hours of breaching our SLA? I need to escalate before they go overdue. Show the affected assets, the specific CVEs, and how many hours remain."}, {"text": "Give me our overall SLA compliance percentage broken down by severity and by business unit."}]},
+  {"n": "Exposure Initiative Setup", "c": "mobilization", "desc": "Launch structured Exposure initiatives; identify all affected assets, tag for tracking, create verification scans, and build progress dashboards.", "prompts": [{"text": "Launch an Exposure initiative for all end-of-life operating systems. Search for 'unsupported operating system' vulnerabilities, list all affected assets grouped by OS name and version."}, {"text": "Create tags for tracking: 'RemediationCampaign:EOL-OS-2026Q2' plus sub-tags per OS like 'EOL-OS:Windows-2012-R2' and 'EOL-OS:Ubuntu-18.04'. Tag each affected asset with both the campaign tag and its OS-specific tag."}, {"text": "Create a verification scan targeting all 'RemediationCampaign:EOL-OS-2026Q2' tagged assets. Then build a campaign dashboard showing total affected assets by OS, remediation progress over time, and remaining assets by network segment."}, {"text": "We're running a Log4j remediation campaign. Find every asset with Log4j-related vulnerabilities, tag them 'RemediationCampaign:Log4j-2026Q2', create a tracking dashboard, and build a targeted scan for weekly verification."}]},
+  {"n": "Patch Verification & Closure", "c": "mobilization", "desc": "Pre-patch and post-patch verification workflows. Baseline vulnerability counts before a patch window, then rescan and compare to confirm closure.", "prompts": [{"text": "Tag all Windows servers with open critical Microsoft vulns as 'PatchCycle:2026-04-Windows-Critical' so we can track them through the patch cycle."}, {"text": "Create a verification scan called 'Post-Patch Verify: April Windows Critical' targeting all assets tagged 'PatchCycle:2026-04-Windows-Critical'. Don't launch it yet. I'll trigger it after the patch window."}, {"text": "The patch window is complete. Launch the post-patch verification scan. Once results are in, compare critical vuln counts against the pre-patch baseline. Which assets still have unpatched critical vulnerabilities?"}]},
+  {"n": "Weekly Risk Reduction To-Do List", "c": "mobilization", "desc": "Generate a prioritized daily action plan for a specific team to reduce vulnerability risk, including patch lists for servers and workstations.", "prompts": [{"text": "I work in the Windows team. Give me a daily to-do list for this week to reduce my risk."}, {"text": "Create a patch list for each server I can send to the patching team."}]},
+  {"n": "High-ACR Asset Exposure Response", "c": "mobilization", "desc": "Review all assets with maximum Asset Criticality Rating and generate actionable risk reduction recommendations.", "prompts": [{"text": "Review all assets with an ACR of 10. Show me how I can reduce the risk."}]},
+  {"n": "New Exploitable Vulns to Jira", "c": "mobilization", "desc": "Find newly exploitable vulnerabilities and create Jira tickets directly from findings, ready for assignment to remediation owners.", "prompts": [{"text": "Show me new exploitable vulnerabilities discovered in the last 30 days. Create a Jira ticket for each one with severity, affected assets, and remediation steps."}, {"text": "Find all critical vulnerabilities on assets with ACR >8 that don't have a Jira ticket yet. Create tickets and assign them to the infrastructure team."}]},
+  {"n": "Custom Jira Ticket Formatting", "c": "mobilization", "desc": "Create Jira tickets from vulnerability findings with customized naming conventions, including IP address, hostname, and ACR in titles and descriptions.", "prompts": [{"text": "Show me new exploitable vulnerabilities discovered in the last 30 days. Create a Jira ticket for each one. Explicitly include the IP Address and hostname in the description. Change title name to use: vulnerability name - Asset Name - ACR."}]},
+  {"n": "Attack Path Analysis", "c": "attack-paths", "desc": "Leverage attack path mapping to understand how an attacker could chain exposures to reach critical assets. Prioritize remediation by cutting the paths that matter most.", "prompts": [{"text": "Prioritize my assets based on the number of attack paths that traverse them. Which assets appear in the most paths?"}, {"text": "Show me all attack paths that lead to my domain controllers. What are the entry points and which vulnerabilities enable each hop?"}, {"text": "Which 5 vulnerabilities, if remediated, would eliminate the most attack paths in my environment?"}, {"text": "Are there any attack paths from internet-facing assets to my database servers? Show the full chain for each."}]},
+  {"n": "Exposure Signals (Combinations)", "c": "signals", "desc": "Define and detect risk combinations where multiple exposure factors compound into outsized risk. Individually manageable findings become critical when they co-exist on the same asset or path.", "prompts": [{"text": "Create a combination for critical vulnerabilities on assets that are publicly exposed."}, {"text": "Define a combination: assets with default credentials AND internet-facing AND running end-of-life operating systems."}, {"text": "Show me all assets that match existing combination rules. Rank them by the number of rules they trigger."}, {"text": "Create a combination for assets that have both a known-exploited vulnerability and an administrative user logged in without Credential Guard enabled."}]}
+];
+
+let activeCategory = null;
+
+function luminance(hex) {
+  const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+  return 0.299*r + 0.587*g + 0.114*b;
+}
+
+function buildCategoriesBar() {
+  const el = document.getElementById("categoriesBar");
+  el.innerHTML = "";
+
+  const allChip = document.createElement("div");
+  allChip.className = "cat-chip" + (!activeCategory ? " active" : "");
+  if (!activeCategory) { allChip.style.background = "var(--text)"; allChip.style.color = "var(--pure-black)"; }
+  allChip.innerHTML = `All <span class="cat-count">${UCS.length}</span>`;
+  allChip.onclick = () => { activeCategory = null; render(); };
+  el.appendChild(allChip);
+
+  CATEGORIES.forEach(cat => {
+    const count = UCS.filter(uc => uc.c === cat.id).length;
+    const chip = document.createElement("div");
+    const isActive = activeCategory === cat.id;
+    chip.className = "cat-chip" + (isActive ? " active" : "");
+    if (isActive) { chip.style.background = cat.color; chip.style.color = luminance(cat.color) > 0.55 ? '#192124' : '#fff'; }
+    chip.innerHTML = `${ICONS[cat.icon]} ${cat.name} <span class="cat-count">${count}</span>`;
+    chip.onclick = () => { activeCategory = activeCategory === cat.id ? null : cat.id; render(); };
+    el.appendChild(chip);
+  });
+}
+
+function updateBanner() {
+  const el = document.getElementById("categoryBanner");
+  if (!activeCategory) { el.classList.remove("visible"); return; }
+  const cat = CATEGORIES.find(c => c.id === activeCategory);
+  el.style.borderLeft = `4px solid ${cat.color}`;
+  el.innerHTML = `
+    <div class="category-banner-icon" style="color:${cat.color}">${ICONS[cat.icon].replace(/stroke="[^"]*"/g, `stroke="${cat.color}"`)} </div>
+    <div>
+      <div class="category-banner-title" style="color:${cat.color}">${cat.name}</div>
+      <div class="category-banner-desc">${cat.desc}</div>
+    </div>`;
+  el.classList.add("visible");
+}
+
+function buildStats(filtered) {
+  const el = document.getElementById("stats");
+  const totalPrompts = filtered.reduce((s, u) => s + (u.prompts?.length || 0), 0);
+  const catCounts = CATEGORIES.map(c => ({name: c.name, count: filtered.filter(uc => uc.c === c.id).length, color: c.color})).filter(x => x.count > 0);
+  el.innerHTML = [
+    {n: filtered.length, l:"Use Cases", c:"var(--text)"},
+    {n: totalPrompts, l:"Example Prompts", c:"var(--highlight)"},
+    {n: CATEGORIES.length, l:"Capabilities", c:"#A78BFA"},
+  ].map(s => `<div class="stat-cell"><div class="stat-num" style="color:${s.c}">${s.n}</div><div class="stat-label">${s.l}</div></div>`).join("");
+}
+
+function buildCards(filtered) {
+  const grid = document.getElementById("cards");
+  const empty = document.getElementById("empty");
+  grid.innerHTML = "";
+  const catOrder = {};
+  CATEGORIES.forEach((c, i) => catOrder[c.id] = i);
+  filtered.sort((a, b) => (catOrder[a.c]??99) - (catOrder[b.c]??99));
+  if (!filtered.length) { empty.style.display = "block"; return; }
+  empty.style.display = "none";
+
+  filtered.forEach((uc, i) => {
+    const cat = CATEGORIES.find(c => c.id === uc.c);
+    const promptCount = uc.prompts?.length || 0;
+    const cardId = `card-${i}`;
+
+    const card = document.createElement("div");
+    card.className = "uc-card";
+    card.style.setProperty("--accent", cat.color);
+    card.style.animationDelay = `${i * 25}ms`;
+
+    let promptsHTML = '';
+    if (promptCount > 0) {
+      const items = uc.prompts.map(pr => `
+        <div class="prompt-item">
+          <div class="prompt-bullet" style="background:${cat.color}"></div>
+          <div class="prompt-text">${pr.text}</div>
+        </div>
+      `).join('');
+
+      promptsHTML = `
+        <div class="prompts-toggle" onclick="togglePrompts('${cardId}')" style="--accent:${cat.color}">
+          ${ICONS.chevron_right}
+          <span class="prompts-toggle-label">Example Prompts</span>
+          <span class="prompts-toggle-count">${promptCount} prompt${promptCount!==1?'s':''}</span>
+        </div>
+        <div class="prompts-drawer" id="drawer-${cardId}">
+          <div class="prompts-inner">${items}</div>
+        </div>`;
+    }
+
+    card.innerHTML = `
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-name">${uc.n}</div>
+        </div>
+        <div class="card-tags">
+          <span class="mini-tag cat-tag" style="background:${cat.color};color:${luminance(cat.color) > 0.55 ? '#192124' : '#fff'}">${ICONS[cat.icon]} ${cat.name}</span>
+        </div>
+        <div class="card-desc">${uc.desc}</div>
+      </div>
+      ${promptsHTML}`;
+    grid.appendChild(card);
+  });
+}
+
+function togglePrompts(cardId) {
+  const drawer = document.getElementById(`drawer-${cardId}`);
+  const toggle = drawer.previousElementSibling;
+  const isOpen = drawer.classList.contains('open');
+  if (isOpen) {
+    drawer.style.maxHeight = '0';
+    drawer.classList.remove('open');
+    toggle.classList.remove('open');
+  } else {
+    drawer.classList.add('open');
+    toggle.classList.add('open');
+    drawer.style.maxHeight = drawer.scrollHeight + 'px';
+  }
+}
+
+function render() {
+  const filtered = UCS.filter(uc => {
+    if (activeCategory && uc.c !== activeCategory) return false;
+    return true;
+  });
+  buildCategoriesBar(); updateBanner(); buildStats(filtered); buildCards(filtered);
+}
+
+render();
+</script>
+</body>
+</html>

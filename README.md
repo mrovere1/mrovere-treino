@@ -29,6 +29,8 @@ Reference pages:
 - Guardian visual reference: `guardian-visual-reference.html`
 - Guardian LATAM demo: `guardian-latam.html`
 - Guardian implementation notes: `docs/guardian-visual-reference.md`
+- Hexa AI prompt cookbook copy: `hexa-prompt-cookbook.html`
+- Hexa AI cookbook implementation notes: `docs/hexa-prompt-cookbook-reference.md`
 
 Role behavior:
 
@@ -145,12 +147,15 @@ Repository files involved:
 - `sw.js`: service worker with conservative caching.
 - `guardian-visual-reference.html`: standalone visual reference for Guardian-style pages.
 - `guardian-latam.html`: standalone LATAM Guardian Program page prototype.
+- `hexa-prompt-cookbook.html`: standalone copy of the Hexa AI Prompt Cookbook by Capability page.
 
 Public reference URLs after GitHub Pages rebuild:
 
 - `https://www.mrovere.com/guardian-visual-reference.html`
 - `https://www.mrovere.com/guardian-latam.html`
 - `https://www.mrovere.com/docs/guardian-visual-reference.md`
+- `https://www.mrovere.com/hexa-prompt-cookbook.html`
+- `https://www.mrovere.com/docs/hexa-prompt-cookbook-reference.md`
 
 Expected domain configuration:
 
