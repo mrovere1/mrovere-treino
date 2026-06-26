@@ -31,6 +31,7 @@ Reference pages:
 - Guardian implementation notes: `docs/guardian-visual-reference.md`
 - Hexa AI prompt cookbook copy: `hexa-prompt-cookbook.html`
 - Hexa AI cookbook implementation notes: `docs/hexa-prompt-cookbook-reference.md`
+- Hexa AI cookbook Excel source: `data/hexa/hexa-prompt-cookbook.xlsx`
 
 Role behavior:
 
@@ -78,6 +79,7 @@ All visible app UI copy should remain in English.
 │   │   ├── accreditation-requirements.json
 │   │   └── templates/
 │   ├── iris/
+│   ├── hexa/
 │   └── tasks/
 ├── tools/
 └── .github/
@@ -148,6 +150,8 @@ Repository files involved:
 - `guardian-visual-reference.html`: standalone visual reference for Guardian-style pages.
 - `guardian-latam.html`: standalone LATAM Guardian Program page prototype.
 - `hexa-prompt-cookbook.html`: standalone copy of the Hexa AI Prompt Cookbook by Capability page.
+- `data/hexa/hexa-prompt-cookbook.xlsx`: editable Excel source for the Hexa AI cookbook content.
+- `tools/build-hexa-cookbook.py`: rebuilds the Hexa AI cookbook HTML from the Excel source.
 
 Public reference URLs after GitHub Pages rebuild:
 
@@ -156,6 +160,14 @@ Public reference URLs after GitHub Pages rebuild:
 - `https://www.mrovere.com/docs/guardian-visual-reference.md`
 - `https://www.mrovere.com/hexa-prompt-cookbook.html`
 - `https://www.mrovere.com/docs/hexa-prompt-cookbook-reference.md`
+
+Hexa cookbook update flow:
+
+```bash
+python3 tools/build-hexa-cookbook.py
+```
+
+This command reads `data/hexa/hexa-prompt-cookbook.xlsx` and updates `hexa-prompt-cookbook.html`.
 
 Expected domain configuration:
 
