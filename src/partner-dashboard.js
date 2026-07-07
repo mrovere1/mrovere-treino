@@ -111,7 +111,7 @@ export function renderPartnerOverview(partners) {
               .map(
                 (partner) => `
                   <tr>
-                    <td><strong>${escapeHtml(partner.partnerName)}</strong></td>
+                    <td class="partner-name-cell"><strong>${escapeHtml(partner.partnerName)}</strong></td>
                     <td>${renderTierBadge(partner.status)}</td>
                     <td class="muted">${escapeHtml(partner.primaryContact || "-")}</td>
                     <td>${renderProgressPill(partner.computed.introCertified, partner.computed.missingIntroCourses)}</td>
@@ -158,7 +158,7 @@ export function renderPartnerCerts(partners) {
               .map(
                 (partner) => `
                   <tr>
-                    <td>
+                    <td class="partner-name-cell">
                       <strong>${escapeHtml(partner.partnerName)}</strong>
                       <div class="muted">${escapeHtml(partner.primaryContact || "")}</div>
                     </td>

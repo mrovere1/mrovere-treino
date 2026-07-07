@@ -424,3 +424,11 @@
 }
 
 
+
+.partner-name-cell {
+  width: 130px;
+  min-width: 110px;
+  max-width: 150px;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
