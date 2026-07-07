@@ -124,8 +124,8 @@ export function parsePartnerWorkbook(workbook, requirements) {
     return {
       partnerId: String(row[0] || "").trim(),
       partnerName: String(row[1] || "").trim(),
-      primaryContact: String(row[2] || "").trim(),
-      status: String(row[3] || "").trim(),
+      primaryContact: String(row[3] || "").trim(),
+      status: String(row[4] || "").trim(),
       introCourses,
       specialistCourses,
       theoryCompleted,
