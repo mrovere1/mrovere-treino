@@ -2,7 +2,7 @@
 {
   "name": "Attention Today",
   "schemaVersion": 1,
-  "description": "Live daily attention page para Marcelo — agenda real do Calendar, prioridades do dia (Granola + contexto), action items abertos com IDs, Slack menções. Atualizado: 10/07/2026 BRT.",
+  "description": "Live daily attention page para Marcelo — agenda real do Calendar, prioridades do dia (Granola + Slack), action items abertos com IDs, DMs Slack. Atualizado: 13/07/2026 BRT.",
   "mcpTools": [
     "mcp__8ff871fe-2c2f-4c8f-98f5-445dfdb64d1d__list_events",
     "mcp__e8984953-dcc8-4b66-bcb6-593ae85edb8d__slack_search_public_and_private",
@@ -161,34 +161,34 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
   </div>
   <div class="tbr">
     <span class="tbdate" id="topDate"></span>
-    <button class="tbbtn" onclick="renderAll()">↻ Refresh</button>
+    <button class="tbbtn" onclick="renderAll()">&#8635; Refresh</button>
     <div class="avatar">MR</div>
   </div>
 </div>
 
 <div class="main">
   <div class="pbanner" id="pbanner">
-    <span class="pbanner-icon">⚡</span>
+    <span class="pbanner-icon">&#9889;</span>
     <div>
       <div class="pbanner-title">Atenção Imediata</div>
       <div class="pbanner-items" id="pitems"></div>
     </div>
   </div>
   <div class="stats" id="stats"></div>
-  <div class="motive"><span style="font-size:20px">🛡️</span><div class="motive-text" id="motive"></div></div>
+  <div class="motive"><span style="font-size:20px">&#128737;&#65039;</span><div class="motive-text" id="motive"></div></div>
 
   <div class="grid-top">
     <div class="sc">
       <div class="sh">
-        <div class="shl"><span style="font-size:15px">📅</span><span class="st">Agenda de Hoje</span><span class="scnt" id="agCnt">0</span></div>
-        <button class="srfr" onclick="renderAgenda()">↻ Ao vivo</button>
+        <div class="shl"><span style="font-size:15px">&#128197;</span><span class="st">Agenda de Hoje</span><span class="scnt" id="agCnt">0</span></div>
+        <button class="srfr" onclick="renderAgenda()">&#8635; Ao vivo</button>
       </div>
       <div class="sb" id="agBody"></div>
     </div>
     <div class="sc">
       <div class="sh">
-        <div class="shl"><span style="font-size:15px">📬</span><span class="st">Prioridades do Dia</span><span class="scnt" id="emCnt">0</span></div>
-        <button class="srfr" onclick="toggleHist()">📋 Histórico</button>
+        <div class="shl"><span style="font-size:15px">&#128236;</span><span class="st">Prioridades do Dia</span><span class="scnt" id="emCnt">0</span></div>
+        <button class="srfr" onclick="toggleHist()">&#128203; Histórico</button>
       </div>
       <div class="sb" id="emBody"></div>
     </div>
@@ -197,8 +197,8 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
   <div class="grid-week">
     <div class="sc">
       <div class="sh">
-        <div class="shl"><span style="font-size:15px">🗓️</span><span class="st">Agenda da Semana</span><span class="scnt" id="wkCnt">0</span></div>
-        <button class="srfr" onclick="renderWeek()">↻ Ao vivo</button>
+        <div class="shl"><span style="font-size:15px">&#128197;</span><span class="st">Agenda da Semana</span><span class="scnt" id="wkCnt">0</span></div>
+        <button class="srfr" onclick="renderWeek()">&#8635; Ao vivo</button>
       </div>
       <div class="sb"><div class="wgrid" id="wkGrid"></div></div>
     </div>
@@ -207,7 +207,7 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
   <div class="grid-bot">
     <div class="sc">
       <div class="sh">
-        <div class="shl"><span style="font-size:15px">✅</span><span class="st">Action Items</span><span class="scnt" id="acCnt">0</span></div>
+        <div class="shl"><span style="font-size:15px">&#9989;</span><span class="st">Action Items</span><span class="scnt" id="acCnt">0</span></div>
         <div style="display:flex;gap:5px">
           <button class="srfr" onclick="setAF('all')">Todos</button>
           <button class="srfr" onclick="setAF('open')">Abertos</button>
@@ -221,8 +221,8 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
     </div>
     <div class="sc">
       <div class="sh">
-        <div class="shl"><span style="font-size:15px">💬</span><span class="st">Slack</span><span class="scnt" id="slCnt">0</span></div>
-        <button class="srfr" onclick="renderSlack()">↻ Ao vivo</button>
+        <div class="shl"><span style="font-size:15px">&#128172;</span><span class="st">Slack</span><span class="scnt" id="slCnt">0</span></div>
+        <button class="srfr" onclick="renderSlack()">&#8635; Ao vivo</button>
       </div>
       <div class="sb" id="slBody"></div>
     </div>
@@ -230,144 +230,164 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
 </div>
 
 <script>
-// ── DATA — Morning Brief 12/07/2026 (Domingo) — BRT ──────────────────
-// ✅ Calendar: OK (0 eventos hoje — domingo) | ✅ Granola: 2 novos action items | ✅ Slack: sem menções (fim de semana) | Gmail: sem ferramenta de busca disponível
-// 🆕 2 novos tasks: Jefferson ticket WhatsApp, Peta/CNC proposta 470 ativos
-// 📅 Semana atualizada: Qua 15/07 agora tem Visita Tdec (in-loco) + T1 Enablement + App Security launch
-// ⚠️ Conflito confirmado: Seg 13/07 14h — SE Semanal vs Netsecurity NFR Teams call
-// ⚠️ Workshop e-Safer 14/07 — convite deve ser confirmado HOJE/AMANHÃ cedo
+// DATA — Morning Brief 13/07/2026 (Segunda) — BRT
+// Calendar: 3 eventos hoje (Brazil Weekly 10h, NetSecurity NFR 14h EXTERNO, CS Office Hours 14h)
+// Slack: 2 DMs — Valter Pereira aguarda pós-call 14h + Scott Barasch recusou pedido
+// CRITICO: Call NetSecurity 14h — Lumin EOS, Valter TS aguarda Go/No Go
+// Workshop PM Partners AMANHA WeWork Paulista 09-16h — 13 parceiros externos, Lismael confirmado
+// SE Semanal MOVIDA para 14/07 09:30. Webinar Precificacao+Hexa criado para Qui 16/07
+// 4 novos tasks | 71 herdados | Total: 75 abertos
 
 const TODAY = new Date();
 document.getElementById('topDate').textContent = TODAY.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
-const agendaItems = [];
+const agendaItems = [
+  {time:"10:00",title:"Brazil Weekly Call",link:"https://tenable.zoom.us/j/94068261600",flags:[],prep:""},
+  {time:"14:00",title:"[EXTERNO] Renovacao NFR Tenable — NetSecurity",link:"https://teams.microsoft.com/meet/2545061989669?p=3WGfAVOAYbPW9RzDJI",flags:["ext","urgent"],attendees:"Fabiana Rodrigues + Andre Feltrin + time NetSecurity",prep:"Lumin EOS: nova licenca sem UI Lumin, apenas ACR/AES algoritmo. Valter Pereira (TS) aguarda resultado para fechar ticket 02511412. Preparar posicao clara!"},
+  {time:"14:00",title:"CS Office Hours (gravado — ver depois)",link:"https://zoom.us/w/97904667344",flags:["conflict"],prep:""},
+];
 
 const weekData = [
-  {day:"Seg",date:"13/07",isToday:false,isPast:false,events:[
-    {t:"10:00",n:"Brazil Weekly Call (Zoom)",type:"i"},
-    {t:"14:00",n:"⚠️ CONFLITO: SE Semanal (opt.)",type:"i"},
-    {t:"14:00",n:"🔴 Netsecurity NFR/Lumin (Teams)",type:"u"},
-    {t:"14:00",n:"CS Office Hours (Zoom)",type:"i"},
-    {t:"16:00",n:"Aula espanhol",type:"i"},
-    {t:"18:00",n:"Aula Zuma",type:"i"},
+  {day:"Seg",date:"13/07",isToday:true,isPast:false,events:[
+    {t:"10:00",n:"Brazil Weekly Call",type:"i"},
+    {t:"14:00",n:"EXTERNO: NetSecurity NFR/Lumin",type:"u"},
+    {t:"14:00",n:"CS Office Hours (conflito)",type:"i"},
   ]},
   {day:"Ter",date:"14/07",isToday:false,isPast:false,events:[
-    {t:"15:00",n:"⚠️ CONFLITO: Channel Team Mtg",type:"i"},
-    {t:"15:00",n:"⚠️ LatAm SEs Bi-Weekly (Dutto)",type:"i"},
+    {t:"09:00",n:"Workshop PM Partners (WeWork Paulista)",type:"p"},
+    {t:"09:30",n:"SE Semanal (movida — conflito)",type:"i"},
+    {t:"15:00",n:"LatAm SEs Bi-Weekly",type:"i"},
     {t:"16:00",n:"Channel & SP-PR Teams",type:"i"},
-    {t:"17:00",n:"Canais Brasil Sync (Oswaldo)",type:"i"},
-    {t:"??:??",n:"Workshop e-Safer? (confirmar)",type:"e"},
+    {t:"17:00",n:"Canais Brasil Sync",type:"i"},
   ]},
   {day:"Qua",date:"15/07",isToday:false,isPast:false,events:[
-    {t:"dia",n:"🏢 Visita Tdec (in-loco)",type:"p"},
-    {t:"12:00",n:"⚠️ CONFLITO: T1 Enablement Call",type:"i"},
-    {t:"12:00",n:"⚠️ App Security + AI Exposure 2.0",type:"u"},
+    {t:"dia",n:"Visita Tdec (in-loco)",type:"p"},
+    {t:"12:00",n:"T1 Enablement Call (conflito)",type:"i"},
+    {t:"12:00",n:"App Sec + AI Exposure 2.0 Launch",type:"u"},
+    {t:"13:00",n:"Guardian Webinar",type:"i"},
+    {t:"16:00",n:"IE Office Hours",type:"i"},
   ]},
-  {day:"Qui",date:"16/07",isToday:false,isPast:false,events:[]},
-  {day:"Sex",date:"17/07",isToday:false,isPast:false,events:[]},
+  {day:"Qui",date:"16/07",isToday:false,isPast:false,events:[
+    {t:"09:30",n:"Webinar Precificacao+Hexa IA (NOVO)",type:"e"},
+    {t:"10:00",n:"MasterClass Hexa SP (conflito)",type:"i"},
+    {t:"12:00",n:"SE All Hands EMEA/LATAM/NA",type:"i"},
+    {t:"17:00",n:"CCR OT Semanal",type:"i"},
+    {t:"17:15",n:"HHH — Hexa Happy Hour",type:"i"},
+  ]},
+  {day:"Sex",date:"17/07",isToday:false,isPast:false,events:[
+    {t:"10:00",n:"Tenable Hexa | Semit/Xsite",type:"e"},
+    {t:"14:00",n:"Aula espanhol",type:"i"},
+  ]},
 ];
 
 const emailItems = [
-  {priority:"high",from:"📅 Calendar — Segunda 13/07 14h",subject:"PREP: Netsecurity NFR/Lumin call — Teams (Andre Feltrin + Fabiana Rodrigues + time)",summary:"Call confirmada no calendar (Teams invite de Fabiana Rodrigues/Netsecurity). Contexto: renovaram NFR mas perderam acesso ao módulo Lumin. Marcelo já explicou que Lumin está EOS — apenas ACR/AES algoritmo permanece. PREP: clareza sobre o que está disponível vs. o que não está, e o Go/No Go de Sales para o Jira do TS (Valter Pereira). ⚠️ CONFLITO com Brazil SE's Semanal 14h.",history:"Email thread Renovação NFR Tenable | 01/07→10/07 | Andre Feltrin, Fabiana Rodrigues, Carlos Barbosa, Felipe Mancini (Netsecurity)",action:"r"},
-  {priority:"high",from:"⚠️ Workshop e-Safer/Craft 14/07",subject:"Confirmar convite — falta 2 dias para o workshop",summary:"O workshop hands-on está marcado para SEGUNDA-FEIRA 14/07. Verificar HOJE se convite foi enviado para fabiano@fnisec e time e-Safer. Se não, enviar imediatamente via WhatsApp/e-mail. Lab de Patch Management em São Paulo.",history:"task-20260708-003 | Granola: Craft TPM Training Jul 7",action:"r"},
-  {priority:"high",from:"📚 'No Before' Training — Prime",subject:"VENCIDO 09/07 — 3 dias em atraso",summary:"Treinamento obrigatório com prazo em 09/07. Verificar no Prime se foi concluído. Se não, concluir IMEDIATAMENTE — está 3 dias vencido.",history:"task-20260602-004 — 40 dias no backlog",action:"r"},
-  {priority:"high",from:"Jefferson — Sync VM+TPM",subject:"Acompanhar ticket via WhatsApp e escalar via Slack (prazo renovação!)",summary:"Jefferson abriu ticket sobre falha de sync VM+TPM. Há prazo de renovação envolvido. Acompanhar numero do ticket via WhatsApp, pesquisar causas conhecidas e escalar internamente via Slack se necessário.",history:"task-20260708-009 | Granola: Tenable vulnerability detection 01/07",action:"r"},
-  {priority:"medium",from:"⚠️ Despesas Midyear — vencidas",subject:"Submeter despesas midyear — VENCIDO 02/07 (10 dias)",summary:"Despesas do mid-year estão pendentes de submissão. Prazo era 02/07. Submeter pelo sistema assim que possível.",history:"task-20260602-003",action:"r"},
-  {priority:"medium",from:"Craft/e-Safer — Reunião 07/07",subject:"4 follow-ups pendentes: patch on-demand, reboot Lucas, logs agente, Dropreal timer",summary:"Da reunião de 07/07: confirmar data lançamento on-demand patch via Slack produto, consultar Lucas sobre reboot servidores, revisar logs agente enviados pelo cliente, verificar comportamento Adaptiva pós-abort Dropreal.",history:"Granola: Craft TPM Training + Dropreal TPM dúvida — Jul 7",action:"r"},
+  {priority:"high",from:"SLACK — Valter Pereira (10:04)",subject:"Aguardando resultado call NetSecurity 14h — ticket Lumin EOS",summary:"Valter: 'Opa. Blz. Estou no aguardo para saber como/se seguiremos com o ticket.' Marcelo respondeu que vai falar com NetSecurity hoje as 14h. ATUALIZAR VALTER APOS A CALL com posicao clara sobre Go/No Go do ticket 02511412.",history:"task-20260713-002 | DM Slack 13/07 10:04",action:"r"},
+  {priority:"high",from:"SLACK — Scott Barasch (10:16)",subject:"Nao pode ajudar — escalar ao manager",summary:"Scott: 'This is not something within the scope of my ability to help -- If I were you, I'd reach out to your manager for guidance and advice on this.' Identificar o tema e escalar ao manager HOJE.",history:"task-20260713-003 | DM Slack 13/07 10:16",action:"r"},
+  {priority:"high",from:"Workshop PM Partners — AMANHA 14/07",subject:"WeWork Av. Paulista 2537 Sala 9A — 09:00-16:00 — 13 parceiros externos",summary:"Workshop Tenable Patch Management. Confirmados: NetSecurity, e-Safer, ShieldSec, VisionCyberSecurity, Asper, TDec. Lismael (Tenable) confirmado. Preparar material e agenda HOJE.",history:"task-20260713-001 | Calendar 13/07 criado",action:"r"},
+  {priority:"high",from:"Call NetSecurity NFR/Lumin — 14h HOJE",subject:"PREP: Lumin EOS — contexto e posicao para call Teams",summary:"NFR renovada mas Lumin sumiu da console. Marcelo ja explicou (07/07): nova licenca nao tem UI Lumin, apenas algoritmo ACR/AES. Ticket 02511412. Fabiana Rodrigues, Andre Feltrin. Preparar: (1) posicao clara sobre o que tem vs nao tem, (2) alinhar com TM Go/No Go.",history:"Email thread Renovacao NFR Tenable | 01/07-10/07 | Andre Feltrin, Fabiana Rodrigues",action:"r"},
+  {priority:"high",from:"No Before Training — Prime",subject:"VENCIDO 09/07 — 4 dias em atraso",summary:"Treinamento obrigatorio com prazo 09/07. Vencido ha 4 dias. Concluir IMEDIATAMENTE no Prime.",history:"task-20260602-004",action:"r"},
+  {priority:"medium",from:"Webinar Precificacao + Hexa IA — Qui 16/07",subject:"Criado hoje — Marco Oswaldo Freitas hosting — prep material",summary:"Webinar 'Novo modelo de Precificacao, Exposure IA e novo Agente: Hexa IA' criado hoje por Marcelo para Qui 16/07 09:30-11:00. Preparar conteudo e divulgar a parceiros.",history:"task-20260713-004 | Calendar 13/07 16:29 UTC",action:"r"},
 ];
 
 let actionItems = [
-  // ── 🆕 NOVOS — 12/07/2026 ──
-  {id:"task-20260712-001",title:"Jefferson — Acompanhar ticket VM+TPM via WhatsApp e escalar via Slack (renovação em risco)",description:"Pesquisar causas conhecidas de falha de sync entre VM e TPM, recomendar coleta de logs e adicionar ao ticket. Acompanhar número do ticket via WhatsApp com Jefferson. Escalar internamente via Slack dado o prazo de renovação.",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"Jefferson",contactEmail:null,meetingOrigin:"Tenable vulnerability detection and CVE mapping (01/07)",activityType:"follow-up",period:"Q3",tags:["follow-up","enablement","internal"],inherited:false,createdAt:"2026-07-12T08:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"🆕 Renovação em risco. Pesquisar sync failure, coletar logs e escalar via Slack."},
-  {id:"task-20260712-002",title:"Peta/CNC — Acionar Ismael e parceiro regional para proposta ~470 ativos",description:"Acionar Ismael e o parceiro regional para preparar proposta de lista de preços para aproximadamente 470 ativos do cliente Peta/CNC.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"Peta",contactEmail:null,meetingOrigin:"Peta - CNC (25/jun)",activityType:"proposal",period:"Q3",tags:["follow-up","pipeline","proposal"],inherited:false,createdAt:"2026-07-12T08:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"🆕 Prospect. ~470 ativos. Acionar Ismael + parceiro regional com pricing."},
-  // ── HIGH HERDADOS ──
-  {id:"task-20260711-001",title:"PREP: Call Netsecurity Renovação NFR/Lumin — Segunda 13/07 14h (Teams)",description:"Call confirmada no calendar. Andre Feltrin + Fabiana Rodrigues + team Netsecurity. Contexto: NFR renovada mas módulo Lumin sumiu (EOS). Marcelo já comunicou que nova licença não tem Lumin UI — só ACR/AES algoritmo. PREP: (1) alinhar posição com TM antes da call, (2) ter Go/No Go de Sales para TS (Valter Pereira Jira ticket), (3) preparar explicação do que o cliente tem disponível na plataforma sem Lumin UI. ⚠️ CONFLITO: Brazil SE's Semanal também às 14h.",priority:"high",dueDate:"2026-07-13",status:"open",source:"calendar",partnerName:"Netsecurity",customerName:null,contactEmail:"andre.feltrin@netsecurity.com.br",meetingOrigin:"[EXTERNAL] RES: Renovação NFR Tenable — 13/07 14h",activityType:"prep",period:"Q3",tags:["partner","prep","follow-up"],inherited:true,createdAt:"2026-07-11T08:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — Teams call confirmada. Lumin EOS: preparar mensagem clara + Get Go/No Go de Sales antes da call."},
-  {id:"task-20260710-001",title:"Netsecurity — Go/No Go Lumin EOS para Valter Pereira (TS)",priority:"high",dueDate:"2026-07-13",status:"open",source:"slack",partnerName:"Netsecurity",customerName:null,tags:["partner","follow-up","internal"],inherited:true,createdAt:"2026-07-10T08:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — Valter Pereira (TS) precisa de OK de Sales para Jira: habilitar Lumin como tile no container do Netsecurity. ⚠️ Lumin está em EOS — alinhar com TM antes da call de segunda."},
-  {id:"task-20260708-013",title:"PREP: Tenable Day XSITE/PagueMenos — 09/07 (realizado)",priority:"high",dueDate:"VENCIDO",status:"open",source:"calendar",partnerName:"XSITE",customerName:"PagueMenos",tags:["partner","prep","enablement"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — Evento realizado 09/07. Capturar follow-ups do Tenable Day se houver."},
-  {id:"task-20260708-003",title:"Craft/e-Safer — Confirmar convite workshop 14/07 (Lab Patch & Deploy, SP)",priority:"high",dueDate:"2026-07-14",status:"open",source:"granola",partnerName:"e-Safer",customerName:"Craft",tags:["partner","enablement","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — Workshop AMANHÃ (14/07). Confirmar se convite foi enviado; se não, enviar IMEDIATAMENTE."},
-  {id:"task-20260708-001",title:"Craft/e-Safer — Confirmar data lançamento on-demand patch com time de produto",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"e-Safer",customerName:"Craft",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — Da reunião 07/07. Consultar via Slack time de produto."},
-  {id:"task-20260708-002",title:"Craft/e-Safer — Consultar Lucas sobre findings de reboot em servidores",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"e-Safer",customerName:"Craft",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — Da reunião 07/07."},
-  {id:"task-20260708-005",title:"Dropreal/Insperg — Confirmar comportamento Adaptiva pós-abort de strategy",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"Dropreal",customerName:"Insperg",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — Da reunião 07/07."},
-  {id:"task-20260708-006",title:"Dropreal/Insperg — Solicitar logs da máquina (Defender update 06/07)",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"Dropreal",customerName:"Insperg",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — Da reunião 07/07."},
-  {id:"task-20260708-009",title:"Jefferson — Pesquisar causas sync failure VM+TPM e recomendar coleta de logs",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"Jefferson",tags:["follow-up","enablement"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — Da reunião 01/07. Ver task-20260712-001 para acompanhamento."},
-  {id:"task-20260708-010",title:"Parceiro RJ — Enviar slides AI use cases + biblioteca de prompts MCP",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:null,tags:["partner","enablement","hexa-ai","mcp"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — Da reunião 26/06. Via WhatsApp do parceiro RJ (Hexa AI)."},
-  {id:"task-20260602-004",title:"📚 Completar 'No Before' Training no Prime — PRAZO VENCIDO 09/07",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:null,customerName:null,tags:["internal","enablement"],inherited:true,createdAt:"2026-06-02T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — ⚠️ 3 dias vencido. Concluir IMEDIATAMENTE se não foi feito."},
-  {id:"task-20260602-003",title:"⚠️ Submeter despesas midyear — VENCIDO 02/07",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:null,customerName:null,tags:["internal","admin"],inherited:true,createdAt:"2026-06-02T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — 10 dias vencido."},
-  {id:"task-20260629-002",title:"Workshop VisionCyber — Follow-up pós-evento (02/07)",priority:"high",dueDate:"VENCIDO",status:"open",source:"calendar",partnerName:"VisionCyber",customerName:null,tags:["partner","enablement","follow-up"],inherited:true,createdAt:"2026-06-29T08:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260701-002",title:"CRAFT/FNISec — Follow-up call Patch Management (02/07)",priority:"high",dueDate:"VENCIDO",status:"open",source:"calendar",partnerName:"FNISec",customerName:"Craft",tags:["partner","follow-up","enablement"],inherited:true,createdAt:"2026-07-01T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260627-002",title:"MasterClass SP EM Mello — Follow-up pós-evento",priority:"high",dueDate:"VENCIDO",status:"open",source:"calendar",partnerName:null,customerName:null,tags:["enablement","follow-up"],inherited:true,createdAt:"2026-06-27T08:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260701-001",title:"Asper — Criar conta TU para Arlem Barros",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:"Asper",customerName:null,tags:["partner","follow-up","admin"],inherited:true,createdAt:"2026-07-01T10:04:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260629-001",title:"[PPSD] SafeSQR — Demo Account Disabled (19 dias!)",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:"SafeSQR",customerName:null,tags:["partner","follow-up","ppsd"],inherited:true,createdAt:"2026-06-29T08:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO. Kacper Jaszczyk sem acesso desde 23/06. ESCALAR."},
-  {id:"task-20260623-006",title:"EM Accreditation — Informar parceiros: TONE Specialist julho",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:null,customerName:null,tags:["enablement","partner"],inherited:true,createdAt:"2026-06-23T11:11:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260624-001",title:"Atualizar Chrome + relinkar Nessus Agent (Self-Service)",priority:"high",dueDate:"VENCIDO",status:"open",source:"slack",partnerName:null,customerName:null,tags:["internal","admin","security"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260624-002",title:"Mercantil — Follow-up Gustavo (oferta 6 meses vs Rapid7)",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"Mercantil",tags:["pipeline","follow-up","competitive"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260623-001",title:"Master Boy — Fechar estrutura de pagamento 42 meses",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:null,customerName:"Master Boy",tags:["pipeline","follow-up"],inherited:true,createdAt:"2026-06-23T11:11:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO. Estrutura 18+12+12."},
-  {id:"task-20260623-002",title:"MCP Pilot — Provisionar acesso por SE",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:null,customerName:null,tags:["internal","admin","mcp"],inherited:true,createdAt:"2026-06-23T11:11:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260623-003",title:"BB — Reagendar call (incluir Claudia)",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:null,customerName:"Banco do Brasil",tags:["follow-up","pipeline"],inherited:true,createdAt:"2026-06-23T11:11:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260616-001",title:"ACTAR — Enviar docs Hexa/MCP/AI para Paula Matos",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:"ACTAR",customerName:null,tags:["partner","follow-up","ai-security"],inherited:true,createdAt:"2026-06-16T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO. 26 dias de atraso."},
-  {id:"task-20260616-002",title:"AEB/Future — Engajar SE para roadmap Tenable One",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:"Future",customerName:"AEB",tags:["partner","follow-up","tenable-one"],inherited:true,createdAt:"2026-06-16T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260618-001",title:"e-Safer/Craft — Follow-up PCI scan vs vuln dashboard",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:"e-Safer",customerName:"Craft",tags:["partner","follow-up"],inherited:true,createdAt:"2026-06-18T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260618-002",title:"e-Safer/Craft — Investigar consumo disco/plugin compilation",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:"e-Safer",customerName:"Craft",tags:["partner","follow-up"],inherited:true,createdAt:"2026-06-18T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260609-002",title:"NFR AI Exposure — Confirmar com Jason Clark",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:null,customerName:null,tags:["internal","follow-up","nfr"],inherited:true,createdAt:"2026-06-09T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO. 33 dias."},
-  {id:"task-20260607-001",title:"Intercom (Egito) — Verificar resolução NFR",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:"Intercom",customerName:null,tags:["partner","follow-up","nfr"],inherited:true,createdAt:"2026-06-07T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO. 35 dias."},
-  {id:"task-20260603-001",title:"Atualizar templates certificação A/B/C + Guardian",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:null,customerName:null,tags:["internal","enablement"],inherited:true,createdAt:"2026-06-03T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO. 39 dias."},
-  {id:"task-20260603-004",title:"UNES — Comitê de aprovação",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:null,customerName:"UNES",tags:["follow-up","pipeline"],inherited:true,createdAt:"2026-06-03T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260601-001",title:"CNA — Enviar e-mail formal para Thales",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"CNA",customerName:null,tags:["partner","follow-up"],inherited:true,createdAt:"2026-06-01T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260601-006",title:"OLX — Responder Daniel Sant'Anna (deal reg vencido)",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:"e-Safer",customerName:"OLX",tags:["partner","follow-up"],inherited:true,createdAt:"2026-06-01T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO. 41 dias."},
-  // ── MEDIUM HERDADOS ──
-  {id:"task-20260708-004",title:"Craft/e-Safer — Revisar logs de agente enviados pelo cliente",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"e-Safer",customerName:"Craft",tags:["partner","follow-up"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — Da reunião 07/07."},
-  {id:"task-20260708-007",title:"Dropreal — Verificar se timer zero force-fecha processos sem notificação",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Dropreal",customerName:null,tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — Da reunião 07/07."},
-  {id:"task-20260708-008",title:"Action Cargo — Call a três: Marcelo + Renato + Henrique (Azure connector)",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"Action Cargo",tags:["follow-up","enablement"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — Da reunião 02/07."},
-  {id:"task-20260708-011",title:"Parceiro RJ — Identificar TM responsável pela renovação",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:null,tags:["partner","follow-up"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO — Daniel ou Bruno TM da renovação RJ."},
-  {id:"task-20260708-012",title:"Parceiro RJ — Agendar sessões enablement RJ (joint + Q&A privado)",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:null,tags:["partner","enablement"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260701-003",title:"TONE Specialist Training — Comunicar parceiros BR",priority:"medium",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:null,customerName:null,tags:["enablement","partner"],inherited:true,createdAt:"2026-07-01T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260630-001",title:"Aser — Follow-ups pós-reunião licenciamento ASM",priority:"medium",dueDate:null,status:"open",source:"calendar",partnerName:"Aser",customerName:null,tags:["partner","follow-up"],inherited:true,createdAt:"2026-06-30T11:26:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260630-002",title:"[PPSD] Axians NFR T1 expirado — Renovação",priority:"medium",dueDate:null,status:"open",source:"gmail",partnerName:"Axians",customerName:null,tags:["partner","follow-up","ppsd","nfr"],inherited:true,createdAt:"2026-06-30T11:26:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260630-003",title:"[PPSD] Tarlogic — Verificar pedido demo Tenable One",priority:"medium",dueDate:null,status:"open",source:"gmail",partnerName:"Tarlogic",customerName:null,tags:["partner","follow-up","ppsd","demo"],inherited:true,createdAt:"2026-06-30T11:26:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260624-010",title:"PPSD coverage — Verificar e-mails semana de 4/julho",priority:"medium",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:null,customerName:null,tags:["internal","admin","ppsd"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260618-003",title:"Workshop hands-on Tenable — e-Safer (14/07 AMANHÃ!)",priority:"medium",dueDate:"2026-07-14",status:"open",source:"granola",partnerName:"e-Safer",customerName:null,tags:["enablement","partner"],inherited:true,createdAt:"2026-06-18T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO. Workshop SEGUNDA-FEIRA. Ver task-20260708-003 para convite."},
-  {id:"task-20260621-001",title:"Suzano/TDec — Follow-up Felipe: Patch vs WSUS + VPR Beta",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"TDec",customerName:"Suzano",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-06-21T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO. VPR Beta ~depr. jul/2026."},
-  {id:"task-20260624-003",title:"Programa Elite — Revisar documento Gabriela Lo Caspi",priority:"medium",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:null,customerName:null,tags:["internal","enablement","marketing"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260624-004",title:"Compliance — Completar Biometric Privacy Notice",priority:"medium",dueDate:null,status:"open",source:"gmail",partnerName:null,customerName:null,tags:["internal","admin","compliance"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260624-005",title:"HexaAI GA — Repassar demos e materiais a parceiros",priority:"medium",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:null,customerName:null,tags:["enablement","partner","hexa-ai","demo"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260624-006",title:"DASA — Identificar Ana Terra e alinhar intel de contrato",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"DASA",tags:["follow-up","pipeline"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260624-007",title:"EQSA POC — Levantar tracking com Duto",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"EQSA",tags:["follow-up","pipeline","pov"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260624-008",title:"IT Demand — Verificar pedido demo Tenable One",priority:"medium",dueDate:null,status:"open",source:"gmail",partnerName:"IT Demand",customerName:null,tags:["partner","follow-up","demo"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260624-009",title:"TPM Training — Alinhar com Pedroza data e setup do lab",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:null,tags:["enablement","internal","training"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260624-011",title:"Aprovação cursos TPM — Rpioker e Rmello (pendente Lismael)",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:null,tags:["internal","admin","enablement"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260624-012",title:"Campanha TouchDown — Monitorar progresso",priority:"medium",dueDate:null,status:"open",source:"gmail",partnerName:null,customerName:null,tags:["internal","partner","marketing"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260623-004",title:"OpenAI Daybreak — Preparar messaging para parceiros",priority:"medium",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:null,customerName:null,tags:["enablement","internal","ai-security"],inherited:true,createdAt:"2026-06-23T11:11:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260609-001",title:"BNDES/Kryptus — Segmentar relatórios PDF por tags",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Kryptus",customerName:"BNDES",tags:["follow-up","prep"],inherited:true,createdAt:"2026-06-09T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260602-002",title:"Acompanhar PoC Anima Educação (e-Safer)",priority:"medium",dueDate:null,status:"open",source:"gmail",partnerName:"e-Safer",customerName:"Anima Educação",tags:["partner","follow-up"],inherited:true,createdAt:"2026-06-02T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260602-005",title:"BB EntraID — Acompanhar configuração de roles",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"Banco do Brasil",tags:["follow-up"],inherited:true,createdAt:"2026-06-02T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260603-005",title:"TJRJ — Acompanhar avaliação da contraproposta",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"TJRJ",tags:["follow-up","pipeline"],inherited:true,createdAt:"2026-06-03T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260603-006",title:"SEFAZ Acre — Resolver bloqueio de crédito R$12k",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"SEFAZ Acre",tags:["follow-up","pipeline"],inherited:true,createdAt:"2026-06-03T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260601-009",title:"CNA — Recriar conexão AD com restrição de OUs",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"CNA",customerName:null,tags:["partner","follow-up"],inherited:true,createdAt:"2026-06-01T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260601-010",title:"NBC Bank — Agendar follow-up técnico",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"NBC Bank",tags:["follow-up"],inherited:true,createdAt:"2026-06-01T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  // ── LOW HERDADOS ──
-  {id:"task-20260629-003",title:"Confirmar container MSSP Portal (RITM0034395)",priority:"low",dueDate:null,status:"open",source:"gmail",partnerName:null,customerName:null,tags:["internal","admin"],inherited:true,createdAt:"2026-06-29T08:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260627-003",title:"Ler June 2026 Product Newsletter (One.Tenable)",priority:"low",dueDate:null,status:"open",source:"gmail",partnerName:null,customerName:null,tags:["enablement","internal"],inherited:true,createdAt:"2026-06-27T08:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260618-004",title:"CTF Brazil — Follow-up 3 novos leads",priority:"low",dueDate:null,status:"open",source:"gmail",partnerName:null,customerName:null,tags:["follow-up","pipeline"],inherited:true,createdAt:"2026-06-18T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260619-001",title:"Assistir gravação SE All Hands (18/06)",priority:"low",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:null,customerName:null,tags:["internal","enablement"],inherited:true,createdAt:"2026-06-19T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260607-003",title:"Ler Claroty Competitive Battlecard (OT)",priority:"low",dueDate:null,status:"open",source:"gmail",partnerName:null,customerName:null,tags:["enablement","internal","competitive"],inherited:true,createdAt:"2026-06-07T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260601-014",title:"Verificar cobertura parceiros ExposureCon 2026",priority:"low",dueDate:null,status:"open",source:"gmail",partnerName:null,customerName:null,tags:["enablement","partner"],inherited:true,createdAt:"2026-06-01T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  {id:"task-20260613-001",title:"RSVP — ToT Exposure Edition SP (24/09)",priority:"low",dueDate:"2026-09-24",status:"open",source:"gmail",partnerName:null,customerName:null,tags:["enablement"],inherited:true,createdAt:"2026-06-13T00:00:00-03:00",updatedAt:"2026-07-12T08:00:00-03:00",summary:"📌 HERDADO."},
-  // ── DONE ──
-  {id:"task-20260623-005",title:"ExposureCon Curitiba — Confirmar presença",priority:"medium",dueDate:"23/06",status:"done",source:"calendar",partnerName:null,customerName:null,tags:["enablement","admin"],inherited:true,createdAt:"2026-06-23T11:11:00-03:00",updatedAt:"2026-06-24T16:10:00-03:00",summary:"✅ DONE."},
-  {id:"task-20260617-001",title:"e-Safer/Craft — Troubleshooting call (17/06)",priority:"high",dueDate:"17/06",status:"done",source:"calendar",partnerName:"e-Safer",customerName:"Craft",tags:["partner","prep"],inherited:true,createdAt:"2026-06-17T00:00:00-03:00",updatedAt:"2026-06-24T16:10:00-03:00",summary:"✅ DONE."},
-  {id:"task-20260603-003",title:"NetSecure SP — Confirmar participação",priority:"medium",dueDate:"16/06",status:"done",source:"granola",partnerName:null,customerName:null,tags:["partner","enablement"],inherited:true,createdAt:"2026-06-03T00:00:00-03:00",updatedAt:"2026-06-18T08:00:00-03:00",summary:"✅ DONE."},
+  // NOVOS — 13/07/2026
+  {id:"task-20260713-001",title:"PREP Workshop PM Partners AMANHA — WeWork Av. Paulista 2537 Sala 9A, 09:00-16:00",priority:"high",dueDate:"2026-07-14",status:"open",source:"calendar",partnerName:"e-Safer/NetSecurity/TDec/Asper",tags:["enablement","partner","patch-management","workshop"],inherited:false,createdAt:"2026-07-13T08:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"13 parceiros externos confirmados. Lismael (Tenable) aceito. Preparar material HOJE."},
+  {id:"task-20260713-002",title:"Atualizar Valter Pereira (TS) apos call NetSecurity 14h — Go/No Go Lumin EOS",priority:"high",dueDate:"2026-07-13",status:"open",source:"slack",partnerName:"NetSecurity",tags:["follow-up","partner","nfr","slack"],inherited:false,createdAt:"2026-07-13T08:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Valter aguarda resultado da call 14h — ticket 02511412. Update imediato apos call."},
+  {id:"task-20260713-003",title:"Escalar ao manager — Scott Barasch recusou pedido",priority:"high",dueDate:"2026-07-13",status:"open",source:"slack",tags:["internal","escalation","slack"],inherited:false,createdAt:"2026-07-13T08:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Scott nao pode ajudar. Identificar o tema e escalar ao manager HOJE."},
+  {id:"task-20260713-004",title:"Webinar 'Novo modelo de Precificacao + Hexa IA' — Qui 16/07 09:30 (Marco Oswaldo)",priority:"medium",dueDate:"2026-07-16",status:"open",source:"calendar",tags:["enablement","partner","hexa-ai","webinar"],inherited:false,createdAt:"2026-07-13T08:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Criado hoje. Preparar material e divulgar a parceiros."},
+  // HIGH HERDADOS
+  {id:"task-20260712-001",title:"Jefferson — Acompanhar ticket VM+TPM via WhatsApp e escalar via Slack (renovacao em risco)",priority:"high",dueDate:null,status:"open",source:"granola",customerName:"Jefferson",tags:["follow-up","enablement","internal"],inherited:true,createdAt:"2026-07-12T08:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Renovacao em risco. Sync VM+TPM falha. Escalar via Slack."},
+  {id:"task-20260711-001",title:"PREP: Call Netsecurity Renovacao NFR/Lumin — Seg 13/07 14h (Teams)",priority:"high",dueDate:"2026-07-13",status:"open",source:"calendar",partnerName:"Netsecurity",tags:["partner","prep","follow-up"],inherited:true,createdAt:"2026-07-11T08:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Teams call confirmada. Lumin EOS: preparar mensagem clara + Go/No Go de Sales antes da call."},
+  {id:"task-20260710-001",title:"Netsecurity — Go/No Go Lumin EOS para Valter Pereira (TS)",priority:"high",dueDate:"2026-07-13",status:"open",source:"slack",partnerName:"Netsecurity",tags:["partner","follow-up","internal"],inherited:true,createdAt:"2026-07-10T08:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Valter Pereira (TS) aguarda OK de Sales. Alinhar com TM antes da call 14h."},
+  {id:"task-20260708-013",title:"PREP: Tenable Day XSITE/PagueMenos — 09/07 (realizado)",priority:"high",dueDate:"VENCIDO",status:"open",source:"calendar",partnerName:"XSITE",customerName:"PagueMenos",tags:["partner","prep","enablement"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Capturar follow-ups do Tenable Day."},
+  {id:"task-20260708-003",title:"Craft/e-Safer — Confirmar convite workshop 14/07 (Lab Patch & Deploy, SP)",priority:"high",dueDate:"2026-07-14",status:"open",source:"granola",partnerName:"e-Safer",customerName:"Craft",tags:["partner","enablement","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Workshop AMANHA (14/07). Confirmar se convite foi enviado."},
+  {id:"task-20260708-001",title:"Craft/e-Safer — Confirmar data lancamento on-demand patch com time de produto",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"e-Safer",customerName:"Craft",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Da reuniao 07/07. Consultar via Slack time de produto."},
+  {id:"task-20260708-002",title:"Craft/e-Safer — Consultar Lucas sobre findings de reboot em servidores",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"e-Safer",customerName:"Craft",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Da reuniao 07/07."},
+  {id:"task-20260708-005",title:"Dropreal/Insperg — Confirmar comportamento Adaptiva pos-abort de strategy",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"Dropreal",customerName:"Insperg",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Da reuniao 07/07."},
+  {id:"task-20260708-006",title:"Dropreal/Insperg — Solicitar logs da maquina (Defender update 06/07)",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"Dropreal",customerName:"Insperg",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Da reuniao 07/07."},
+  {id:"task-20260708-009",title:"Jefferson — Pesquisar causas sync failure VM+TPM e recomendar coleta de logs",priority:"high",dueDate:null,status:"open",source:"granola",customerName:"Jefferson",tags:["follow-up","enablement"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Da reuniao 01/07. Ver task-20260712-001."},
+  {id:"task-20260708-010",title:"Parceiro RJ — Enviar slides AI use cases + biblioteca de prompts MCP",priority:"high",dueDate:null,status:"open",source:"granola",tags:["partner","enablement","hexa-ai","mcp"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Da reuniao 26/06. Via WhatsApp do parceiro RJ (Hexa AI)."},
+  {id:"task-20260602-004",title:"Completar 'No Before' Training no Prime — PRAZO VENCIDO 09/07",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",tags:["internal","enablement"],inherited:true,createdAt:"2026-06-02T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"4 dias vencido. Concluir IMEDIATAMENTE."},
+  {id:"task-20260602-003",title:"Submeter despesas midyear — VENCIDO 02/07",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",tags:["internal","admin"],inherited:true,createdAt:"2026-06-02T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"11 dias vencido."},
+  {id:"task-20260629-002",title:"Workshop VisionCyber — Follow-up pos-evento",priority:"high",dueDate:"VENCIDO",status:"open",source:"calendar",partnerName:"VisionCyber",tags:["partner","enablement","follow-up"],inherited:true,createdAt:"2026-06-29T08:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260701-002",title:"CRAFT/FNISec — Follow-up call Patch Management",priority:"high",dueDate:"VENCIDO",status:"open",source:"calendar",partnerName:"FNISec",customerName:"Craft",tags:["partner","follow-up","enablement"],inherited:true,createdAt:"2026-07-01T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260627-002",title:"MasterClass SP EM Mello — Follow-up pos-evento",priority:"high",dueDate:"VENCIDO",status:"open",source:"calendar",tags:["enablement","follow-up"],inherited:true,createdAt:"2026-06-27T08:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260701-001",title:"Asper — Criar conta TU para Arlem Barros",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:"Asper",tags:["partner","follow-up","admin"],inherited:true,createdAt:"2026-07-01T10:04:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260629-001",title:"[PPSD] SafeSQR — Demo Account Disabled (20 dias!)",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:"SafeSQR",tags:["partner","follow-up","ppsd"],inherited:true,createdAt:"2026-06-29T08:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Kacper Jaszczyk sem acesso desde 23/06. ESCALAR."},
+  {id:"task-20260623-006",title:"EM Accreditation — Informar parceiros: TONE Specialist julho",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",tags:["enablement","partner"],inherited:true,createdAt:"2026-06-23T11:11:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260624-001",title:"Atualizar Chrome + relinkar Nessus Agent",priority:"high",dueDate:"VENCIDO",status:"open",source:"slack",tags:["internal","admin","security"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260624-002",title:"Mercantil — Follow-up Gustavo (oferta 6 meses vs Rapid7)",priority:"high",dueDate:null,status:"open",source:"granola",customerName:"Mercantil",tags:["pipeline","follow-up","competitive"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260623-001",title:"Master Boy — Fechar estrutura de pagamento 42 meses",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",customerName:"Master Boy",tags:["pipeline","follow-up"],inherited:true,createdAt:"2026-06-23T11:11:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Estrutura 18+12+12."},
+  {id:"task-20260623-002",title:"MCP Pilot — Provisionar acesso por SE",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",tags:["internal","admin","mcp"],inherited:true,createdAt:"2026-06-23T11:11:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260623-003",title:"BB — Reagendar call (incluir Claudia)",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",customerName:"Banco do Brasil",tags:["follow-up","pipeline"],inherited:true,createdAt:"2026-06-23T11:11:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260616-001",title:"ACTAR — Enviar docs Hexa/MCP/AI para Paula Matos",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:"ACTAR",tags:["partner","follow-up","ai-security"],inherited:true,createdAt:"2026-06-16T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"27 dias de atraso."},
+  {id:"task-20260616-002",title:"AEB/Future — Engajar SE para roadmap Tenable One",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:"Future",customerName:"AEB",tags:["partner","follow-up","tenable-one"],inherited:true,createdAt:"2026-06-16T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260618-001",title:"e-Safer/Craft — Follow-up PCI scan vs vuln dashboard",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:"e-Safer",customerName:"Craft",tags:["partner","follow-up"],inherited:true,createdAt:"2026-06-18T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260618-002",title:"e-Safer/Craft — Investigar consumo disco/plugin compilation",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:"e-Safer",customerName:"Craft",tags:["partner","follow-up"],inherited:true,createdAt:"2026-06-18T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260609-002",title:"NFR AI Exposure — Confirmar com Jason Clark",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",tags:["internal","follow-up","nfr"],inherited:true,createdAt:"2026-06-09T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"34 dias."},
+  {id:"task-20260607-001",title:"Intercom (Egito) — Verificar resolucao NFR",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:"Intercom",tags:["partner","follow-up","nfr"],inherited:true,createdAt:"2026-06-07T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"36 dias."},
+  {id:"task-20260603-001",title:"Atualizar templates certificacao A/B/C + Guardian",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",tags:["internal","enablement"],inherited:true,createdAt:"2026-06-03T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"40 dias."},
+  {id:"task-20260603-004",title:"UNES — Comite de aprovacao",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",customerName:"UNES",tags:["follow-up","pipeline"],inherited:true,createdAt:"2026-06-03T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260601-001",title:"CNA — Enviar e-mail formal para Thales",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"CNA",tags:["partner","follow-up"],inherited:true,createdAt:"2026-06-01T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260601-006",title:"OLX — Responder Daniel Sant'Anna (deal reg vencido)",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:"e-Safer",customerName:"OLX",tags:["partner","follow-up"],inherited:true,createdAt:"2026-06-01T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"42 dias."},
+  // MEDIUM HERDADOS
+  {id:"task-20260712-002",title:"Peta/CNC — Acionar Ismael e parceiro regional para proposta ~470 ativos",priority:"medium",dueDate:null,status:"open",source:"granola",customerName:"Peta",tags:["follow-up","pipeline","proposal"],inherited:true,createdAt:"2026-07-12T08:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Prospect. ~470 ativos. Acionar Ismael + parceiro regional com pricing."},
+  {id:"task-20260708-004",title:"Craft/e-Safer — Revisar logs de agente enviados pelo cliente",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"e-Safer",customerName:"Craft",tags:["partner","follow-up"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260708-007",title:"Dropreal — Verificar se timer zero force-fecha processos",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Dropreal",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260708-008",title:"Action Cargo — Call a tres: Marcelo + Renato + Henrique (Azure connector)",priority:"medium",dueDate:null,status:"open",source:"granola",customerName:"Action Cargo",tags:["follow-up","enablement"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260708-011",title:"Parceiro RJ — Identificar TM responsavel pela renovacao",priority:"medium",dueDate:null,status:"open",source:"granola",tags:["partner","follow-up"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260708-012",title:"Parceiro RJ — Agendar sessoes enablement RJ",priority:"medium",dueDate:null,status:"open",source:"granola",tags:["partner","enablement"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260701-003",title:"TONE Specialist Training — Comunicar parceiros BR",priority:"medium",dueDate:"VENCIDO",status:"open",source:"granola",tags:["enablement","partner"],inherited:true,createdAt:"2026-07-01T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260630-001",title:"Aser — Follow-ups pos-reuniao licenciamento ASM",priority:"medium",dueDate:null,status:"open",source:"calendar",partnerName:"Aser",tags:["partner","follow-up"],inherited:true,createdAt:"2026-06-30T11:26:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260630-002",title:"[PPSD] Axians NFR T1 expirado — Renovacao",priority:"medium",dueDate:null,status:"open",source:"gmail",partnerName:"Axians",tags:["partner","follow-up","ppsd","nfr"],inherited:true,createdAt:"2026-06-30T11:26:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260630-003",title:"[PPSD] Tarlogic — Verificar pedido demo Tenable One",priority:"medium",dueDate:null,status:"open",source:"gmail",partnerName:"Tarlogic",tags:["partner","follow-up","ppsd","demo"],inherited:true,createdAt:"2026-06-30T11:26:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260624-010",title:"PPSD coverage — Verificar e-mails semana de 4/julho",priority:"medium",dueDate:"VENCIDO",status:"open",source:"granola",tags:["internal","admin","ppsd"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260618-003",title:"Workshop hands-on Tenable — e-Safer (14/07 AMANHA!)",priority:"medium",dueDate:"2026-07-14",status:"open",source:"granola",partnerName:"e-Safer",tags:["enablement","partner"],inherited:true,createdAt:"2026-06-18T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Workshop SEGUNDA-FEIRA. Ver task-20260713-001."},
+  {id:"task-20260621-001",title:"Suzano/TDec — Follow-up Felipe: Patch vs WSUS + VPR Beta",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"TDec",customerName:"Suzano",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-06-21T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260624-003",title:"Programa Elite — Revisar documento Gabriela Lo Caspi",priority:"medium",dueDate:"VENCIDO",status:"open",source:"gmail",tags:["internal","enablement","marketing"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260624-004",title:"Compliance — Completar Biometric Privacy Notice",priority:"medium",dueDate:null,status:"open",source:"gmail",tags:["internal","admin","compliance"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260624-005",title:"HexaAI GA — Repassar demos e materiais a parceiros",priority:"medium",dueDate:"VENCIDO",status:"open",source:"gmail",tags:["enablement","partner","hexa-ai","demo"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260624-006",title:"DASA — Identificar Ana Terra e alinhar intel de contrato",priority:"medium",dueDate:null,status:"open",source:"granola",customerName:"DASA",tags:["follow-up","pipeline"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260624-007",title:"EQSA POC — Levantar tracking com Duto",priority:"medium",dueDate:null,status:"open",source:"granola",customerName:"EQSA",tags:["follow-up","pipeline","pov"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260624-008",title:"IT Demand — Verificar pedido demo Tenable One",priority:"medium",dueDate:null,status:"open",source:"gmail",partnerName:"IT Demand",tags:["partner","follow-up","demo"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260624-009",title:"TPM Training — Alinhar com Pedroza data e setup do lab",priority:"medium",dueDate:null,status:"open",source:"granola",tags:["enablement","internal","training"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260624-011",title:"Aprovacao cursos TPM — Rpioker e Rmello",priority:"medium",dueDate:null,status:"open",source:"granola",tags:["internal","admin","enablement"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260624-012",title:"Campanha TouchDown — Monitorar progresso",priority:"medium",dueDate:null,status:"open",source:"gmail",tags:["internal","partner","marketing"],inherited:true,createdAt:"2026-06-24T16:10:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260623-004",title:"OpenAI Daybreak — Preparar messaging para parceiros",priority:"medium",dueDate:"VENCIDO",status:"open",source:"gmail",tags:["enablement","internal","ai-security"],inherited:true,createdAt:"2026-06-23T11:11:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260609-001",title:"BNDES/Kryptus — Segmentar relatorios PDF por tags",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Kryptus",customerName:"BNDES",tags:["follow-up","prep"],inherited:true,createdAt:"2026-06-09T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260602-002",title:"Acompanhar PoC Anima Educacao (e-Safer)",priority:"medium",dueDate:null,status:"open",source:"gmail",partnerName:"e-Safer",customerName:"Anima Educacao",tags:["partner","follow-up"],inherited:true,createdAt:"2026-06-02T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260602-005",title:"BB EntraID — Acompanhar configuracao de roles",priority:"medium",dueDate:null,status:"open",source:"granola",customerName:"Banco do Brasil",tags:["follow-up"],inherited:true,createdAt:"2026-06-02T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260603-005",title:"TJRJ — Acompanhar avaliacao da contraproposta",priority:"medium",dueDate:null,status:"open",source:"granola",customerName:"TJRJ",tags:["follow-up","pipeline"],inherited:true,createdAt:"2026-06-03T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260603-006",title:"SEFAZ Acre — Resolver bloqueio de credito R$12k",priority:"medium",dueDate:null,status:"open",source:"granola",customerName:"SEFAZ Acre",tags:["follow-up","pipeline"],inherited:true,createdAt:"2026-06-03T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260601-009",title:"CNA — Recriar conexao AD com restricao de OUs",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"CNA",tags:["partner","follow-up"],inherited:true,createdAt:"2026-06-01T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260601-010",title:"NBC Bank — Agendar follow-up tecnico",priority:"medium",dueDate:null,status:"open",source:"granola",customerName:"NBC Bank",tags:["follow-up"],inherited:true,createdAt:"2026-06-01T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  // LOW HERDADOS
+  {id:"task-20260629-003",title:"Confirmar container MSSP Portal (RITM0034395)",priority:"low",dueDate:null,status:"open",source:"gmail",tags:["internal","admin"],inherited:true,createdAt:"2026-06-29T08:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260627-003",title:"Ler June 2026 Product Newsletter (One.Tenable)",priority:"low",dueDate:null,status:"open",source:"gmail",tags:["enablement","internal"],inherited:true,createdAt:"2026-06-27T08:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260618-004",title:"CTF Brazil — Follow-up 3 novos leads",priority:"low",dueDate:null,status:"open",source:"gmail",tags:["follow-up","pipeline"],inherited:true,createdAt:"2026-06-18T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260619-001",title:"Assistir gravacao SE All Hands (18/06)",priority:"low",dueDate:"VENCIDO",status:"open",source:"gmail",tags:["internal","enablement"],inherited:true,createdAt:"2026-06-19T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260607-003",title:"Ler Claroty Competitive Battlecard (OT)",priority:"low",dueDate:null,status:"open",source:"gmail",tags:["enablement","internal","competitive"],inherited:true,createdAt:"2026-06-07T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260601-014",title:"Verificar cobertura parceiros ExposureCon 2026",priority:"low",dueDate:null,status:"open",source:"gmail",tags:["enablement","partner"],inherited:true,createdAt:"2026-06-01T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  {id:"task-20260613-001",title:"RSVP — ToT Exposure Edition SP (24/09)",priority:"low",dueDate:"2026-09-24",status:"open",source:"gmail",tags:["enablement"],inherited:true,createdAt:"2026-06-13T00:00:00-03:00",updatedAt:"2026-07-13T08:00:00-03:00",summary:"Herdado."},
+  // DONE
+  {id:"task-20260623-005",title:"ExposureCon Curitiba — Confirmar presenca",priority:"medium",dueDate:"23/06",status:"done",source:"calendar",tags:["enablement","admin"],inherited:true,createdAt:"2026-06-23T11:11:00-03:00",updatedAt:"2026-06-24T16:10:00-03:00",summary:"DONE."},
+  {id:"task-20260617-001",title:"e-Safer/Craft — Troubleshooting call (17/06)",priority:"high",dueDate:"17/06",status:"done",source:"calendar",partnerName:"e-Safer",customerName:"Craft",tags:["partner","prep"],inherited:true,createdAt:"2026-06-17T00:00:00-03:00",updatedAt:"2026-06-24T16:10:00-03:00",summary:"DONE."},
+  {id:"task-20260603-003",title:"NetSecure SP — Confirmar participacao",priority:"medium",dueDate:"16/06",status:"done",source:"granola",tags:["partner","enablement"],inherited:true,createdAt:"2026-06-03T00:00:00-03:00",updatedAt:"2026-06-18T08:00:00-03:00",summary:"DONE."},
 ];
 
-const slackItems = [];
+const slackItems = [
+  {avatar:"VP",channel:"DM — Valter Pereira",sender:"Valter Pereira",text:"Opa. Blz. Estou no aguardo para saber como/se seguiremos com o ticket.",time:"Hoje 10:04 — Aguardando resultado call NetSecurity 14h (ticket 02511412 Lumin EOS)",unread:true},
+  {avatar:"SB",channel:"DM — Scott Barasch",sender:"Scott Barasch",text:"Hi Marcelo, This is not something within the scope of my ability to help -- If I were you, I'd reach out to your manager for guidance and advice on this.",time:"Hoje 10:16 — Escalar ao manager",unread:true},
+];
 
 const motives = [
-  "O parceiro que você capacitou hoje fecha o deal que você <strong>não conseguiria sozinho amanhã.</strong>",
-  "Em cybersecurity, <strong>visibilidade não é opcional — é o ponto de partida.</strong>",
-  "Channel sales é sobre <strong>multiplicar impacto através de outros.</strong> Cada enablement tem efeito cascata.",
-  "<strong>O exposure gap existe porque ninguém estava olhando.</strong> Você é o que faz a diferença.",
-  "<strong>O canal que você nutre hoje</strong> é a vantagem competitiva que nenhum adversário copia.",
-  "<strong>O fim de semana que você usa para preparar a segunda</strong> é a diferença entre reagir e liderar.",
-  "Início de semana é sobre <strong>definir o que vai mover o ponteiro.</strong>",
+  "O parceiro que voce capacitou hoje fecha o deal que voce <strong>nao conseguiria sozinho amanha.</strong>",
+  "Em cybersecurity, <strong>visibilidade nao e opcional — e o ponto de partida.</strong>",
+  "Channel sales e sobre <strong>multiplicar impacto atraves de outros.</strong> Cada enablement tem efeito cascata.",
+  "<strong>O exposure gap existe porque ninguem estava olhando.</strong> Voce e o que faz a diferenca.",
+  "<strong>O canal que voce nutre hoje</strong> e a vantagem competitiva que nenhum adversario copia.",
+  "<strong>Inicio de semana e sobre definir o que vai mover o ponteiro.</strong> Execute com intencao.",
+  "Preparar o workshop de amanha e <strong>investir no parceiro que vai fechar deals sem voce.</strong>",
 ];
 
 let showHist=false,af='all',tf='all';
@@ -376,10 +396,10 @@ function renderAll(){renderBanner();renderStats();renderMotive();renderAgenda();
 
 function renderBanner(){
   const bannerItems=[
-    '🔴 SEG 13/07 14h — CONFLITO: SE Semanal vs Netsecurity NFR call (Teams)',
-    '⚠️ Workshop e-Safer 14/07 (AMANHÃ!) — confirmar convite HOJE',
-    '📚 No Before Training — VENCIDO 09/07 — concluir imediatamente',
-    '⚠️ Despesas midyear — VENCIDO 02/07 — submeter urgente',
+    '14h HOJE: Call NetSecurity NFR/Lumin (Teams) — Valter TS aguarda resultado',
+    'AMANHA 09h: Workshop PM Partners WeWork Paulista — 13 parceiros externos',
+    'Scott Barasch recusou pedido — escalar ao manager HOJE',
+    'No Before Training VENCIDO 09/07 — concluir IMEDIATAMENTE',
   ].slice(0,4);
   document.getElementById('pbanner').style.display='flex';
   document.getElementById('pitems').innerHTML=bannerItems.map(i=>`<span class="ppill">${i}</span>`).join('');
@@ -390,10 +410,10 @@ function renderStats(){
   const hi=actionItems.filter(a=>a.priority==='high'&&a.status==='open').length;
   const newT=actionItems.filter(a=>!a.inherited&&a.status==='open').length;
   document.getElementById('stats').innerHTML=[
-    {icon:"📅",val:agendaItems.length,lbl:"Reuniões hoje",d:"Domingo — sem eventos"},
-    {icon:"🆕",val:newT,lbl:"Novos hoje",d:"Jefferson ticket + Peta/CNC"},
-    {icon:"✅",val:open,lbl:"Actions abertas",d:`${hi} high | ${open-hi} outros`,cls:"sdelta"},
-    {icon:"💬",val:slackItems.length,lbl:"Slack menções",d:"Sem menções (fim de semana)"},
+    {icon:"&#128197;",val:agendaItems.length,lbl:"Reunioes hoje",d:"Brazil Weekly 10h + NetSec 14h"},
+    {icon:"&#128269;",val:newT,lbl:"Novos hoje",d:"3 high + 1 medium"},
+    {icon:"&#9989;",val:open,lbl:"Actions abertas",d:`${hi} high | ${open-hi} outros`,cls:"sdelta"},
+    {icon:"&#128172;",val:slackItems.length,lbl:"Slack DMs",d:"Valter + Scott Barasch"},
   ].map(s=>`<div class="scard"><span class="sicon">${s.icon}</span><div><div class="sval">${s.val}</div><div class="slbl">${s.lbl}</div><div class="${s.cls||'sdelta'}">${s.d}</div></div></div>`).join('');
 }
 
@@ -403,9 +423,9 @@ function renderMotive(){
 
 function renderAgenda(){
   document.getElementById('agCnt').textContent=agendaItems.length;
-  const fh={urgent:'<span class="flag f-urgent">🔴 AGORA</span>',ext:'<span class="flag f-ext">👥 Externo</span>',back:'<span class="flag f-back">⚡ Back-to-back</span>',conflict:'<span class="flag f-conflict">⚠️ Conflito</span>'};
+  const fh={urgent:'<span class="flag f-urgent">CRITICO</span>',ext:'<span class="flag f-ext">Externo</span>',back:'<span class="flag f-back">Back-to-back</span>',conflict:'<span class="flag f-conflict">Conflito</span>'};
   if(!agendaItems.length){
-    document.getElementById('agBody').innerHTML='<div style="text-align:center;padding:24px 0;color:var(--tm);font-size:12px">✅ Sem eventos hoje — domingo. Prepare a semana! 💪</div>';
+    document.getElementById('agBody').innerHTML='<div style="text-align:center;padding:24px 0;color:var(--tm);font-size:12px">Sem eventos de trabalho hoje.</div>';
     return;
   }
   document.getElementById('agBody').innerHTML=agendaItems.map(a=>`
@@ -414,18 +434,18 @@ function renderAgenda(){
       <div style="flex:1">
         <div class="ainame">${a.title}</div>
         <div class="aimeta">
-          ${a.link?`<a class="alink" href="${a.link}" target="_blank">🔗 Entrar</a>`:''}
+          ${a.link?`<a class="alink" href="${a.link}" target="_blank">Entrar</a>`:''}
           ${a.attendees?`<span style="font-size:11px;color:var(--tm)">${a.attendees}</span>`:''}
           ${(a.flags||[]).map(f=>fh[f]||'').join('')}
         </div>
-        ${a.prep?`<div class="aprep">📋 ${a.prep}</div>`:''}
+        ${a.prep?`<div class="aprep">${a.prep}</div>`:''}
       </div>
     </div>`).join('');
 }
 
 function renderEmails(){
   document.getElementById('emCnt').textContent=emailItems.length;
-  const al={r:'↩ Ação',a:'🗂 Arquivar',w:'⏳ Aguardar'};
+  const al={r:'Acao',a:'Arquivar',w:'Aguardar'};
   const ac={r:'ea-r',a:'ea-a',w:'ea-w'};
   document.getElementById('emBody').innerHTML=emailItems.map(e=>`
     <div class="ei">
@@ -434,7 +454,7 @@ function renderEmails(){
         <div class="efrom">${e.from}</div>
         <div class="esubj">${e.subject}</div>
         <div class="esum">${e.summary}</div>
-        ${showHist&&e.history?`<div class="ehist"><span class="ehlbl">📚 Fonte: </span>${e.history}</div>`:''}
+        ${showHist&&e.history?`<div class="ehist"><span class="ehlbl">Fonte: </span>${e.history}</div>`:''}
         <span class="eact ${ac[e.action]}">${al[e.action]}</span>
       </div>
     </div>`).join('');
@@ -449,7 +469,7 @@ function renderWeek(){
         <div class="dname">${d.day}</div><div class="ddate">${d.date}</div>
       </div>
       <div class="dbody">
-        ${!d.events.length?'<div class="dempty">—</div>':d.events.map(e=>`
+        ${!d.events.length?'<div class="dempty">sem eventos</div>':d.events.map(e=>`
           <div class="dev ${e.type==='u'?'dev-u':e.type==='e'?'dev-e':e.type==='p'?'dev-p':'dev-i'}">
             <span class="devtime">${e.t}</span><span class="devname">${e.n}</span>
           </div>`).join('')}
@@ -469,23 +489,23 @@ function renderActions(){
   document.getElementById('ftabs').innerHTML=[{id:'all',lbl:'Todos'},...allTags.map(t=>({id:t,lbl:t}))].map(t=>`<button class="ftab ${tf===t.id?'active':''}" onclick="setTF('${t.id}')">${t.lbl}</button>`).join('');
   const tc={'partner':'at-p','enablement':'at-e','follow-up':'at-f','prep':'at-r'};
   const groups=[
-    {p:'high',lbl:'HIGH PRIORITY',cls:'plbl-h',icon:'🔴'},
-    {p:'medium',lbl:'MEDIUM PRIORITY',cls:'plbl-m',icon:'🟡'},
-    {p:'low',lbl:'LOW PRIORITY',cls:'plbl-l',icon:'🟢'},
+    {p:'high',lbl:'HIGH PRIORITY',cls:'plbl-h',icon:''},
+    {p:'medium',lbl:'MEDIUM PRIORITY',cls:'plbl-m',icon:''},
+    {p:'low',lbl:'LOW PRIORITY',cls:'plbl-l',icon:''},
   ].map(g=>({...g,items:items.filter(a=>a.priority===g.p)})).filter(g=>g.items.length);
   document.getElementById('acBody').innerHTML=groups.map(g=>`
     <div class="pg">
-      <div class="plbl ${g.cls}">${g.icon} ${g.lbl}</div>
+      <div class="plbl ${g.cls}">${g.lbl}</div>
       ${g.items.map(a=>`
         <div class="ait ${a.status==='done'?'done':!a.inherited?'new-today':''}" id="ai-${a.id}">
-          <div class="achk ${a.status==='done'?'chk':''}" onclick="tog('${a.id}')">${a.status==='done'?'✓':''}</div>
+          <div class="achk ${a.status==='done'?'chk':''}" onclick="tog('${a.id}')">${a.status==='done'?'v':''}</div>
           <div style="flex:1">
-            <div class="aititle">${!a.inherited?'<span class="new-badge">🆕 NOVO</span> ':'<span class="inh">📌 HERD</span> '}${a.title}</div>
+            <div class="aititle">${!a.inherited?'<span class="new-badge">NOVO</span> ':'<span class="inh">HERD</span> '}${a.title}</div>
             <div class="aimeta2">
               ${(a.partnerName||a.customerName)?`<span class="atag at-p">${a.partnerName||a.customerName}</span>`:''}
               ${(a.tags||[]).map(t=>`<span class="atag ${tc[t]||''}">${t}</span>`).join('')}
-              <span class="asrc">📎 ${a.source}</span>
-              ${a.dueDate?`<span class="adue ${['2026-07-13','2026-07-14','HOJE','VENCIDO'].includes(a.dueDate)?'adue-u':''}">📅 ${a.dueDate}</span>`:''}
+              <span class="asrc">${a.source}</span>
+              ${a.dueDate?`<span class="adue ${['2026-07-13','2026-07-14','HOJE','VENCIDO'].includes(a.dueDate)?'adue-u':''}">prazo: ${a.dueDate}</span>`:''}
             </div>
             <div style="font-size:11px;color:var(--tm);margin-top:3px">${a.summary||''}</div>
           </div>
@@ -494,16 +514,16 @@ function renderActions(){
 }
 
 function renderSlack(){
-  document.getElementById('slCnt').textContent=slackItems.length+' não lido'+(slackItems.length!==1?'s':'');
+  document.getElementById('slCnt').textContent=slackItems.length+' DM'+(slackItems.length!==1?'s':'');
   if(!slackItems.length){
-    document.getElementById('slBody').innerHTML='<div style="text-align:center;padding:24px 0;color:var(--tm);font-size:12px">✅ Sem menções diretas — fim de semana tranquilo.</div>';
+    document.getElementById('slBody').innerHTML='<div style="text-align:center;padding:24px 0;color:var(--tm);font-size:12px">Sem mensagens diretas.</div>';
     return;
   }
   document.getElementById('slBody').innerHTML=slackItems.map(s=>`
     <div class="si">
       <div class="savt">${s.avatar}</div>
       <div style="flex:1">
-        <div class="sch">${s.channel} ${s.unread?'<span class="sunrd">não lido</span>':''}</div>
+        <div class="sch">${s.channel} ${s.unread?'<span class="sunrd">nao lido</span>':''}</div>
         <div class="ssndr">${s.sender}</div>
         <div class="stxt">${s.text}</div>
         <div class="stime">${s.time}</div>
