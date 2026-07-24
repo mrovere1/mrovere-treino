@@ -522,3 +522,29 @@
   font-size: 0.75rem;
   white-space: nowrap;
 }
+
+/* Course category colors — light tints of the brand data colors so it's easy
+   to scan which block (Intro / Specialist / Theory) each chip belongs to. */
+.em-course-chip.intro {
+  color: #1c5ea8;
+  background: rgba(78, 165, 255, 0.16);
+  border-color: rgba(78, 165, 255, 0.4);
+}
+
+.em-course-chip.specialist {
+  color: #7239b3;
+  background: rgba(187, 143, 242, 0.2);
+  border-color: rgba(187, 143, 242, 0.45);
+}
+
+.em-course-chip.theory {
+  color: #128063;
+  background: rgba(113, 255, 198, 0.22);
+  border-color: rgba(113, 255, 198, 0.5);
+}
+
+.em-course-legend {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}

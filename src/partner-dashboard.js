@@ -16,7 +16,8 @@ import {
   parseGuardianSheet,
   parseTechCertsSheet,
   parseEmCertsDetailSheet,
-  emCourseName
+  emCourseName,
+  emCourseCategory
 } from "./partner-excel.js";
 
 const partnerState = {
@@ -792,11 +793,32 @@ export function renderEmCertDetail(detail) {
       </div>
     </section>
 
+    <section class="panel em-block-panel">
+      <header>
+        <div>
+          <h3>Block 3 — Theory <span class="pill ${blocks.b3.pass ? "success" : "warning"}">${
+    blocks.b3.pass ? "Passed" : "Incomplete"
+  }</span></h3>
+        </div>
+      </header>
+      <div class="em-block-grid">
+        <div class="em-block-item">
+          <span class="em-block-item-label"><strong>552</strong> — Exposure Management Business Theory</span>
+          <span>${blocks.b3.pass ? "✅" : "❌"}</span>
+        </div>
+      </div>
+    </section>
+
     <section class="panel card-table">
       <header>
         <div>
           <h3>Team members</h3>
           <p class="muted">${users.length} people with EM courses on file.</p>
+        </div>
+        <div class="em-course-legend">
+          <span class="em-course-chip intro">Intro</span>
+          <span class="em-course-chip specialist">Specialist</span>
+          <span class="em-course-chip theory">Theory</span>
         </div>
       </header>
       <div class="table-wrap">
@@ -821,7 +843,7 @@ export function renderEmCertDetail(detail) {
                         ${user.courses
                           .map(
                             (course) =>
-                              `<span class="em-course-chip"><strong>${course}</strong> ${escapeHtml(
+                              `<span class="em-course-chip ${emCourseCategory(course)}"><strong>${course}</strong> ${escapeHtml(
                                 emCourseName(course)
                               )}</span>`
                           )

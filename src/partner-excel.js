@@ -460,6 +460,16 @@ export function emCourseName(courseId) {
   return EM_COURSE_NAMES[courseId] || `Course ${courseId}`;
 }
 
+const EM_INTRO_COURSE_IDS = new Set([303, 333, 346, 414, 483, 535, 551]);
+const EM_THEORY_COURSE_IDS = new Set([552]);
+
+// Categoria usada só para a cor do chip no drill-down (intro/specialist/theory).
+export function emCourseCategory(courseId) {
+  if (EM_INTRO_COURSE_IDS.has(courseId)) return "intro";
+  if (EM_THEORY_COURSE_IDS.has(courseId)) return "theory";
+  return "specialist";
+}
+
 export function parseEmCertsDetailSheet(workbook) {
   const sheetName = workbook.SheetNames.find((name) => /em certs detail/i.test(name.trim()));
   if (!sheetName) return {};
