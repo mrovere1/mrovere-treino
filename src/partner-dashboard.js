@@ -62,7 +62,7 @@ export async function renderPartnerDashboard(container, userContext) {
   }
 }
 
-export function renderPartnerOverview(partners) {
+export function renderPartnerOverview(partners, emCertsDetail = {}) {
   const readyCount = partners.filter((partner) => partner.computed.accreditationReady).length;
   const introReady = partners.filter((partner) => partner.computed.introCertified).length;
   const theoryDone = partners.filter((partner) => partner.theoryCompleted).length;
@@ -124,7 +124,7 @@ export function renderPartnerOverview(partners) {
                     <td>${renderProgressPill(partner.computed.specialistCertified, partner.computed.missingSpecialistCourses)}</td>
                     <td>${renderStatusPill(partner.theoryCompleted)}</td>
                     <td>${renderProgressPill(partner.computed.accreditationReady, partner.computed.missingCourses)}</td>
-                    <td>${renderProgramProgress(partner)}</td>
+                    <td>${renderProgramProgress(partner, emCertsDetail)}</td>
                   </tr>
                 `
               )
@@ -174,7 +174,7 @@ export function renderPartnerCerts(partners, emCertsDetail = {}) {
                     <td>${renderCourseList("specialist", partner.specialistCourses)}</td>
                     <td>${renderProgressPill(partner.computed.specialistCertified, partner.computed.missingSpecialistCourses)}</td>
                     <td>${renderStatusPill(partner.theoryCompleted)}</td>
-                    <td>${renderProgramProgress(partner)}</td>
+                    <td>${renderProgramProgress(partner, emCertsDetail)}</td>
                   </tr>
                 `
               )
@@ -667,7 +667,7 @@ function renderPartnerTabContent(tabContent, userContext) {
     return;
   }
 
-  tabContent.innerHTML = renderPartnerOverview(partnerState.partners);
+  tabContent.innerHTML = renderPartnerOverview(partnerState.partners, partnerState.emCertsDetail);
 }
 
 function wireCertsTabActions(tabContent, userContext) {
@@ -702,6 +702,8 @@ export function renderEmCertDetail(detail) {
 
   const req2DoneNames = blocks.b2.req2.done.map((c) => `${c} — ${escapeHtml(emCourseName(c))}`).join("<br/>");
   const grpDoneNames = (done) => done.map((c) => `${c} — ${escapeHtml(emCourseName(c))}`).join(", ");
+  const idsWithNames = (ids, separator) =>
+    ids.map((c) => `${c} — ${escapeHtml(emCourseName(c))}`).join(separator);
 
   return `
     <section class="panel">
@@ -764,7 +766,7 @@ export function renderEmCertDetail(detail) {
         <div class="em-block-item em-block-item-stack">
           <div class="em-block-item-label">
             <strong>Req 2 (any 1 of):</strong>
-            <span class="muted">304 · 375 · 488 · 554 · 557</span>
+            <div class="muted em-block-options">${idsWithNames([304, 375, 488, 554, 557], "<br/>")}</div>
           </div>
           <span>${blocks.b2.req2.pass ? "✅" : "❌"}</span>
           ${
@@ -779,13 +781,13 @@ export function renderEmCertDetail(detail) {
           </div>
           <span>${blocks.b2.req3.pass ? "✅" : "❌"}</span>
           <div class="em-block-groups">
-            <div><strong>Group A</strong> (332 or 555): ${
+            <div><strong>Group A</strong> (${idsWithNames([332, 555], " or ")}): ${
               blocks.b2.req3.groupA.pass ? `✅ ${grpDoneNames(blocks.b2.req3.groupA.done)}` : "❌ Not met"
             }</div>
-            <div><strong>Group B</strong> (420 or 560): ${
+            <div><strong>Group B</strong> (${idsWithNames([420, 560], " or ")}): ${
               blocks.b2.req3.groupB.pass ? `✅ ${grpDoneNames(blocks.b2.req3.groupB.done)}` : "❌ Not met"
             }</div>
-            <div><strong>Group C</strong> (540, 539 or 556): ${
+            <div><strong>Group C</strong> (${idsWithNames([540, 539, 556], " or ")}): ${
               blocks.b2.req3.groupC.pass ? `✅ ${grpDoneNames(blocks.b2.req3.groupC.done)}` : "❌ Not met"
             }</div>
           </div>
@@ -1252,16 +1254,22 @@ function getProgressTone(value) {
   return "danger";
 }
 
-function renderProgramProgress(partner) {
+function renderProgramProgress(partner, emCertsDetail = {}) {
   const progress = partner.computed.programProgress || {
     totalDone: 0,
     totalCriteria: 11,
     percentage: 0
   };
 
+  // The per-person detail (EM Certs Detail sheet) is computed directly from
+  // the Tableau by-user course data and is more accurate than the workbook's
+  // aggregate boolean columns, which can lag behind — prefer it when present.
+  const overallPct = emCertsDetail[partner.partnerName]?.blocks?.overallPct;
+  const percentage = overallPct ?? progress.percentage;
+
   return `
     <div class="partner-program-progress" title="Intro ${progress.introDone || 0}/6 | Specialist ${progress.specialistDone || 0}/4 | Theory ${progress.theoryDone || 0}/1">
-      ${renderProgressBar(progress.percentage)}
+      ${renderProgressBar(percentage)}
       <span class="muted">${progress.totalDone}/${progress.totalCriteria}</span>
     </div>
   `;
