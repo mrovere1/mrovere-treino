@@ -355,6 +355,24 @@ Progress bar colors:
 - `61-99`: green
 - `100`: complete
 
+#### Per-partner drill-down (EM Certs Detail)
+
+Partner names in the Courses tab are clickable when the workbook has per-person
+data for that partner (sheet `EM Certs Detail`, written by
+`partner-dashboard/scripts/update_certs.py`). Clicking a partner name shows:
+
+- Overall / Block 1 (Intro) / Block 2 (Specialist) / Block 3 (Theory) progress,
+  mirroring the EM Certification Dashboard rules (Intro = 6 items; Specialist =
+  Req1 fixed course + Req2 1-of-5 + Req3 2-of-3 elective groups; Theory = 1 course).
+- A table of every team member with at least one EM course, and which course IDs
+  they completed.
+
+Data flow: Tableau ("EM Certs By User" view) → `update_certs.py` writes the
+`EM Certs Detail` sheet (one row per person × course) → `partner-excel.js`
+(`parseEmCertsDetailSheet`) groups it by partner and computes the same blocks
+client-side → `partner-dashboard.js` renders the drill-down. No separate
+JSON/static file is used — the workbook stays the single source of truth.
+
 ### Maturity Tab
 
 The Maturity tab reads maturity values from the workbook at runtime.

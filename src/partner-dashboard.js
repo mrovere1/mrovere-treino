@@ -14,7 +14,9 @@ import {
   loadPartnerWorkbook,
   parsePartnerWorkbook,
   parseGuardianSheet,
-  parseTechCertsSheet
+  parseTechCertsSheet,
+  parseEmCertsDetailSheet,
+  emCourseName
 } from "./partner-excel.js";
 
 const partnerState = {
@@ -25,7 +27,9 @@ const partnerState = {
   requirements: null,
   templates: [],
   guardians: [],
-  techCerts: []
+  techCerts: [],
+  emCertsDetail: {},
+  certDetailPartner: null
 };
 
 const TEMPLATE_WORKFLOW_URL =
@@ -44,6 +48,7 @@ export async function renderPartnerDashboard(container, userContext) {
     partnerState.partners = parsePartnerWorkbook(workbook, requirements);
     partnerState.guardians = parseGuardianSheet(workbook);
     partnerState.techCerts = parseTechCertsSheet(workbook);
+    partnerState.emCertsDetail = parseEmCertsDetailSheet(workbook);
     partnerState.requirements = requirements;
     partnerState.templates = templates;
     partnerState.selectedTemplateId = partnerState.selectedTemplateId || templates[0]?.id || null;
@@ -130,13 +135,13 @@ export function renderPartnerOverview(partners) {
   `;
 }
 
-export function renderPartnerCerts(partners) {
+export function renderPartnerCerts(partners, emCertsDetail = {}) {
   return `
     <section class="panel card-table">
       <header>
         <div>
           <h3>Course detail by partner</h3>
-          <p class="muted">Rules: Intro = required courses plus grouped choices. Specialist = required courses plus 1-of-2 and 2-of-3 rules.</p>
+          <p class="muted">Rules: Intro = required courses plus grouped choices. Specialist = required courses plus 1-of-2 and 2-of-3 rules. Click a partner name for the per-person breakdown.</p>
         </div>
       </header>
       <div class="table-wrap">
@@ -159,7 +164,7 @@ export function renderPartnerCerts(partners) {
                 (partner) => `
                   <tr>
                     <td class="partner-name-cell">
-                      <strong>${escapeHtml(partner.partnerName)}</strong>
+                      ${renderPartnerNameCell(partner, emCertsDetail)}
                       <div class="muted">${escapeHtml(partner.primaryContact || "")}</div>
                     </td>
                     <td>${renderTierBadge(partner.status)}</td>
@@ -178,6 +183,16 @@ export function renderPartnerCerts(partners) {
       </div>
     </section>
   `;
+}
+
+function renderPartnerNameCell(partner, emCertsDetail) {
+  const hasDetail = Boolean(emCertsDetail[partner.partnerName]?.users?.length);
+  if (!hasDetail) {
+    return `<strong>${escapeHtml(partner.partnerName)}</strong>`;
+  }
+  return `<a href="#" class="partner-name-link" data-open-cert-detail="${escapeHtml(
+    partner.partnerName
+  )}" title="View per-person course detail"><strong>${escapeHtml(partner.partnerName)}</strong> ↗</a>`;
 }
 
 export function renderPartnerMaturity(partners) {
@@ -618,7 +633,15 @@ function drawPartnerModule(container, userContext) {
 
 function renderPartnerTabContent(tabContent, userContext) {
   if (partnerState.activeTab === "certifications") {
-    tabContent.innerHTML = renderPartnerCerts(partnerState.partners);
+    const detail = partnerState.certDetailPartner
+      ? partnerState.emCertsDetail[partnerState.certDetailPartner]
+      : null;
+
+    tabContent.innerHTML = detail
+      ? renderEmCertDetail(detail)
+      : renderPartnerCerts(partnerState.partners, partnerState.emCertsDetail);
+
+    wireCertsTabActions(tabContent, userContext);
     return;
   }
 
@@ -644,6 +667,177 @@ function renderPartnerTabContent(tabContent, userContext) {
   }
 
   tabContent.innerHTML = renderPartnerOverview(partnerState.partners);
+}
+
+function wireCertsTabActions(tabContent, userContext) {
+  tabContent.querySelectorAll("[data-open-cert-detail]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      partnerState.certDetailPartner = link.dataset.openCertDetail;
+      renderPartnerTabContent(tabContent, userContext);
+    });
+  });
+
+  tabContent.querySelector("[data-back-to-certs]")?.addEventListener("click", (event) => {
+    event.preventDefault();
+    partnerState.certDetailPartner = null;
+    renderPartnerTabContent(tabContent, userContext);
+  });
+}
+
+export function renderEmCertDetail(detail) {
+  const { partnerName, users, blocks } = detail;
+
+  const b1ItemsHtml = blocks.b1.items
+    .map(
+      (item) => `
+        <div class="em-block-item">
+          <span class="em-block-item-label"><strong>${item.code}</strong> — ${escapeHtml(item.label)}</span>
+          <span>${item.pass ? "✅" : "❌"}</span>
+        </div>
+      `
+    )
+    .join("");
+
+  const req2DoneNames = blocks.b2.req2.done.map((c) => `${c} — ${escapeHtml(emCourseName(c))}`).join("<br/>");
+  const grpDoneNames = (done) => done.map((c) => `${c} — ${escapeHtml(emCourseName(c))}`).join(", ");
+
+  return `
+    <section class="panel">
+      <header>
+        <div>
+          <a href="#" class="partner-name-link" data-back-to-certs>← Back to EM Certs</a>
+          <h3 style="margin-top: 0.5rem;">${escapeHtml(partnerName)}</h3>
+          <p class="muted">${users.length} team member${users.length === 1 ? "" : "s"} with at least one EM course.</p>
+        </div>
+      </header>
+
+      <div class="partner-grid4" style="margin-top: 1rem;">
+        <article class="stat-card panel">
+          <h3>Overall</h3>
+          <div class="stat-value">${blocks.overallPct}%</div>
+          <p class="muted">${blocks.overall ? "✅ EM Certified" : "⏳ In progress"}</p>
+        </article>
+        <article class="stat-card panel">
+          <h3>Block 1 — Intro</h3>
+          <div class="stat-value">${blocks.b1.pct}%</div>
+          <p class="muted">${blocks.b1.metCount}/6 met</p>
+        </article>
+        <article class="stat-card panel">
+          <h3>Block 2 — Specialist</h3>
+          <div class="stat-value">${blocks.b2.pct}%</div>
+          <p class="muted">${blocks.b2.pass ? "✅ Passed" : "⏳ Incomplete"}</p>
+        </article>
+        <article class="stat-card panel">
+          <h3>Block 3 — Theory</h3>
+          <div class="stat-value">${blocks.b3.pct}%</div>
+          <p class="muted">${blocks.b3.pass ? "552 ✅" : "Pending"}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel em-block-panel">
+      <header>
+        <div>
+          <h3>Block 1 — Intro <span class="pill ${blocks.b1.pass ? "success" : "warning"}">${
+    blocks.b1.pass ? "Passed (6/6)" : `${blocks.b1.metCount}/6 met`
+  }</span></h3>
+        </div>
+      </header>
+      <div class="em-block-grid">${b1ItemsHtml}</div>
+    </section>
+
+    <section class="panel em-block-panel">
+      <header>
+        <div>
+          <h3>Block 2 — Specialist <span class="pill ${blocks.b2.pass ? "success" : "warning"}">${
+    blocks.b2.pass ? "Passed" : "Incomplete"
+  }</span></h3>
+        </div>
+      </header>
+      <div class="em-block-grid">
+        <div class="em-block-item">
+          <span class="em-block-item-label"><strong>Req 1:</strong> 561 — Tenable One Exposure Management Platform Specialist On-Demand</span>
+          <span>${blocks.b2.req1.pass ? "✅" : "❌"}</span>
+        </div>
+        <div class="em-block-item em-block-item-stack">
+          <div class="em-block-item-label">
+            <strong>Req 2 (any 1 of):</strong>
+            <span class="muted">304 · 375 · 488 · 554 · 557</span>
+          </div>
+          <span>${blocks.b2.req2.pass ? "✅" : "❌"}</span>
+          ${
+            blocks.b2.req2.done.length
+              ? `<div class="muted em-block-done">Completed: ${req2DoneNames}</div>`
+              : ""
+          }
+        </div>
+        <div class="em-block-item em-block-item-stack">
+          <div class="em-block-item-label">
+            <strong>Req 3:</strong> any 2 elective groups (${blocks.b2.req3.metCount}/2 met)
+          </div>
+          <span>${blocks.b2.req3.pass ? "✅" : "❌"}</span>
+          <div class="em-block-groups">
+            <div><strong>Group A</strong> (332 or 555): ${
+              blocks.b2.req3.groupA.pass ? `✅ ${grpDoneNames(blocks.b2.req3.groupA.done)}` : "❌ Not met"
+            }</div>
+            <div><strong>Group B</strong> (420 or 560): ${
+              blocks.b2.req3.groupB.pass ? `✅ ${grpDoneNames(blocks.b2.req3.groupB.done)}` : "❌ Not met"
+            }</div>
+            <div><strong>Group C</strong> (540, 539 or 556): ${
+              blocks.b2.req3.groupC.pass ? `✅ ${grpDoneNames(blocks.b2.req3.groupC.done)}` : "❌ Not met"
+            }</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel card-table">
+      <header>
+        <div>
+          <h3>Team members</h3>
+          <p class="muted">${users.length} people with EM courses on file.</p>
+        </div>
+      </header>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Courses</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${users
+              .map(
+                (user) => `
+                  <tr>
+                    <td><strong>${escapeHtml(user.name)}</strong></td>
+                    <td class="muted">${escapeHtml(user.email)}</td>
+                    <td>
+                      <div class="em-user-course-chips">
+                        ${user.courses
+                          .map(
+                            (course) =>
+                              `<span class="em-course-chip"><strong>${course}</strong> ${escapeHtml(
+                                emCourseName(course)
+                              )}</span>`
+                          )
+                          .join("")}
+                      </div>
+                    </td>
+                    <td>${user.courses.length}</td>
+                  </tr>
+                `
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  `;
 }
 
 function wireTemplateActions(container, userContext) {

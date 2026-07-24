@@ -426,3 +426,148 @@ export function parseTechCertsSheet(workbook) {
       };
     });
 }
+
+// ─── EM Certs Detail (drill-down por pessoa) ──────────────────────────────
+// Regras dos blocos espelham exatamente as do EM Certification Dashboard
+// (Tenable University): Block 1 = Intro (6 itens), Block 2 = Specialist
+// (Req1 fixo + Req2 1-de-5 + Req3 2-de-3 grupos), Block 3 = Theory.
+
+export const EM_COURSE_NAMES = {
+  303: "Introduction to Tenable OT Security",
+  333: "Introduction to Tenable Security Center",
+  346: "Introduction to Tenable Vulnerability Management",
+  414: "Introduction to Tenable Identity Exposure",
+  483: "Tenable One Exposure Management Platform Introduction",
+  535: "Introduction to Tenable Cloud Security",
+  551: "Introduction to Web Application Scanning",
+  561: "Tenable One Exposure Management Platform Specialist On-Demand",
+  304: "Tenable Security Center Specialist",
+  375: "Tenable Vulnerability Management Specialist",
+  488: "Tenable Vulnerability Management Specialist On-Demand",
+  554: "Domain Test Out Exam for Security Center",
+  557: "Domain Test out Exam for Tenable VM",
+  332: "Tenable OT Security Specialist",
+  555: "Domain Test out exam for Tenable OT",
+  420: "Tenable Identity Exposure Specialist",
+  560: "Domain Test out Exam for Tenable IE",
+  540: "Tenable Cloud Security Specialist",
+  539: "Tenable Cloud Security Specialist On-Demand",
+  556: "Domain Test out Exam for Tenable CS",
+  552: "Exposure Management Business Theory"
+};
+
+export function emCourseName(courseId) {
+  return EM_COURSE_NAMES[courseId] || `Course ${courseId}`;
+}
+
+export function parseEmCertsDetailSheet(workbook) {
+  const sheetName = workbook.SheetNames.find((name) => /em certs detail/i.test(name.trim()));
+  if (!sheetName) return {};
+
+  const sheet = workbook.Sheets[sheetName];
+  const rows = window.XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+  if (rows.length < 2) return {};
+
+  const grouped = {};
+  rows.slice(1).forEach((row) => {
+    const partnerId = String(row[0] ?? "").trim();
+    const partnerName = String(row[1] ?? "").trim();
+    const userName = String(row[2] ?? "").trim();
+    const email = String(row[3] ?? "").trim();
+    const course = Number(row[4]);
+    if (!partnerName || !userName || !course) return;
+
+    if (!grouped[partnerName]) {
+      grouped[partnerName] = { partnerId, partnerName, users: {} };
+    }
+    if (!grouped[partnerName].users[userName]) {
+      grouped[partnerName].users[userName] = { name: userName, email, courses: new Set() };
+    }
+    grouped[partnerName].users[userName].courses.add(course);
+  });
+
+  const result = {};
+  Object.values(grouped).forEach((entry) => {
+    const users = Object.values(entry.users)
+      .map((u) => ({
+        name: u.name,
+        email: u.email,
+        courses: Array.from(u.courses).sort((a, b) => a - b)
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    const courseSet = new Set();
+    users.forEach((u) => u.courses.forEach((c) => courseSet.add(c)));
+
+    result[entry.partnerName] = {
+      partnerId: entry.partnerId,
+      partnerName: entry.partnerName,
+      users,
+      blocks: computeEmCertBlocks(courseSet)
+    };
+  });
+  return result;
+}
+
+function computeEmCertBlocks(courseSet) {
+  const has = (course) => courseSet.has(course);
+
+  const b1Items = [
+    { code: "303", label: "Introduction to Tenable OT Security", pass: has(303) },
+    {
+      code: "333/346",
+      label: "Introduction to Tenable Security Center OU Introduction to Tenable Vulnerability Management",
+      pass: has(333) || has(346)
+    },
+    { code: "414", label: "Introduction to Tenable Identity Exposure", pass: has(414) },
+    { code: "483", label: "Tenable One Exposure Management Platform Introduction", pass: has(483) },
+    { code: "535", label: "Introduction to Tenable Cloud Security", pass: has(535) },
+    { code: "551", label: "Introduction to Web Application Scanning", pass: has(551) }
+  ];
+  const b1MetCount = b1Items.filter((item) => item.pass).length;
+  const b1Pass = b1MetCount === 6;
+  const b1Pct = Math.round((b1MetCount / 6) * 1000) / 10;
+
+  const b2Req1Pass = has(561);
+  const b2Req2Done = [304, 375, 488, 554, 557].filter(has);
+  const b2Req2Pass = b2Req2Done.length > 0;
+
+  const grpADone = [332, 555].filter(has);
+  const grpBDone = [420, 560].filter(has);
+  const grpCDone = [540, 539, 556].filter(has);
+  const grpAPass = grpADone.length > 0;
+  const grpBPass = grpBDone.length > 0;
+  const grpCPass = grpCDone.length > 0;
+  const grpsCount = [grpAPass, grpBPass, grpCPass].filter(Boolean).length;
+  const b2Req3Pass = grpsCount >= 2;
+
+  const b2Pass = b2Req1Pass && b2Req2Pass && b2Req3Pass;
+  const b2Score = (b2Req1Pass ? 1 : 0) + (b2Req2Pass ? 1 : 0) + Math.min(grpsCount, 2) / 2;
+  const b2Pct = Math.round((b2Score / 3) * 1000) / 10;
+
+  const b3Pass = has(552);
+  const b3Pct = b3Pass ? 100 : 0;
+
+  const overall = b1Pass && b2Pass && b3Pass;
+  const overallPct = Math.round(((b1Pct + b2Pct + b3Pct) / 3) * 10) / 10;
+
+  return {
+    overall,
+    overallPct,
+    b1: { pass: b1Pass, pct: b1Pct, metCount: b1MetCount, items: b1Items },
+    b2: {
+      pass: b2Pass,
+      pct: b2Pct,
+      req1: { pass: b2Req1Pass },
+      req2: { pass: b2Req2Pass, done: b2Req2Done },
+      req3: {
+        pass: b2Req3Pass,
+        metCount: grpsCount,
+        groupA: { pass: grpAPass, done: grpADone },
+        groupB: { pass: grpBPass, done: grpBDone },
+        groupC: { pass: grpCPass, done: grpCDone }
+      }
+    },
+    b3: { pass: b3Pass, pct: b3Pct }
+  };
+}
