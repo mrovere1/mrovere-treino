@@ -197,7 +197,7 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
   <div class="grid-week">
     <div class="sc">
       <div class="sh">
-        <div class="shl"><span style="font-size:15px">&#128197;</span><span class="st">Agenda da Semana</span><span class="scnt" id="wkCnt">0</span></div>
+        <div class="shl"><span style="font-size:15px">&#128197;</span><span class="st">Próxima Semana</span><span class="scnt" id="wkCnt">0</span></div>
         <button class="srfr" onclick="renderWeek()">&#8635; Ao vivo</button>
       </div>
       <div class="sb"><div class="wgrid" id="wkGrid"></div></div>
@@ -230,96 +230,89 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
 </div>
 
 <script>
-// DATA — Morning Brief 06/08/2026 (Quinta-feira) — BRT — atualizado 09:40 BRT
-// Fortaleza: HH VIP XSITE Illa Mare 18h | CCR OT semanal 17h | The Pulse 12h
-// BIG BOX renovação vence SÁBADO 08/ago — ação necessária HOJE
-// Gmail: 19 não lidos | Granola: 29 tasks (9 novos hoje) | Slack: 0 menções
-// +2 tasks novas: Dropreal TVM filters + CNA/Asper licença
+// DATA — Morning Brief 07/08/2026 (Sexta-feira) — BRT — atualizado 06:20 BRT
+// Agenda: Aula 08h + Aula espanhol 14h (dia leve, sem reuniões de trabalho)
+// BIG BOX RENOVAÇÃO VENCE AMANHÃ (sábado 08/ago) — ÚLTIMA CHANCE HOJE
+// Gmail: 15 não lidos | Granola: timeout | Slack: 0 menções
+// PPSD: 2x Request Tenable One Demo não respondidos (chegaram hoje cedo)
 
 const TODAY = new Date();
 document.getElementById('topDate').textContent = TODAY.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
 const agendaItems = [
-  {time:"12:00",title:"The Pulse — Monthly (Zoom)",link:"https://tenable.zoom.us/j/94079372782?pwd=KIHhPhtJQTCKsBhMeJjX4wQZXirx5R.1",attendees:"Interno Tenable (SMEs globais)",flags:[],prep:"Call mensal com SMEs globais. Tópicos variam mensalmente. Gravação disponível depois."},
-  {time:"16:00",title:"Master Class SP – Exp Mgt (Pioker) ⚠️",link:null,attendees:"peurico, glocaspi, SEs-Brazil, driera, dsantanna | Presencial CENU Torre Norte SP",flags:["conflict"],prep:"Você está em FORTALEZA — confirmar se vai participar online ou não. Apresentação: RPioker. Backup: RMello."},
-  {time:"17:00",title:"CCR – Alinhamento Técnico Tenable OT",link:"https://teams.microsoft.com/l/meetup-join/19%3ameeting_NDFmMjZhZTktOTI0Ni00NDliLThkY2MtMTAwY2FkZjJhN2Vj%40thread.v2/0?context=%7b%22Tid%22%3a%222538a8d5-38f8-47ed-97ba-d023c54a6667%22%2c%22Oid%22%3a%222a64e3a5-a157-4e74-9010-17f4488a11c8%22%7d",attendees:"iBliss (Wendel, Lucas, Argemiro, Felipe) | CCR (Paulo Marini, João Machado) | Tenable (arodrigues, rdamasceno)",flags:["ext","back"],prep:"Reunião semanal recorrente Projeto OT. Termina às 18h — sair direto para o Illa Mare."},
-  {time:"18:00",title:"HH VIP/Executivo XSITE e Tenable — Illa Mare 🍽️",link:null,attendees:"Rodrigo Gomes (XSITE) | Herb Carvalho (XSITE) | Av. Beira Mar 3821, Fortaleza",flags:["ext"],prep:"Jantar pós-Tenable Day (05/ago). Pautar: trial Identity PagueMenos, prompts ExposureAI, pilot Patch + coordenação PwC. Zoom summary (04/ago): Marcelo + Ravier discutiram Plugin X + VM."},
+  {time:"08:00",title:"Aula (pessoal)",link:null,attendees:null,flags:[],prep:null},
+  {time:"14:00",title:"Aula espanhol (pessoal)",link:"https://us06web.zoom.us/j/81043324094?pwd=cmYXtBqOjOjdlbF6bVJ9XQcay4xcdD.1",attendees:null,flags:[],prep:"Zoom link disponível. Dia sem reuniões de trabalho — oportunidade para avançar em backlog."},
 ];
 
 const weekData = [
-  {day:"Seg",date:"03/08",isToday:false,isPast:true,events:[
+  {day:"Seg",date:"10/08",isToday:false,isPast:false,events:[
     {t:"10:00",n:"Brazil Weekly Call",type:"i"},
     {t:"11:30",n:"Sync Canais e Mkt",type:"i"},
+    {t:"13:00",n:"1:1 com Rob Karnbach",type:"i"},
     {t:"14:00",n:"Brazil SEs Semanal",type:"i"},
     {t:"16:00",n:"Aula espanhol",type:"i"},
+    {t:"18:00",n:"Aula Zuma",type:"i"},
   ]},
-  {day:"Ter",date:"04/08",isToday:false,isPast:true,events:[
-    {t:"15:00",n:"LatAm SEs Bi-Weekly",type:"i"},
-    {t:"16:00",n:"Channel & SP-PR",type:"i"},
-    {t:"17:00",n:"Canais Brasil Sync",type:"i"},
+  {day:"Ter",date:"11/08",isToday:false,isPast:false,events:[
+    {t:"15:00",n:"Channel Team Meeting (EXT)",type:"e"},
+    {t:"16:00",n:"Channel & SP-PR Teams",type:"i"},
+    {t:"17:00",n:"Canais Brasil Sync (Marco)",type:"i"},
   ]},
-  {day:"Qua",date:"05/08",isToday:false,isPast:true,events:[
-    {t:"09:30",n:"TDay XSITE/PagueMenos (EXT)",type:"e"},
-    {t:"12:00",n:"SE T1 Enablement",type:"i"},
+  {day:"Qua",date:"12/08",isToday:false,isPast:false,events:[
+    {t:"todo dia",n:"⚠️ Visita TDEC presencial",type:"u"},
+    {t:"10:45",n:"Webinar Hexa AI (Rafael Mello)",type:"e"},
+    {t:"11:00",n:"Mythos Preview - Black Hat",type:"i"},
+    {t:"12:00",n:"SE T1 Enablement Call",type:"i"},
     {t:"16:00",n:"IE Office Hours",type:"i"},
   ]},
-  {day:"Qui",date:"06/08",isToday:true,isPast:false,events:[
-    {t:"todo dia",n:"✈️ Fortaleza",type:"u"},
-    {t:"12:00",n:"The Pulse Monthly",type:"i"},
-    {t:"16:00",n:"Master Class SP Pioker ⚠️",type:"u"},
-    {t:"17:00",n:"CCR OT Semanal (EXT)",type:"e"},
-    {t:"18:00",n:"HH VIP XSITE Fortaleza (EXT)",type:"e"},
-  ]},
-  {day:"Sex",date:"07/08",isToday:false,isPast:false,events:[
-    {t:"08:00",n:"Aula",type:"i"},
-    {t:"14:00",n:"Aula espanhol",type:"i"},
-  ]},
+  {day:"Qui",date:"13/08",isToday:false,isPast:false,events:[]},
+  {day:"Sex",date:"14/08",isToday:false,isPast:false,events:[]},
 ];
 
 const emailItems = [
-  {priority:"medium",from:"no-reply@zoom.us",subject:"Meeting assets — Personal Meeting Room pronto",summary:"Resumo automático: Marcelo e Ravier discutiram integração Plugin X com VM. Contexto útil para HH XSITE esta noite.",history:"04/08/2026 17:10 — Zoom AI summary",action:"r"},
-  {priority:"medium",from:"no-reply@tenable.com",subject:"Tenable Hexa Evaluation — fernandols@insper.edu.br",summary:"Trial Hexa Cloud ativado para Fernando (Insper). UUID: 80751fa8. Expira 04/out/2026. Verificar se Marcelo acompanha.",history:"04/08/2026 16:46",action:"w"},
-  {priority:"low",from:"ddimarino + moleary @tenable.com",subject:"Black Hat: CyberAgents Exchange & AI Exposure lançados",summary:"Dois lançamentos no Black Hat: CyberAgents Exchange (marketplace AI) e AI Exposure (novo produto). Pitch relevante para canal BR.",history:"04/08/2026 13:32",action:"r"},
-  {priority:"low",from:"ibelyna@tenable.com",subject:"Research Release: HTTP/3 Detection Support em NASL",summary:"Novo suporte HTTP/3 em plugins NASL. Release em 10/ago (correção da data original). Melhoria de cobertura de scanning.",history:"04/08/2026 18:17 + correção 19:53",action:"a"},
-  {priority:"low",from:"latam@tenable.com",subject:"Hexa AI Webinar — Quarta 12/ago 11h BRT",summary:"Webinar 'Conheça o Tenable Hexa AI' na próxima quarta. Já no calendário. Compartilhar link com parceiros BR.",history:"04/08/2026 13:00",action:"a"},
+  {priority:"high",from:"ppsd@tenable.com (2x)",subject:"[EXTERNAL] Request Partner Tenable One Demo",summary:"2 solicitações de acesso ao Tenable One demo chegaram hoje (06:17 e 07:56). Parceiro externo solicita acesso à plataforma cloud para demonstrações. Sem resposta da equipe ainda — verificar se são da região BR e tomar ação.",history:"07/08/2026 06:17 e 07:56 — PPSD inbound",action:"r"},
+  {priority:"medium",from:"ddimarino@tenable.com",subject:"Weekly AI Conversation Starters - Aug 6th",summary:"Black Hat: Tenable lançou o primeiro open-source da indústria (detalhes no email). CyberAgents Exchange e AI Exposure possivelmente mencionados. Conteúdo relevante para pitch com parceiros BR.",history:"06/08/2026 22:23",action:"r"},
+  {priority:"low",from:"ppsd@tenable.com",subject:"Re: [EXTERNAL] Request Partner Tenable Patch Management Demo",summary:"Francisco Soto (Chile) assumiu o request de Patch Management Demo da EstrategiaProactiva. Não precisa de ação do Brasil.",history:"06/08/2026 19:07–19:12",action:"a"},
+  {priority:"low",from:"snarang@tenable.com",subject:"Tenable Security Intel Brief: Multi-state cyberattacks hit water systems",summary:"Newsletter semanal de inteligência. TA488 OWA backdoor, DeepSeek como attack operator, AI labs comprometidos. Leitura de contexto.",history:"05/08/2026 13:01",action:"a"},
 ];
 
 let actionItems = [
-  // NOVOS — 06/08/2026
-  {id:"task-20260806-001",title:"Habilitar trial Tenable Identity — PagueMenos",priority:"high",dueDate:"2026-08-06",status:"open",source:"granola",partnerName:"XSITE",customerName:"Pague Menos",contactEmail:null,meetingOrigin:"Tenable Day XSITE/PagueMenos 05/ago",activityType:"follow-up",period:"Q3",tags:["partner","customer","follow-up","identity-exposure"],inherited:false,createdAt:"2026-08-06T07:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Configurar connector Identity com conta de domínio padrão PagueMenos. XSITE coordena licença com PwC."},
-  {id:"task-20260806-002",title:"Compartilhar arquivo de prompts ExposureAI — PagueMenos",priority:"high",dueDate:"2026-08-06",status:"open",source:"granola",partnerName:"XSITE",customerName:"Pague Menos",contactEmail:null,meetingOrigin:"Tenable Day XSITE/PagueMenos 05/ago",activityType:"follow-up",period:"Q3",tags:["partner","customer","follow-up","hexa-ai"],inherited:false,createdAt:"2026-08-06T07:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Enviar arquivo de exemplos de prompts do ExposureAI para o time técnico da PagueMenos."},
-  {id:"task-20260806-003",title:"Compartilhar cmds troubleshooting agentes offline",priority:"high",dueDate:"2026-08-06",status:"open",source:"granola",partnerName:"XSITE",customerName:"Pague Menos",contactEmail:null,meetingOrigin:"Tenable Day XSITE/PagueMenos 05/ago",activityType:"follow-up",period:"Q3",tags:["partner","customer","follow-up","agents"],inherited:false,createdAt:"2026-08-06T07:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Compartilhar lista de comandos de troubleshooting para agentes offline com o time da PagueMenos."},
-  {id:"task-20260806-004",title:"Prep HH VIP XSITE Illa Mare 18h — contextualizar Tenable Day",priority:"high",dueDate:"2026-08-06",status:"open",source:"calendar",partnerName:"XSITE",customerName:null,contactEmail:"rodrigo@xsite.com.br",meetingOrigin:"HH VIP XSITE Fortaleza 06/ago",activityType:"prep",period:"Q3",tags:["partner","prep","travel","enablement"],inherited:false,createdAt:"2026-08-06T07:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Jantar VIP no Illa Mare. Pautar: trial Identity, prompts ExposureAI, pilot Patch + PwC. Usar Zoom summary (Ravier/Plugin X) como contexto."},
-  {id:"task-20260806-005",title:"Confirmar participação online Master Class SP (16h)",priority:"medium",dueDate:"2026-08-06",status:"open",source:"calendar",partnerName:null,customerName:null,contactEmail:"peurico@tenable.com",meetingOrigin:"Master Class SP – Exp Mgt Pioker",activityType:"admin",period:"Q3",tags:["internal","admin"],inherited:false,createdAt:"2026-08-06T07:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Evento presencial CENU SP às 16h. Marcelo está em Fortaleza — decidir se participa online ou delega."},
-  {id:"task-20260806-006",title:"Ler Zoom meeting summary — Ravier/Plugin X antes do HH",priority:"medium",dueDate:"2026-08-06",status:"open",source:"gmail",partnerName:"XSITE",customerName:null,contactEmail:"mrovere@tenable.com",meetingOrigin:null,activityType:"prep",period:"Q3",tags:["partner","prep","hexa-ai"],inherited:false,createdAt:"2026-08-06T07:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Zoom enviou assets da reunião (04/ago). Snippet: Marcelo e Ravier — integração Plugin X + VM. Ler antes do HH."},
-  {id:"task-20260806-007",title:"ACTAR — Adicionar contatos no WhatsApp de parceiros",priority:"low",dueDate:null,status:"open",source:"granola",partnerName:"ACTAR",tags:["partner","admin"],inherited:false,createdAt:"2026-08-06T07:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Adicionar contatos da ACTAR (Paula Matos e equipe) ao grupo WhatsApp de parceiros Tenable."},
-  {id:"task-20260806-008",title:"Dropreal/Javier — Refinar filtros e tags TVM (acesso limitado)",priority:"high",dueDate:"2026-08-07",status:"open",source:"granola",partnerName:"Dropreal",customerName:"Javier",contactEmail:null,meetingOrigin:"UA: 02509321 — 04/ago",activityType:"follow-up",period:"Q3",tags:["partner","follow-up","vm"],inherited:false,createdAt:"2026-08-06T09:40:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Enquanto o acesso ao ambiente do Javier ainda está disponível, revisar e melhorar filtros e tags no TVM."},
-  {id:"task-20260806-009",title:"CNA/Asper — E-mail Thales: modelo licença + trocar admin",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Asper",customerName:"CNA",contactEmail:null,meetingOrigin:null,activityType:"follow-up",period:"Q3",tags:["partner","follow-up","admin"],inherited:false,createdAt:"2026-08-06T09:40:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Enviar email formal à Thales atualizando modelo de licença (0.5/identidade) e trocando admin de Luciano para Gabriel."},
-  // HERDADOS HIGH
-  {id:"task-20260801-002",title:"PREP — Reunião presencial Prodam (05/ago 11h, SP)",priority:"high",dueDate:"2026-08-05",status:"open",source:"calendar",partnerName:null,customerName:"Prodam",contactEmail:"allexsander@prodam.sp.gov.br",meetingOrigin:"Agenda Tenable/Prodam",activityType:"prep",period:"Q3",tags:["customer","prep","presencial"],inherited:true,createdAt:"2026-08-01T08:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Verificar se reunião ocorreu ontem (05/ago). Capturar follow-ups se sim."},
-  {id:"task-20260730-006",title:"Big Box — Renovação crítica antes de 08/ago",priority:"high",dueDate:"2026-08-08",status:"open",source:"granola",customerName:"Big Box",partnerName:"ASER",activityType:"follow-up",period:"Q3",tags:["customer","follow-up","pipeline","urgent"],inherited:true,createdAt:"2026-07-30T08:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Acionar Caio/Vitor (ASER). Vitor deleta domínio ASM para reduzir overuse. PRAZO: 08/ago (sábado = agir HOJE)."},
-  {id:"task-20260730-007",title:"Kyndryl — Enviar deck PowerPoint + link Tenable Exchange",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",customerName:"Kyndryl",activityType:"follow-up",period:"Q3",tags:["customer","follow-up","enablement","urgent"],inherited:true,createdAt:"2026-07-30T08:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"VENCIDO desde 21/jul. Guilherme/Maria Selene (Kyndryl) aguardando deck PPT + vídeos Tenable Exchange."},
-  {id:"task-20260723-001",title:"Kyndryl — Cases LATAM ROI (Crefisa como candidato)",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",customerName:"Kyndryl",tags:["customer","follow-up","pipeline"],inherited:true,createdAt:"2026-07-23T08:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Buscar cases LATAM Patch Management com métricas de ROI. Crefisa como principal candidato."},
-  {id:"task-20260723-002",title:"Kyndryl — NFR sandbox México (coordenar com Pique)",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",customerName:"Kyndryl",tags:["customer","follow-up","nfr"],inherited:true,createdAt:"2026-07-23T08:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Coordenar disponibilidade de sandbox NFR para time Kyndryl México com Pique."},
-  {id:"task-20260723-003",title:"André/Avest — Executive report + PowerPoint consumo tokens",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:"Avest",tags:["partner","follow-up","enablement"],inherited:true,createdAt:"2026-07-23T08:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Exemplos de executive report + tabela consumo tokens Tenable AI para André."},
-  {id:"task-20260723-004",title:"André/Avest — Habilitar Tenable AI no NFR 60 dias",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"Avest",tags:["partner","follow-up","hexa-ai","nfr"],inherited:true,createdAt:"2026-07-23T08:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Aguardando account ID do NFR da Avest de André para habilitar trial 60 dias."},
-  {id:"task-20260730-001",title:"ISH — Responder NFR Identity Exposure (edson.junior@ish.com.br)",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:"ISH",contactEmail:"edson.junior@ish.com.br",activityType:"follow-up",period:"Q3",tags:["partner","follow-up","nfr","urgent"],inherited:true,createdAt:"2026-07-30T08:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Pedido NFR Identity Exposure 29/jul. VENCIDO sem resposta."},
-  {id:"task-20260730-002",title:"Valter Pereira — Update ticket NetSecurity/Lumin (02511412)",priority:"high",dueDate:"VENCIDO",status:"open",source:"slack",partnerName:"NetSecurity",activityType:"follow-up",period:"Q3",tags:["partner","follow-up","urgent","slack"],inherited:true,createdAt:"2026-07-30T08:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"DM sem resposta há +20 dias. Escalar ou fechar."},
-  {id:"task-20260730-003",title:"IE POV escalation — confirmar próximo passo (Charles/Federico/Talles)",priority:"high",dueDate:"VENCIDO",status:"open",source:"slack",activityType:"follow-up",period:"Q3",tags:["follow-up","escalation","slack"],inherited:true,createdAt:"2026-07-30T08:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Group DM Charles/Federico/Talles. POV cleanup pendente há dias."},
-  {id:"task-20260616-001",title:"ACTAR — Docs Hexa/MCP/AI para Paula Matos",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:"ACTAR",tags:["partner","follow-up","ai-security"],inherited:true,createdAt:"2026-06-16T00:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"47+ dias vencido. Enviar docs Hexa, MCP e portfólio AI para Paula (ACTAR)."},
-  {id:"task-20260708-001",title:"Craft/e-Safer — Data lançamento on-demand patch",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"e-Safer",customerName:"Craft",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Consultar time de produto via Slack. Adenilson aguarda."},
-  {id:"task-20260708-005",title:"Dropreal/Insperg — Adaptiva pós-abort strategy",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"Dropreal",customerName:"Insperg",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Confirmar com Adaptiva se ciclos em andamento continuam após abort da estratégia."},
-  {id:"task-20260708-006",title:"Dropreal/Insperg — Solicitar logs máquina (Defender 06/07)",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"Dropreal",customerName:"Insperg",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Solicitar logs pós-reboot da máquina do Insperg para análise do caso Defender."},
+  // NOVOS — 07/08/2026
+  {id:"task-20260807-001",title:"PPSD: 2x Request Tenable One Demo — verificar e acionar",priority:"high",dueDate:"2026-08-07",status:"open",source:"gmail",partnerName:null,customerName:null,contactEmail:"ppsd@tenable.com",meetingOrigin:null,activityType:"follow-up",period:"Q3",tags:["partner","follow-up","ppsd"],inherited:false,createdAt:"2026-08-07T06:20:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"2 pedidos de acesso demo Tenable One chegaram hoje (06:17 e 07:56) sem resposta. Checar se são da região BR e responder ou encaminhar."},
+  {id:"task-20260807-002",title:"Prep Visita TDEC presencial — Quarta 12/ago (dia todo)",priority:"medium",dueDate:"2026-08-11",status:"open",source:"calendar",partnerName:"TDec",customerName:null,contactEmail:"driera@tenable.com",meetingOrigin:"Visita Tdec - Trabalho in-loco",activityType:"prep",period:"Q3",tags:["partner","prep","presencial"],inherited:false,createdAt:"2026-08-07T06:20:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Evento presencial full-day no cliente TDEC na quarta-feira 12/ago. Organizador: driera. Preparar agenda, materiais e contexto do relacionamento antes do fim de semana."},
+  {id:"task-20260807-003",title:"Ler Weekly AI Conversation Starters — Black Hat launches",priority:"low",dueDate:null,status:"open",source:"gmail",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:null,activityType:"enablement",period:"Q3",tags:["enablement","hexa-ai","internal"],inherited:false,createdAt:"2026-08-07T06:20:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Email de Dmitri DiMarino com novidades Black Hat (open-source primeiro da indústria + AI). Extrair talking points para enablement de parceiros BR."},
+  // HERDADOS HIGH — Big Box URGENTÍSSIMO (vence amanhã)
+  {id:"task-20260730-006",title:"Big Box — ÚLTIMO DIA: Renovação vence AMANHÃ sábado 08/ago",priority:"high",dueDate:"2026-08-08",status:"open",source:"granola",customerName:"Big Box",partnerName:"ASER",activityType:"follow-up",period:"Q3",tags:["customer","follow-up","pipeline","urgent"],inherited:true,createdAt:"2026-07-30T08:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"PRAZO CRÍTICO: vence amanhã (sábado). Acionar Caio/Vitor (ASER) HOJE. Vitor deleta domínio ASM para reduzir overuse."},
+  {id:"task-20260806-001",title:"Habilitar trial Tenable Identity — PagueMenos",priority:"high",dueDate:"2026-08-07",status:"open",source:"granola",partnerName:"XSITE",customerName:"Pague Menos",contactEmail:null,meetingOrigin:"Tenable Day XSITE/PagueMenos 05/ago",activityType:"follow-up",period:"Q3",tags:["partner","customer","follow-up","identity-exposure"],inherited:true,createdAt:"2026-08-06T07:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Configurar connector Identity com conta de domínio padrão PagueMenos. XSITE coordena licença com PwC. Venceu ontem."},
+  {id:"task-20260806-002",title:"Compartilhar arquivo de prompts ExposureAI — PagueMenos",priority:"high",dueDate:"2026-08-07",status:"open",source:"granola",partnerName:"XSITE",customerName:"Pague Menos",contactEmail:null,meetingOrigin:"Tenable Day XSITE/PagueMenos 05/ago",activityType:"follow-up",period:"Q3",tags:["partner","customer","follow-up","hexa-ai"],inherited:true,createdAt:"2026-08-06T07:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Enviar arquivo de exemplos de prompts do ExposureAI para o time técnico da PagueMenos."},
+  {id:"task-20260806-003",title:"Compartilhar cmds troubleshooting agentes offline — PagueMenos",priority:"high",dueDate:"2026-08-07",status:"open",source:"granola",partnerName:"XSITE",customerName:"Pague Menos",contactEmail:null,meetingOrigin:"Tenable Day XSITE/PagueMenos 05/ago",activityType:"follow-up",period:"Q3",tags:["partner","customer","follow-up","agents"],inherited:true,createdAt:"2026-08-06T07:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Compartilhar lista de comandos de troubleshooting para agentes offline com o time da PagueMenos."},
+  {id:"task-20260806-008",title:"Dropreal/Javier — Refinar filtros e tags TVM (acesso limitado)",priority:"high",dueDate:"2026-08-07",status:"open",source:"granola",partnerName:"Dropreal",customerName:"Javier",contactEmail:null,meetingOrigin:"UA: 02509321 — 04/ago",activityType:"follow-up",period:"Q3",tags:["partner","follow-up","vm"],inherited:true,createdAt:"2026-08-06T09:40:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Enquanto o acesso ao ambiente do Javier ainda está disponível, revisar e melhorar filtros e tags no TVM. Vence hoje."},
+  {id:"task-20260730-007",title:"Kyndryl — Enviar deck PowerPoint + link Tenable Exchange",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",customerName:"Kyndryl",activityType:"follow-up",period:"Q3",tags:["customer","follow-up","enablement","urgent"],inherited:true,createdAt:"2026-07-30T08:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"VENCIDO desde 21/jul. Guilherme/Maria Selene (Kyndryl) aguardando deck PPT + vídeos Tenable Exchange."},
+  {id:"task-20260723-001",title:"Kyndryl — Cases LATAM ROI (Crefisa como candidato)",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",customerName:"Kyndryl",tags:["customer","follow-up","pipeline"],inherited:true,createdAt:"2026-07-23T08:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Buscar cases LATAM Patch Management com métricas de ROI. Crefisa como principal candidato."},
+  {id:"task-20260723-002",title:"Kyndryl — NFR sandbox México (coordenar com Pique)",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",customerName:"Kyndryl",tags:["customer","follow-up","nfr"],inherited:true,createdAt:"2026-07-23T08:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Coordenar disponibilidade de sandbox NFR para time Kyndryl México com Pique."},
+  {id:"task-20260723-003",title:"André/Avest — Executive report + PowerPoint consumo tokens",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:"Avest",tags:["partner","follow-up","enablement"],inherited:true,createdAt:"2026-07-23T08:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Exemplos de executive report + tabela consumo tokens Tenable AI para André."},
+  {id:"task-20260723-004",title:"André/Avest — Habilitar Tenable AI no NFR 60 dias",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"Avest",tags:["partner","follow-up","hexa-ai","nfr"],inherited:true,createdAt:"2026-07-23T08:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Aguardando account ID do NFR da Avest de André para habilitar trial 60 dias."},
+  {id:"task-20260730-001",title:"ISH — Responder NFR Identity Exposure (edson.junior@ish.com.br)",priority:"high",dueDate:"VENCIDO",status:"open",source:"gmail",partnerName:"ISH",contactEmail:"edson.junior@ish.com.br",activityType:"follow-up",period:"Q3",tags:["partner","follow-up","nfr","urgent"],inherited:true,createdAt:"2026-07-30T08:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Pedido NFR Identity Exposure 29/jul. VENCIDO sem resposta."},
+  {id:"task-20260730-002",title:"Valter Pereira — Update ticket NetSecurity/Lumin (02511412)",priority:"high",dueDate:"VENCIDO",status:"open",source:"slack",partnerName:"NetSecurity",activityType:"follow-up",period:"Q3",tags:["partner","follow-up","urgent","slack"],inherited:true,createdAt:"2026-07-30T08:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"DM sem resposta há +20 dias. Escalar ou fechar."},
+  {id:"task-20260730-003",title:"IE POV escalation — confirmar próximo passo (Charles/Federico/Talles)",priority:"high",dueDate:"VENCIDO",status:"open",source:"slack",activityType:"follow-up",period:"Q3",tags:["follow-up","escalation","slack"],inherited:true,createdAt:"2026-07-30T08:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Group DM Charles/Federico/Talles. POV cleanup pendente há dias."},
+  {id:"task-20260616-001",title:"ACTAR — Docs Hexa/MCP/AI para Paula Matos",priority:"high",dueDate:"VENCIDO",status:"open",source:"granola",partnerName:"ACTAR",tags:["partner","follow-up","ai-security"],inherited:true,createdAt:"2026-06-16T00:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"47+ dias vencido. Enviar docs Hexa, MCP e portfólio AI para Paula (ACTAR)."},
+  {id:"task-20260708-001",title:"Craft/e-Safer — Data lançamento on-demand patch",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"e-Safer",customerName:"Craft",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Consultar time de produto via Slack. Adenilson aguarda."},
+  {id:"task-20260708-005",title:"Dropreal/Insperg — Adaptiva pós-abort strategy",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"Dropreal",customerName:"Insperg",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Confirmar com Adaptiva se ciclos em andamento continuam após abort da estratégia."},
+  {id:"task-20260708-006",title:"Dropreal/Insperg — Solicitar logs máquina (Defender 06/07)",priority:"high",dueDate:null,status:"open",source:"granola",partnerName:"Dropreal",customerName:"Insperg",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-07-08T08:30:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Solicitar logs pós-reboot da máquina do Insperg para análise do caso Defender."},
+  {id:"task-20260801-002",title:"PRODAM — Checar se reunião 05/ago ocorreu + capturar follow-ups",priority:"high",dueDate:"VENCIDO",status:"open",source:"calendar",partnerName:null,customerName:"Prodam",contactEmail:"allexsander@prodam.sp.gov.br",meetingOrigin:"Agenda Tenable/Prodam",activityType:"follow-up",period:"Q3",tags:["customer","follow-up","presencial"],inherited:true,createdAt:"2026-08-01T08:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Reunião presencial Prodam estava marcada para 05/ago. Checar se ocorreu e registrar outcomes."},
   // MEDIUM HERDADOS
-  {id:"task-20260730-008",title:"Enviar e-mails parceiros para Rob — bug cursos espanhol",priority:"medium",dueDate:null,status:"open",source:"granola",activityType:"internal",period:"Q3",tags:["internal","enablement","admin"],inherited:true,createdAt:"2026-07-30T08:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Da 1:1 com Rob 27/jul. Bug na versão em espanhol — Rob faz correção manual."},
-  {id:"task-20260723-005",title:"André/Avest — Deep dive MCP session",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Avest",tags:["partner","enablement","mcp"],inherited:true,createdAt:"2026-07-23T08:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Agendar sessão técnica deep dive em MCP com André e seu analista."},
-  {id:"task-20260801-005",title:"CrowdStrike ILT — verificar data/horário do treinamento",priority:"medium",dueDate:null,status:"open",source:"gmail",activityType:"enablement",period:"Q3",tags:["internal","enablement","competitive","crowdstrike"],inherited:true,createdAt:"2026-08-01T08:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Inscrito no ILT Product Playbook CrowdStrike EM. Confirmar data e blocar calendário."},
-  {id:"task-20260801-006",title:"Guardian Digital — avaliar request Patch Management Demo",priority:"medium",dueDate:null,status:"open",source:"gmail",partnerName:"Guardian Digital",activityType:"follow-up",period:"Q3",tags:["partner","follow-up","patch-management","ppsd"],inherited:true,createdAt:"2026-08-01T08:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Darlan Baquer pediu demo Patch Mgmt via PPSD 30/jul. Verificar se parceiro ativo BR."},
-  {id:"task-20260722-003",title:"HEXA AI Tracking — dados BR planilha Dutto",priority:"medium",dueDate:null,status:"open",source:"gmail",tags:["internal","hexa-ai","enablement","admin"],inherited:true,createdAt:"2026-07-22T08:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Preencher demos/oportunidades Hexa BR na planilha de tracking."},
-  {id:"task-20260621-001",title:"Suzano/TDec — Patch vs WSUS + VPR Beta",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"TDec",customerName:"Suzano",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-06-21T00:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Follow-up com Felipe sobre Patch Assessment + confirmar migração VPR Beta."},
+  {id:"task-20260806-005",title:"Confirmar participação online Master Class SP (16h de ontem)",priority:"medium",dueDate:"2026-08-06",status:"open",source:"calendar",partnerName:null,customerName:null,contactEmail:"peurico@tenable.com",meetingOrigin:"Master Class SP – Exp Mgt Pioker",activityType:"admin",period:"Q3",tags:["internal","admin"],inherited:true,createdAt:"2026-08-06T07:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Master Class foi ontem às 16h. Marcelo estava em Fortaleza — verificar se participou online e capturar takeaways."},
+  {id:"task-20260806-009",title:"CNA/Asper — E-mail Thales: modelo licença + trocar admin",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Asper",customerName:"CNA",contactEmail:null,meetingOrigin:null,activityType:"follow-up",period:"Q3",tags:["partner","follow-up","admin"],inherited:true,createdAt:"2026-08-06T09:40:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Enviar email formal à Thales atualizando modelo de licença (0.5/identidade) e trocando admin de Luciano para Gabriel."},
+  {id:"task-20260730-008",title:"Enviar e-mails parceiros para Rob — bug cursos espanhol",priority:"medium",dueDate:null,status:"open",source:"granola",activityType:"internal",period:"Q3",tags:["internal","enablement","admin"],inherited:true,createdAt:"2026-07-30T08:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Da 1:1 com Rob 27/jul. Bug na versão em espanhol — Rob faz correção manual."},
+  {id:"task-20260723-005",title:"André/Avest — Deep dive MCP session",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Avest",tags:["partner","enablement","mcp"],inherited:true,createdAt:"2026-07-23T08:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Agendar sessão técnica deep dive em MCP com André e seu analista."},
+  {id:"task-20260801-005",title:"CrowdStrike ILT — verificar data/horário do treinamento",priority:"medium",dueDate:null,status:"open",source:"gmail",activityType:"enablement",period:"Q3",tags:["internal","enablement","competitive","crowdstrike"],inherited:true,createdAt:"2026-08-01T08:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Inscrito no ILT Product Playbook CrowdStrike EM. Confirmar data e blocar calendário."},
+  {id:"task-20260801-006",title:"Guardian Digital — avaliar request Patch Management Demo",priority:"medium",dueDate:null,status:"open",source:"gmail",partnerName:"Guardian Digital",activityType:"follow-up",period:"Q3",tags:["partner","follow-up","patch-management","ppsd"],inherited:true,createdAt:"2026-08-01T08:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Darlan Baquer pediu demo Patch Mgmt via PPSD 30/jul. Verificar se parceiro ativo BR."},
+  {id:"task-20260722-003",title:"HEXA AI Tracking — dados BR planilha Dutto",priority:"medium",dueDate:null,status:"open",source:"gmail",tags:["internal","hexa-ai","enablement","admin"],inherited:true,createdAt:"2026-07-22T08:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Preencher demos/oportunidades Hexa BR na planilha de tracking."},
+  {id:"task-20260621-001",title:"Suzano/TDec — Patch vs WSUS + VPR Beta",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"TDec",customerName:"Suzano",tags:["partner","follow-up","patch-management"],inherited:true,createdAt:"2026-06-21T00:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Follow-up com Felipe sobre Patch Assessment + confirmar migração VPR Beta."},
   // LOW HERDADOS
-  {id:"task-20260616-002",title:"AEB/Future — E-mail processo + SE para roadmap Tenable One",priority:"low",dueDate:null,status:"open",source:"granola",partnerName:"Future",customerName:"AEB",tags:["partner","follow-up","tenable-one"],inherited:true,createdAt:"2026-06-16T00:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Enviar e-mail de processo (licenciamento, migração, renovação). Engajar SE para roadmap."},
-  {id:"task-20260613-001",title:"RSVP — ToT Exposure SP (24/09)",priority:"low",dueDate:"2026-09-24",status:"open",source:"gmail",tags:["enablement"],inherited:true,createdAt:"2026-06-13T00:00:00-03:00",updatedAt:"2026-08-06T09:40:00-03:00",summary:"Confirmar presença no evento Tenable Exposure em SP."},
+  {id:"task-20260806-007",title:"ACTAR — Adicionar contatos no WhatsApp de parceiros",priority:"low",dueDate:null,status:"open",source:"granola",partnerName:"ACTAR",tags:["partner","admin"],inherited:true,createdAt:"2026-08-06T07:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Adicionar contatos da ACTAR (Paula Matos e equipe) ao grupo WhatsApp de parceiros Tenable."},
+  {id:"task-20260616-002",title:"AEB/Future — E-mail processo + SE para roadmap Tenable One",priority:"low",dueDate:null,status:"open",source:"granola",partnerName:"Future",customerName:"AEB",tags:["partner","follow-up","tenable-one"],inherited:true,createdAt:"2026-06-16T00:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Enviar e-mail de processo (licenciamento, migração, renovação). Engajar SE para roadmap."},
+  {id:"task-20260613-001",title:"RSVP — ToT Exposure SP (24/09)",priority:"low",dueDate:"2026-09-24",status:"open",source:"gmail",tags:["enablement"],inherited:true,createdAt:"2026-06-13T00:00:00-03:00",updatedAt:"2026-08-07T06:20:00-03:00",summary:"Confirmar presença no evento Tenable Exposure em SP."},
 ];
 
 const slackItems = [];
@@ -330,7 +323,7 @@ const motives = [
   "Channel sales e sobre <strong>multiplicar impacto atraves de outros.</strong> Cada enablement tem efeito cascata.",
   "<strong>O exposure gap existe porque ninguem estava olhando.</strong> Voce e o que faz a diferenca.",
   "<strong>O canal que voce nutre hoje</strong> e a vantagem competitiva que nenhum adversario copia.",
-  "O campo se vence no preparo — <strong>o jantar de hoje nao e so relacionamento, e a prova de que voce entende o negocio do parceiro.</strong>",
+  "Sexta-feira e o melhor dia para fechar o que ficou aberto — <strong>o fim de semana e melhor depois de ter zerado as urgencias.</strong>",
   "Preparar o cliente de hoje e <strong>investir no parceiro que vai renovar sem precisar ser convencido.</strong>",
   "O melhor preparo acontece quando <strong>ninguem esta olhando</strong> — a reuniao de amanha comeca agora.",
 ];
@@ -341,10 +334,10 @@ function renderAll(){renderBanner();renderStats();renderMotive();renderAgenda();
 
 function renderBanner(){
   const bannerItems=[
-    'Big Box/ASER — RENOVACAO vence SABADO 08/ago: acionar ASER HOJE',
-    'HH VIP XSITE Illa Mare 18h Fortaleza: prep Tenable Day + Zoom summary Ravier',
-    '3 urgentes PagueMenos: trial Identity + prompts ExposureAI + troubleshooting agentes',
-    'Master Class SP 16h conflita com CCR 17h — voce esta em Fortaleza, confirmar agora',
+    'Big Box/ASER — RENOVACAO vence AMANHA sabado 08/ago: ULTIMA CHANCE — acionar ASER AGORA',
+    '2x Request Tenable One Demo no PPSD (06:17 e 07:56 hoje) — sem resposta ainda',
+    'PagueMenos: 3 follow-ups de ontem ainda abertos (trial Identity + prompts + agentes)',
+    'Visita TDEC presencial Quarta 12/ago — preparar agenda antes do fim de semana',
   ].slice(0,4);
   document.getElementById('pbanner').style.display='flex';
   document.getElementById('pitems').innerHTML=bannerItems.map(i=>`<span class="ppill">${i}</span>`).join('');
@@ -355,7 +348,7 @@ function renderStats(){
   const hi=actionItems.filter(a=>a.priority==='high'&&a.status==='open').length;
   const newT=actionItems.filter(a=>!a.inherited&&a.status==='open').length;
   document.getElementById('stats').innerHTML=[
-    {icon:"&#128197;",val:agendaItems.length,lbl:"Reunioes hoje",d:"Quinta em Fortaleza"},
+    {icon:"&#128197;",val:agendaItems.length,lbl:"Compromissos hoje",d:"Dia leve — 2 pessoais"},
     {icon:"&#128269;",val:newT,lbl:"Novos hoje",d:`${newT} tasks | ${hi} high total`},
     {icon:"&#9989;",val:open,lbl:"Actions abertas",d:`${hi} high | ${open-hi} outros`},
     {icon:"&#128172;",val:0,lbl:"Slack pendencias",d:"Nenhuma mencao nova"},
@@ -369,7 +362,7 @@ function renderMotive(){
 function renderAgenda(){
   document.getElementById('agCnt').textContent=agendaItems.length;
   if(!agendaItems.length){
-    document.getElementById('agBody').innerHTML='<div style="text-align:center;padding:24px 0;color:var(--tm);font-size:12px">Sem compromissos externos hoje.</div>';
+    document.getElementById('agBody').innerHTML='<div style="text-align:center;padding:24px 0;color:var(--tm);font-size:12px">Sem compromissos hoje.</div>';
     return;
   }
   const fh={urgent:'<span class="flag f-urgent">URGENTE</span>',ext:'<span class="flag f-ext">Externo</span>',back:'<span class="flag f-back">Back-to-back</span>',conflict:'<span class="flag f-conflict">Conflito</span>',prep:'<span class="flag f-prep">PREP</span>'};
@@ -450,7 +443,7 @@ function renderActions(){
               ${(a.partnerName||a.customerName)?`<span class="atag at-p">${a.partnerName||a.customerName}</span>`:''}
               ${(a.tags||[]).map(t=>`<span class="atag ${tc[t]||''}">${t}</span>`).join('')}
               <span class="asrc">${a.source}</span>
-              ${a.dueDate?`<span class="adue ${['HOJE','VENCIDO'].includes(a.dueDate)||a.dueDate<'2026-08-06'?'adue-u':''}">prazo: ${a.dueDate}</span>`:''}
+              ${a.dueDate?`<span class="adue ${['HOJE','VENCIDO'].includes(a.dueDate)||a.dueDate<='2026-08-07'?'adue-u':''}">prazo: ${a.dueDate}</span>`:''}
             </div>
             <div style="font-size:11px;color:var(--tm);margin-top:3px">${a.summary||''}</div>
           </div>
