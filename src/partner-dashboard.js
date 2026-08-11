@@ -516,9 +516,14 @@ export function renderTechCertsTab(techCerts) {
   }
 
   const allKeys = GROUPS.flatMap((g) => g.keys);
-  const totalCerts = techCerts.reduce((sum, p) => {
-    return sum + allKeys.reduce((s, k) => s + (p.certs[k] || 0), 0);
+  const seKeys = allKeys.filter((k) => k.endsWith("-SE"));
+  const salesKeys = allKeys.filter((k) => k.endsWith("-Sales"));
+  const sumKeys = (keys) => techCerts.reduce((sum, p) => {
+    return sum + keys.reduce((s, k) => s + (p.certs[k] || 0), 0);
   }, 0);
+  const totalCerts = sumKeys(allKeys);
+  const totalSE = sumKeys(seKeys);
+  const totalSales = sumKeys(salesKeys);
   const certifiedPartners = techCerts.filter((p) =>
     allKeys.some((k) => (p.certs[k] || 0) > 0)
   ).length;
@@ -566,6 +571,14 @@ export function renderTechCertsTab(techCerts) {
         <div class="stat-card" style="flex:1">
           <div class="stat-label">Total de certs mapeadas</div>
           <div class="stat-value">${totalCerts}</div>
+        </div>
+        <div class="stat-card" style="flex:1">
+          <div class="stat-label">Total SE</div>
+          <div class="stat-value">${totalSE}</div>
+        </div>
+        <div class="stat-card" style="flex:1">
+          <div class="stat-label">Total Sales</div>
+          <div class="stat-value">${totalSales}</div>
         </div>
       </div>
 
