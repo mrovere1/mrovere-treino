@@ -229,41 +229,33 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
 </div>
 
 <script>
-// DATA — Morning Brief 31/08/2026 (Segunda-feira) — BRT — atualizado automaticamente
-// Hoje: 3 calls internas manhã + Asper/Hexa 14h (externos) + conflito CS Office Hours 14h
-// Gmail: 10 não lidos (72h fim de semana) — Kryptus sem retorno 2sem, TDEC thread nova, Asper NFR
-// Granola: 14 action items abertos (6 herdados/atrasados)
-// Slack: sem menções diretas pendentes para Marcelo
+// DATA — Morning Brief 01/09/2026 (Terça-feira) — BRT — atualizado automaticamente
+// Hoje: 2 calls internas tarde (16h e 17h, back-to-back)
+// Gmail: 16 não lidos — Power Up TD Synnex (RSVP), Project Watershed launch, Claude spending limits
+// Granola: 16 action items (13 herdados + 3 novos do Asper 31/ago)
+// Slack: sem menções diretas pendentes
 
 const TODAY = new Date();
 document.getElementById('topDate').textContent = TODAY.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
 const agendaItems = [
-  {time:"09:30",title:"Brazil SE's - Semanal",link:"https://tenable.zoom.us/j/91348942627",attendees:"Pedro Eurico (org) | Renato Pioker | Ricardo Mello | Lucas (opt)",flags:[],prep:null},
-  {time:"10:00",title:"Brazil Weekly Call",link:"https://tenable.zoom.us/j/94068261600",attendees:"Internal — canal Brasil",flags:[],prep:null},
-  {time:"11:30",title:"Sync Semanal Bra Canais e Mkt",link:"https://tenable.zoom.us/j/9699963728",attendees:"Fabio Peake (org) | moswaldo | glocaspi",flags:[],prep:null},
-  {time:"14:00",title:"Asper/Tenable - Hexa",link:null,attendees:"Victor Watanabe | Renata Santos | Alex Decarli | Francesco Franco (asper.tec.br)",flags:["ext","prep","conflict"],prep:"PREP NEEDED: Asper tem NFR pendente de ativação (thread gmail ago). Reunião sobre Hexa — verificar vault para contexto. ⚠️ Conflito com CS Office Hours (skip Office Hours)."},
-  {time:"16:00",title:"Aula espanhol (pessoal)",link:"https://us06web.zoom.us/j/81043324094",attendees:null,flags:[],prep:null},
+  {time:"16:00",title:"Channel & SP-PR Teams",link:null,attendees:"Marco Oswaldo (org) | lsawada | driera — interno",flags:["back"],prep:null},
+  {time:"17:00",title:"Canais Brasil Sync Meeting",link:"https://tenable.zoom.us/j/93443839493",attendees:"Marco Oswaldo (org) | Marcelo — interno",flags:["back"],prep:null},
 ];
 
 const weekData = [
-  {day:"Seg",date:"31/08",isToday:true,isPast:false,events:[
-    {t:"09:30",n:"SE's Semanal",type:"i"},
-    {t:"10:00",n:"Brazil Weekly Call",type:"i"},
-    {t:"11:30",n:"Sync Canais & Mkt",type:"i"},
-    {t:"14:00",n:"Asper/Hexa",type:"e"},
-    {t:"16:00",n:"Aula espanhol",type:"p"},
-  ]},
-  {day:"Ter",date:"01/09",isToday:false,isPast:false,events:[
-    {t:"16:00",n:"Channel & SP-PR Teams",type:"i"},
+  {day:"Ter",date:"01/09",isToday:true,isPast:false,events:[
+    {t:"16:00",n:"Channel & SP-PR",type:"i"},
     {t:"17:00",n:"Canais Brasil Sync",type:"i"},
   ]},
   {day:"Qua",date:"02/09",isToday:false,isPast:false,events:[
     {t:"11:00",n:"Claude L&L: Prompting",type:"i"},
     {t:"12:00",n:"SE T1 Enablement",type:"i"},
     {t:"16:00",n:"IE Office Hours",type:"i"},
+    {t:"22:00",n:"Claude L&L (2ª sessão)",type:"i"},
   ]},
   {day:"Qui",date:"03/09",isToday:false,isPast:false,events:[
+    {t:"10:00",n:"Ocupado (privado)",type:"p"},
     {t:"12:00",n:"The Pulse Monthly",type:"i"},
     {t:"17:00",n:"CCR OT Semanal",type:"e"},
   ]},
@@ -271,39 +263,51 @@ const weekData = [
     {t:"08:00",n:"Aula",type:"p"},
     {t:"14:00",n:"Aula espanhol",type:"p"},
   ]},
+  {day:"Seg",date:"07/09",isToday:false,isPast:false,events:[
+    {t:"10:00",n:"Brazil Weekly Call",type:"i"},
+    {t:"11:30",n:"Sync Canais & Mkt",type:"i"},
+    {t:"14:00",n:"CS Office Hours",type:"i"},
+    {t:"16:00",n:"Aula espanhol",type:"p"},
+  ]},
 ];
 
 const emailItems = [
-  {priority:"high",from:"moswaldo@tenable.com",subject:"Re: Planejamento Contas, Adoção e Certificações - TDEC",summary:"Hoje 07:11 — Marco pede que Thuany e Diogo atualizem contas com visitas marcadas. Plano inclui: Azul, Cogna, Rede Americas, Marisa, Tramontina, Ademicon, Gol. Treinamentos pendentes: cursos 551, 561, 420/560 para Omar e Raul.",history:"Thread desde 21/ago. Você está na thread com TDEC (mfabossi, jrcastro, fjorge, foliveira).",action:"w"},
-  {priority:"high",from:"sabino.lima@kryptus.com",subject:"Re: Atualização da tabela de treinamentos da equipe",summary:"17/ago — Sabino aguarda retorno sobre acesso OT/SC para parceiro Silver. Você prometeu verificar em 11/ago. 2 semanas sem resposta.",history:"Thread desde 10/ago. Kryptus aguarda liberação de cursos OT Specialist e SC para equipe.",action:"r"},
-  {priority:"low",from:"ibelyna@tenable.com",subject:"Research Release: Windows DACL Compliance Check Types",summary:"28/ago — Novos atomic checks: FILE_DACL, REGISTRY_DACL, SERVICE_DACL no Nessus. Útil para posicionamento de compliance Windows.",history:"Enviado para SE-Global, ts-global, account_management",action:"a"},
+  {priority:"high",from:"glocaspi.ctr@tenable.com",subject:"Invitation: Power Up 2026 | TD Synnex @ Qua 16/09",summary:"Evento presencial Tokio Marine Hall (SP) — 8h30 às 20h. Cota Ruby: 2 convites, lounge, 2 reuniões 1:1, 1 entrevista. Participantes: Marco Oswaldo, Fabio Peake, Fabio Xavier. Resposta pendente.",history:"Convite enviado por Gabriela Lo Caspi (glocaspi.ctr). Evento em 16 dias.",action:"r"},
+  {priority:"medium",from:"jshapiro@tenable.com",subject:"Project Watershed Launch: Tenable e Critical Infrastructure Security",summary:"Tenable anunciou participação oficial no Project Watershed — iniciativa da Casa Branca para proteger sistemas de água e esgoto dos EUA. Chris Day (Public Sector CTO) participou de evento no Texas Cyber Command HQ. Pede para compartilhar no Charge.",history:"Enviado para mrovere@tenable.com. VP Jill Shapiro (Global Government Affairs). Anúncio público 31/ago.",action:"a"},
+  {priority:"medium",from:"gbaran@tenable.com",subject:"Update to Claude Enterprise Monthly Spending Limits — efetivo hoje",summary:"Ajuste no limite mensal de gastos por funcionário do Claude Enterprise, efetivo a partir de 1º de setembro (hoje). Verificar impacto no uso pessoal/equipe.",history:"Enviado diretamente para mrovere@tenable.com.",action:"r"},
+  {priority:"low",from:"no-reply@zoom.us",subject:"Meeting assets for Marcelo Rovere's Personal Meeting Room (Asper/31ago)",summary:"Resumo automático da reunião de ontem com Victor Watanabe (Asper) via PMR. Contém transcrição e action items gerados pelo Zoom AI Companion.",history:"Reunião Asper realizada em 31/ago via PMR.",action:"a"},
 ];
 
 let actionItems = [
-  {id:"task-20260831-001",title:"PREP: Asper/Hexa 14h — verificar vault e pauta",description:"Reunião às 14h com 4 externos da Asper. Tema Hexa. NFR pendente.",priority:"high",dueDate:"2026-08-31",status:"open",source:"calendar",partnerName:"Asper",customerName:null,contactEmail:"victor.watanabe@asper.tec.br",meetingOrigin:"Asper/Tenable - Hexa",activityType:"prep",period:"Q3",tags:["partner","hexa","prep"],inherited:false,createdAt:"2026-08-31T09:30:00-03:00",updatedAt:"2026-08-31T09:30:00-03:00",summary:"Reunião externa 14h — verificar contexto Asper no vault. NFR ainda pendente per email agosto."},
-  {id:"task-20260831-002",title:"Kryptus (Sabino): responder sobre acesso OT/SC Silver",description:"Sabino aguarda desde 17/ago. Prometeu verificar em 11/ago — retorno atrasado 2 semanas.",priority:"high",dueDate:"2026-08-31",status:"open",source:"gmail",partnerName:"Kryptus",customerName:null,contactEmail:"sabino.lima@kryptus.com",meetingOrigin:"Thread email: Atualização treinamentos",activityType:"follow-up",period:"Q3",tags:["partner","training","kryptus","overdue"],inherited:true,createdAt:"2026-08-17T08:00:00-03:00",updatedAt:"2026-08-31T09:30:00-03:00",summary:"Retorno pendente há 2 semanas sobre elegibilidade OT/SC para Silver."},
-  {id:"task-20260831-003",title:"Asper NFR: verificar ativação + agendar sessão hands-on",description:"Anderson Kleyton aguarda confirmação NFR. Prometido em 14/ago.",priority:"high",dueDate:"2026-08-31",status:"open",source:"gmail",partnerName:"Asper",customerName:null,contactEmail:"anderson.kleyton@asper.tec.br",meetingOrigin:"Thread email: Renovação NFR Asper",activityType:"follow-up",period:"Q3",tags:["partner","nfr","enablement","asper"],inherited:true,createdAt:"2026-08-21T08:00:00-03:00",updatedAt:"2026-08-31T09:30:00-03:00",summary:"NFR Asper pendente + sessão hands-on prometida em agosto."},
-  {id:"task-20260831-004",title:"Email para Mark Thurmond: parceiros BR sem treinamento VM/EMPS",description:"Listar 2-3 parceiros com times VM/EMPS sem treinamento formal. Mark encaminha a Keith Texter.",priority:"high",dueDate:"2026-08-20",status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Breakfast Mark Thurmond (18/ago)",activityType:"internal",period:"Q3",tags:["internal","enablement","overdue"],inherited:true,createdAt:"2026-08-18T08:00:00-03:00",updatedAt:"2026-08-31T09:30:00-03:00",summary:"Comprometido em reunião com Mark. Atrasado desde 20/ago."},
-  {id:"task-20260831-005",title:"Compilar 4-5 casos suporte (ping-pong) para call liderança",description:"Tickets com ping-pong entre times — argumento para call com Nathan, Terry e Francisco. Foco no caso CPFL.",priority:"high",dueDate:"2026-08-21",status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Breakfast Mark Thurmond + SE's 24/ago",activityType:"internal",period:"Q3",tags:["internal","support","overdue"],inherited:true,createdAt:"2026-08-18T08:00:00-03:00",updatedAt:"2026-08-31T09:30:00-03:00",summary:"Atrasado desde 21/ago. Mencionado também no SE's de 24/ago."},
-  {id:"task-20260831-006",title:"Vision/Credisis: redigir explicação Oracle Linux update model",description:"Modelo in-place sem mudança de versão, apenas reboot. Gean (Vision) repassa ao cliente.",priority:"high",dueDate:"2026-08-27",status:"open",source:"granola",partnerName:"Vision Cybersecurity",customerName:"Credisis",contactEmail:null,meetingOrigin:"Vision Apoio Credisis (20/ago)",activityType:"follow-up",period:"Q3",tags:["partner","vm","oracle-linux","overdue"],inherited:true,createdAt:"2026-08-20T08:00:00-03:00",updatedAt:"2026-08-31T09:30:00-03:00",summary:"Atrasado desde 27/ago. Vision aguarda explicação técnica para repassar ao cliente."},
-  {id:"task-20260831-007",title:"Investigar limite export VM (50 colunas) — quando/por quê",description:"Limite inesperado de 50 colunas no export VM. Investigar via Slack e comunicar parceiros.",priority:"high",dueDate:"2026-08-28",status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Vision Apoio Credisis (20/ago)",activityType:"internal",period:"Q3",tags:["tenable-vm","product","export","overdue"],inherited:true,createdAt:"2026-08-20T08:00:00-03:00",updatedAt:"2026-08-31T09:30:00-03:00",summary:"Atrasado desde 28/ago. Cap de 50 colunas afeta parceiros."},
-  {id:"task-20260831-008",title:"BlueDiamond: escalar suporte se API key Cloud Security falhar",description:"Testar integração CS com API key (João Victor). Escalar ao suporte se falhar — verificar Access Key + Secret Key.",priority:"high",dueDate:"2026-09-01",status:"open",source:"granola",partnerName:"BlueDiamond",customerName:null,contactEmail:null,meetingOrigin:"BlueDiamond Integração CS (28/ago)",activityType:"follow-up",period:"Q3",tags:["partner","cloud-security","integration"],inherited:true,createdAt:"2026-08-28T08:00:00-03:00",updatedAt:"2026-08-31T09:30:00-03:00",summary:"Integração Tenable Cloud Security sendo testada. Escalar se API key falhar."},
-  {id:"task-20260831-009",title:"TDEC: acompanhar thread Marco — contas com visitas agendadas",description:"Marco pediu que Thuany e Diogo atualizem contas. Verificar andamento.",priority:"medium",dueDate:"2026-09-04",status:"open",source:"gmail",partnerName:"TDEC",customerName:null,contactEmail:"moswaldo@tenable.com",meetingOrigin:"Email thread TDEC 31/ago",activityType:"follow-up",period:"Q3",tags:["partner","tdec","pipeline"],inherited:false,createdAt:"2026-08-31T09:30:00-03:00",updatedAt:"2026-08-31T09:30:00-03:00",summary:"Thread de planejamento TDEC com lista de contas e pendências de treinamento (551, 561, 420/560)."},
-  {id:"task-20260831-010",title:"Brazil Weekly: Juliano — confirmar timeline setembro",description:"Lead time 20 dias para fechar em set. Bruno deve contatar esta semana.",priority:"medium",dueDate:"2026-09-04",status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Brazil Weekly Call (24/ago)",activityType:"follow-up",period:"Q3",tags:["pipeline","internal"],inherited:true,createdAt:"2026-08-24T08:00:00-03:00",updatedAt:"2026-08-31T09:30:00-03:00",summary:"Urgência de pipeline: fechar Juliano em setembro, lead time 20 dias."},
-  {id:"task-20260831-011",title:"Follow-up Anderson/Thell — Proderpa/Semas",description:"Verificar andamento das oportunidades Proderpa e Semas.",priority:"medium",dueDate:"2026-09-04",status:"open",source:"granola",partnerName:null,customerName:"Proderpa/Semas",contactEmail:null,meetingOrigin:"Brazil Weekly Call (24/ago)",activityType:"follow-up",period:"Q3",tags:["pipeline","customer"],inherited:true,createdAt:"2026-08-24T08:00:00-03:00",updatedAt:"2026-08-31T09:30:00-03:00",summary:"Duas oportunidades Q3 para verificar andamento."},
-  {id:"task-20260831-012",title:"Proposta Nubank via AWS — verificar submissão",description:"Rafa Aguiar submete via marketplace AWS. Verificar com Dani fluxo de submissão.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"Nubank",contactEmail:null,meetingOrigin:"Brazil Weekly Call (24/ago)",activityType:"proposal",period:"Q3",tags:["pipeline","customer","aws"],inherited:true,createdAt:"2026-08-24T08:00:00-03:00",updatedAt:"2026-08-31T09:30:00-03:00",summary:"Oportunidade Nubank via AWS marketplace — validar fluxo."},
-  {id:"task-20260831-013",title:"Compartilhar log Febraban com Marketing (Diogo)",description:"Log de atividades no Febraban para Marketing.",priority:"medium",dueDate:"2026-09-04",status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:"driera@tenable.com",meetingOrigin:"Brazil Weekly Call (24/ago)",activityType:"admin",period:"Q3",tags:["internal","marketing"],inherited:true,createdAt:"2026-08-24T08:00:00-03:00",updatedAt:"2026-08-31T09:30:00-03:00",summary:"Registro de atividades Febraban para time de Marketing."},
-  {id:"task-20260831-014",title:"PagueMenos: compartilhar prompts ExposureAI + troubleshooting agentes",description:"Compartilhar arquivo de prompts ExposureAI e comandos de troubleshooting offline.",priority:"low",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"PagueMenos",contactEmail:null,meetingOrigin:"Tenable Day PagueMenos (5/ago)",activityType:"follow-up",period:"Q3",tags:["customer","enablement","exposureai"],inherited:true,createdAt:"2026-08-05T08:00:00-03:00",updatedAt:"2026-08-31T09:30:00-03:00",summary:"Comprometido desde 5/ago. Recursos de ExposureAI para time PagueMenos."},
+  // ── NOVOS HOJE (01/09) ──────────────────────────────
+  {id:"task-20260901-001",title:"Asper (Victor): enviar biblioteca de prompts de AI",description:"Comprometido na reunião de ontem (31/ago) com Victor Watanabe. Enviar biblioteca de prompts AI/ExposureAI usados na Tenable.",priority:"high",dueDate:"2026-09-01",status:"open",source:"granola",partnerName:"Asper",customerName:null,contactEmail:"victor.watanabe@asper.tec.br",meetingOrigin:"Asper/Tenable PMR (31/ago)",activityType:"follow-up",period:"Q3",tags:["partner","asper","ai","prompts"],inherited:false,createdAt:"2026-09-01T09:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Reunião de ontem com Asper gerou ação direta: enviar lib de prompts para Victor hoje."},
+  {id:"task-20260901-002",title:"Asper: agendar visita presencial com Denis (BDM)",description:"Comprometido em reunião 31/ago. Denis é o BDM que acompanha a conta Asper. Definir data para visita presencial.",priority:"high",dueDate:"2026-09-03",status:"open",source:"granola",partnerName:"Asper",customerName:null,contactEmail:null,meetingOrigin:"Asper/Tenable PMR (31/ago)",activityType:"follow-up",period:"Q3",tags:["partner","asper","visit"],inherited:false,createdAt:"2026-09-01T09:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Visita presencial à Asper — coordenar com Denis (BDM) para data."},
+  {id:"task-20260901-003",title:"Power Up 2026 TD Synnex (16/09) — confirmar presença",description:"Evento presencial em São Paulo (Tokio Marine Hall). Cota Ruby da Tenable: 2 convites, lounge, 2 reuniões 1:1. Responder convite.",priority:"medium",dueDate:"2026-09-05",status:"open",source:"gmail",partnerName:"TD Synnex",customerName:null,contactEmail:"glocaspi.ctr@tenable.com",meetingOrigin:"Email convite 01/set",activityType:"admin",period:"Q3",tags:["event","partner","synnex"],inherited:false,createdAt:"2026-09-01T09:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Evento 16/set em SP. Confirmar participação e definir quem vai (cota: 2 convites)."},
+  // ── HERDADOS (31/08) ────────────────────────────────
+  {id:"task-20260831-002",title:"Kryptus (Sabino): responder sobre acesso OT/SC Silver",description:"Sabino aguarda desde 17/ago. Prometeu verificar em 11/ago — retorno atrasado mais de 2 semanas.",priority:"high",dueDate:"2026-08-17",status:"open",source:"gmail",partnerName:"Kryptus",customerName:null,contactEmail:"sabino.lima@kryptus.com",meetingOrigin:"Thread email: Atualização treinamentos",activityType:"follow-up",period:"Q3",tags:["partner","training","kryptus","overdue"],inherited:true,createdAt:"2026-08-17T08:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Retorno pendente há mais de 2 semanas sobre elegibilidade OT/SC para Silver."},
+  {id:"task-20260831-003",title:"Asper NFR: verificar ativação + agendar sessão hands-on",description:"Anderson Kleyton aguarda confirmação NFR. Prometido em 14/ago.",priority:"high",dueDate:"2026-08-21",status:"open",source:"gmail",partnerName:"Asper",customerName:null,contactEmail:"anderson.kleyton@asper.tec.br",meetingOrigin:"Thread email: Renovação NFR Asper",activityType:"follow-up",period:"Q3",tags:["partner","nfr","enablement","asper"],inherited:true,createdAt:"2026-08-21T08:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"NFR Asper pendente + sessão hands-on prometida. Verificar status."},
+  {id:"task-20260831-004",title:"Email para Mark Thurmond: parceiros BR sem treinamento VM/EMPS",description:"Listar 2-3 parceiros com times VM/EMPS sem treinamento formal. Mark encaminha a Keith Texter.",priority:"high",dueDate:"2026-08-20",status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Breakfast Mark Thurmond (18/ago)",activityType:"internal",period:"Q3",tags:["internal","enablement","overdue"],inherited:true,createdAt:"2026-08-18T08:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Comprometido com Mark. Atrasado desde 20/ago. Bloqueia ação de Keith Texter."},
+  {id:"task-20260831-005",title:"Compilar 4-5 casos suporte (ping-pong) para call com liderança",description:"Tickets com ping-pong entre times — argumento para call com Nathan, Terry e Francisco. Foco no caso CPFL.",priority:"high",dueDate:"2026-08-21",status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Breakfast Mark Thurmond + SE's 24/ago",activityType:"internal",period:"Q3",tags:["internal","support","overdue"],inherited:true,createdAt:"2026-08-18T08:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Atrasado desde 21/ago. Mencionado também no SE's de 24/ago."},
+  {id:"task-20260831-006",title:"Vision/Credisis: redigir explicação Oracle Linux update model",description:"Modelo in-place sem mudança de versão, apenas reboot. Gean (Vision) repassa ao cliente.",priority:"high",dueDate:"2026-08-27",status:"open",source:"granola",partnerName:"Vision Cybersecurity",customerName:"Credisis",contactEmail:null,meetingOrigin:"Vision Apoio Credisis (20/ago)",activityType:"follow-up",period:"Q3",tags:["partner","vm","oracle-linux","overdue"],inherited:true,createdAt:"2026-08-20T08:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Atrasado desde 27/ago. Vision aguarda explicação técnica para repassar ao cliente."},
+  {id:"task-20260831-007",title:"Investigar limite export VM (50 colunas) — quando/por quê",description:"Limite inesperado de 50 colunas no export VM. Investigar via Slack e comunicar parceiros.",priority:"high",dueDate:"2026-08-28",status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Vision Apoio Credisis (20/ago)",activityType:"internal",period:"Q3",tags:["tenable-vm","product","export","overdue"],inherited:true,createdAt:"2026-08-20T08:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Atrasado desde 28/ago. Cap de 50 colunas afeta parceiros."},
+  {id:"task-20260831-008",title:"BlueDiamond: escalar suporte se API key Cloud Security falhar",description:"Testar integração CS com nova API key (João Victor / Gustavo). Escalar ao suporte se falhar.",priority:"high",dueDate:"2026-09-01",status:"open",source:"granola",partnerName:"BlueDiamond",customerName:null,contactEmail:null,meetingOrigin:"BlueDiamond Integração CS (28/ago)",activityType:"follow-up",period:"Q3",tags:["partner","cloud-security","integration"],inherited:true,createdAt:"2026-08-28T08:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Prazo: hoje. Integração Tenable CS sendo testada — escalar se API key falhar."},
+  {id:"task-20260831-009",title:"TDEC: acompanhar thread Marco — contas com visitas agendadas",description:"Marco pediu que Thuany e Diogo atualizem contas. Verificar andamento. Treinamentos pendentes: 551, 561, 420/560.",priority:"medium",dueDate:"2026-09-04",status:"open",source:"gmail",partnerName:"TDEC",customerName:null,contactEmail:"moswaldo@tenable.com",meetingOrigin:"Email thread TDEC 31/ago",activityType:"follow-up",period:"Q3",tags:["partner","tdec","pipeline"],inherited:true,createdAt:"2026-08-31T09:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Thread de planejamento TDEC com lista de contas (Azul, Cogna, Rede Americas, Marisa...) e pendências de treinamento."},
+  {id:"task-20260831-010",title:"Brazil Weekly: Juliano — confirmar timeline setembro",description:"Lead time 20 dias para fechar em set. Bruno deve contatar esta semana.",priority:"medium",dueDate:"2026-09-04",status:"open",source:"granola",partnerName:null,customerName:"Juliano",contactEmail:null,meetingOrigin:"Brazil Weekly Call (24/ago)",activityType:"follow-up",period:"Q3",tags:["pipeline","internal"],inherited:true,createdAt:"2026-08-24T08:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Urgência de pipeline Q3: fechar Juliano em setembro, lead time 20 dias."},
+  {id:"task-20260831-011",title:"Follow-up Anderson/Thell — Proderpa/Semas",description:"Verificar andamento das oportunidades Proderpa e Semas.",priority:"medium",dueDate:"2026-09-04",status:"open",source:"granola",partnerName:null,customerName:"Proderpa/Semas",contactEmail:null,meetingOrigin:"Brazil Weekly Call (24/ago)",activityType:"follow-up",period:"Q3",tags:["pipeline","customer"],inherited:true,createdAt:"2026-08-24T08:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Duas oportunidades Q3 para verificar andamento."},
+  {id:"task-20260831-012",title:"Proposta Nubank via AWS — verificar submissão",description:"Rafa Aguiar submete via marketplace AWS. Verificar com Dani fluxo de submissão.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"Nubank",contactEmail:null,meetingOrigin:"Brazil Weekly Call (24/ago)",activityType:"proposal",period:"Q3",tags:["pipeline","customer","aws"],inherited:true,createdAt:"2026-08-24T08:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Oportunidade Nubank via AWS marketplace — validar fluxo."},
+  {id:"task-20260831-013",title:"Compartilhar log Febraban com Marketing (Diogo)",description:"Log de atividades no Febraban para Marketing.",priority:"medium",dueDate:"2026-09-04",status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:"driera@tenable.com",meetingOrigin:"Brazil Weekly Call (24/ago)",activityType:"admin",period:"Q3",tags:["internal","marketing"],inherited:true,createdAt:"2026-08-24T08:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Registro de atividades Febraban para time de Marketing."},
+  {id:"task-20260831-014",title:"PagueMenos: compartilhar prompts ExposureAI + troubleshooting agentes",description:"Compartilhar arquivo de prompts ExposureAI e comandos de troubleshooting de agentes offline.",priority:"low",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"PagueMenos",contactEmail:null,meetingOrigin:"Tenable Day PagueMenos (5/ago)",activityType:"follow-up",period:"Q3",tags:["customer","enablement","exposureai"],inherited:true,createdAt:"2026-08-05T08:00:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Comprometido desde 5/ago. Recursos de ExposureAI para time PagueMenos."},
+  {id:"task-20260831-001",title:"PREP: Asper/Hexa — reunião realizada em 31/ago",description:"Reunião aconteceu via PMR (Victor Watanabe confirmado). Summary disponível no Zoom.",priority:"high",dueDate:"2026-08-31",status:"done",source:"calendar",partnerName:"Asper",customerName:null,contactEmail:"victor.watanabe@asper.tec.br",meetingOrigin:"Asper/Tenable PMR (31/ago)",activityType:"prep",period:"Q3",tags:["partner","hexa","done"],inherited:true,createdAt:"2026-08-31T09:30:00-03:00",updatedAt:"2026-09-01T09:00:00-03:00",summary:"Reunião concluída. Novos action items gerados (task-20260901-001 e 002)."},
 ];
 
 const slackItems = [];
 
 const motives = [
-  "Segunda-feira: <strong>a semana e uma tela em branco.</strong> O que voce escrever hoje define o ritmo dos proximos 5 dias.",
+  "O melhor momento para fechar um loop era ontem — o <strong>segundo melhor momento e agora.</strong>",
   "Channel sales e sobre <strong>multiplicar impacto atraves de outros.</strong> Cada enablement tem efeito cascata.",
   "Os parceiros que vencem sao os que aparecem <strong>preparados — cada reuniao e uma chance de provar que voce conhece o negocio deles melhor do que eles.</strong>",
   "Em cybersecurity, <strong>visibilidade nao e opcional — e o ponto de partida.</strong>",
-  "O melhor momento para fechar um loop era ontem — o <strong>segundo melhor momento e agora.</strong>",
+  "Terça-feira: <strong>a semana ainda esta no inicio.</strong> Os loops abertos de agosto terminam aqui.",
 ];
 
 let showHist=false,af='all',tf='all';
@@ -312,10 +316,10 @@ function renderAll(){renderBanner();renderStats();renderMotive();renderAgenda();
 
 function renderBanner(){
   const bannerItems=[
-    '🔴 Kryptus/Sabino — sem retorno 2 semanas (responder hoje)',
-    '🔴 Asper NFR pendente desde 14/ago — verificar antes da reuniao 14h',
-    '🟡 Asper/Hexa 14h — 4 externos confirmados (PREP!)',
-    '🔴 Limite export VM 50 colunas — investigar via Slack',
+    '🔴 Asper (Victor): enviar biblioteca de prompts hoje',
+    '🔴 BlueDiamond: API key Cloud Security — prazo hoje',
+    '🔴 Kryptus/Sabino — sem retorno há +2 semanas',
+    '🟡 Power Up TD Synnex 16/set — confirmar presença',
   ];
   document.getElementById('pbanner').style.display='flex';
   document.getElementById('pitems').innerHTML=bannerItems.map(i=>`<span class="ppill">${i}</span>`).join('');
@@ -326,10 +330,10 @@ function renderStats(){
   const hi=actionItems.filter(a=>a.priority==='high'&&a.status==='open').length;
   const newT=actionItems.filter(a=>!a.inherited&&a.status==='open').length;
   document.getElementById('stats').innerHTML=[
-    {icon:"&#128197;",val:agendaItems.length,lbl:"Compromissos hoje",d:"1 externo (Asper 14h) | 2 pessoais"},
-    {icon:"&#128269;",val:newT,lbl:"Novos hoje",d:`${newT} novas | ${hi} high total`},
+    {icon:"&#128197;",val:agendaItems.length,lbl:"Compromissos hoje",d:"2 internos tarde | back-to-back 16-17h"},
+    {icon:"&#128269;",val:newT,lbl:"Novos hoje",d:`${newT} novas | ${hi} high priority total`},
     {icon:"&#9989;",val:open,lbl:"Actions abertas",d:`${hi} high | ${open-hi} outros`},
-    {icon:"&#128236;",val:10,lbl:"Emails nao lidos",d:"72h (fim de semana)"},
+    {icon:"&#128236;",val:16,lbl:"Emails nao lidos",d:"16 não lidos — 3 prioritários"},
   ].map(s=>`<div class="scard"><span class="sicon">${s.icon}</span><div><div class="sval">${s.val}</div><div class="slbl">${s.lbl}</div><div class="sdelta">${s.d}</div></div></div>`).join('');
 }
 
@@ -340,7 +344,7 @@ function renderMotive(){
 function renderAgenda(){
   document.getElementById('agCnt').textContent=agendaItems.length;
   if(!agendaItems.length){document.getElementById('agBody').innerHTML='<div style="text-align:center;padding:24px 0;color:var(--tm);font-size:12px">Sem compromissos hoje.</div>';return;}
-  const fh={urgent:'<span class="flag f-urgent">URGENTE</span>',ext:'<span class="flag f-ext">Externo</span>',back:'<span class="flag f-back">Back-to-back</span>',conflict:'<span class="flag f-conflict">Conflito 14h</span>',prep:'<span class="flag f-prep">PREP</span>'};
+  const fh={urgent:'<span class="flag f-urgent">URGENTE</span>',ext:'<span class="flag f-ext">Externo</span>',back:'<span class="flag f-back">Back-to-back</span>',conflict:'<span class="flag f-conflict">Conflito</span>',prep:'<span class="flag f-prep">PREP</span>'};
   document.getElementById('agBody').innerHTML=agendaItems.map(a=>`
     <div class="ai">
       <div class="aitime">${a.time}</div>
@@ -369,7 +373,7 @@ function renderEmails(){
         <div class="efrom">${e.from}</div>
         <div class="esubj">${e.subject}</div>
         <div class="esum">${e.summary}</div>
-        ${showHist&&e.history?`<div class="ehist"><span class="ehlbl">Fonte: </span>${e.history}</div>`:''}
+        ${showHist&&e.history?`<div class="ehist"><span class="ehlbl">Contexto: </span>${e.history}</div>`:''}
         <span class="eact ${ac[e.action]}">${al[e.action]}</span>
       </div>
     </div>`).join('');
@@ -406,7 +410,7 @@ function renderActions(){
     if(!groups[p].length)return;
     html+=`<div class="pg"><div class="plbl ${pcls[p]}"><span>${plbls[p]}</span><span style="opacity:.5;font-weight:400">${groups[p].filter(a=>a.status==='open').length} abertos</span></div>`;
     groups[p].forEach(a=>{
-      const over=a.dueDate&&a.dueDate<'2026-08-31'&&a.status==='open';
+      const over=a.dueDate&&a.dueDate<'2026-09-01'&&a.status==='open';
       html+=`<div class="ait${a.status==='done'?' done':''}${!a.inherited?' new-today':''}">
         <div class="achk${a.status==='done'?' chk':''}" onclick="toggleTask('${a.id}')">${a.status==='done'?'&#10003;':''}</div>
         <div style="flex:1">
