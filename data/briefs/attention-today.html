@@ -50,6 +50,7 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
 .pbanner-title{color:#fff;font-weight:700;font-size:13px}
 .pbanner-items{display:flex;gap:7px;flex-wrap:wrap;margin-top:3px}
 .ppill{background:rgba(255,255,255,.2);color:#fff;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:500}
+.wbanner{background:linear-gradient(135deg,#8A5500 0%,#F5A623 100%);border-radius:var(--r);padding:9px 15px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:11px;color:#fff;opacity:.9}
 .stats{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
 .scard{background:#fff;border:1px solid var(--gray-light);border-radius:8px;padding:10px 15px;display:flex;align-items:center;gap:10px;flex:1;min-width:110px;box-shadow:var(--shc)}
 .sicon{font-size:20px}
@@ -100,6 +101,7 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
 .dhdr{background:var(--mid80);padding:7px 9px;text-align:center}
 .dhdr.today{background:var(--blue)}
 .dhdr.past{background:#444F5A}
+.dhdr.critical{background:#C41535}
 .dname{color:rgba(255,255,255,.7);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
 .ddate{color:#fff;font-size:14px;font-weight:800;margin-top:1px}
 .dbody{padding:7px}
@@ -173,6 +175,9 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
       <div class="pbanner-items" id="pitems"></div>
     </div>
   </div>
+  <div class="wbanner" id="wbanner" style="display:none">
+    ⚠️ <strong>Dados parciais:</strong> Calendar, Gmail, Granola e Slack indisponíveis nesta execução. Action items e e-mails refletem o último estado capturado em 11/09/2026.
+  </div>
   <div class="stats" id="stats"></div>
   <div class="motive"><span style="font-size:20px">&#128737;&#65039;</span><div class="motive-text" id="motive"></div></div>
 
@@ -196,7 +201,7 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
   <div class="grid-week">
     <div class="sc">
       <div class="sh">
-        <div class="shl"><span style="font-size:15px">&#128197;</span><span class="st">Semana</span><span class="scnt" id="wkCnt">0</span></div>
+        <div class="shl"><span style="font-size:15px">&#128197;</span><span class="st">Semana — 14 a 18/set</span><span class="scnt" id="wkCnt">0</span></div>
         <button class="srfr" onclick="renderWeek()">&#8635; Ao vivo</button>
       </div>
       <div class="sb"><div class="wgrid" id="wkGrid"></div></div>
@@ -229,27 +234,21 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
 </div>
 
 <script>
-// DATA — Morning Brief 11/09/2026 (Sexta-feira) — BRT
-// Calendário: 2 eventos hoje — pessoais (Aula 08h, Espanhol 14h). Sem reuniões de trabalho.
-// Gmail: 20 não lidos — newsletters/automações. PGDAS novo, ISC2 Town Hall, SANS @RISK.
-// Granola: renovação 18/set CRÍTICA, 10 action items ativos dos dias anteriores.
-// Slack: sem menções diretas pendentes. Alerta: macOS Golden Gate 27.0 NÃO instalar até 27.1.
-// Semana: segunda CHEIA — 4 reuniões internas (conflito 11h/11:30h); Qua 16/set Power Up TD Synnex presencial.
+// DATA — Morning Brief 12/09/2026 (Sábado) — BRT
+// ⚠️ AVISO: Calendar, Gmail, Granola e Slack MCPs indisponíveis nesta execução.
+// Dados herdados do último brief completo: 11/09/2026 (Sexta-feira).
+// Agenda hoje: sábado — sem dados de calendário. Semana exibe próxima semana útil (14-18/set).
+// Action items: 20 tasks herdadas, todas open. Renovação 18/set em 6 dias — CRÍTICO.
+// Próxima semana: Qua 16/set Power Up TD Synnex presencial. Seg 14/set dia cheio (conflito 11h/11:30h).
 
 const TODAY = new Date();
 document.getElementById('topDate').textContent = TODAY.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+document.getElementById('wbanner').style.display = 'flex';
 
-const agendaItems = [
-  {time:"08:00",title:"Aula (pessoal — já concluída)",flags:[],attendees:null,link:null,prep:null},
-  {time:"14:00",title:"Aula espanhol (pessoal)",flags:[],attendees:null,link:"https://us06web.zoom.us/j/81043324094?pwd=cmYXtBqOjOjdlbF6bVJ9XQcay4xcdD.1",prep:null},
-];
+const agendaItems = [];
 
 const weekData = [
-  {day:"Sex",date:"11/09",isToday:true,isPast:false,events:[
-    {t:"08:00",n:"Aula (pessoal)",type:"p"},
-    {t:"14:00",n:"Aula espanhol",type:"p"},
-  ]},
-  {day:"Seg",date:"14/09",isToday:false,isPast:false,events:[
+  {day:"Seg",date:"14/09",isToday:false,isPast:false,isCritical:false,events:[
     {t:"09:30",n:"Brazil SE's Semanal",type:"i"},
     {t:"10:00",n:"Brazil Weekly Call",type:"i"},
     {t:"11:00",n:"⚠️ New Channel SE Team (conflito)",type:"u"},
@@ -257,20 +256,24 @@ const weekData = [
     {t:"14:00",n:"CS Office Hours",type:"i"},
     {t:"16:00",n:"Aula espanhol",type:"p"},
   ]},
-  {day:"Ter",date:"15/09",isToday:false,isPast:false,events:[
+  {day:"Ter",date:"15/09",isToday:false,isPast:false,isCritical:false,events:[
     {t:"16:00",n:"Channel & SP-PR Teams",type:"i"},
     {t:"17:00",n:"Canais Brasil Sync",type:"i"},
   ]},
-  {day:"Qua",date:"16/09",isToday:false,isPast:false,events:[
+  {day:"Qua",date:"16/09",isToday:false,isPast:false,isCritical:false,events:[
     {t:"08:30",n:"🏢 Power Up 2026 — TD Synnex (presencial)",type:"e"},
     {t:"12:00",n:"SE T1 Enablement Call",type:"i"},
     {t:"13:00",n:"Guardian Webinar (Karnbach)",type:"i"},
     {t:"16:00",n:"IE Office Hours",type:"i"},
   ]},
-  {day:"Qui",date:"17/09",isToday:false,isPast:false,events:[
+  {day:"Qui",date:"17/09",isToday:false,isPast:false,isCritical:false,events:[
     {t:"10:00",n:"Ocupado (privado)",type:"p"},
     {t:"12:00",n:"SE All Hands EMEA/LATAM/NA",type:"i"},
     {t:"17:00",n:"CCR OT Semanal (externo)",type:"e"},
+  ]},
+  {day:"Sex",date:"18/09",isToday:false,isPast:false,isCritical:true,events:[
+    {t:"🔴",n:"RENOVAÇÃO CRÍTICA — deadline",type:"u"},
+    {t:"16:00",n:"Aula espanhol",type:"p"},
   ]},
 ];
 
@@ -282,29 +285,30 @@ const emailItems = [
 ];
 
 let actionItems = [
-  // ── NOVOS 11/09 ──────────────────────────────────────────────────────────
-  {id:"task-20260911-001",title:"Power Up 2026 TD Synnex (16/set) — confirmar presença e prep materiais",description:"Evento presencial em Tokio Marine Hall, São Paulo. 16/set das 08:30 às 20:00. Cota Ruby: 2 convites, acesso ao Lounge coletivo, 2 reuniões 1:1, 1 entrevista. Organizado por Gabriela Locaspi. Fpeake declinou. Confirmar presença e preparar materiais/pitch para as reuniões 1:1.",priority:"high",dueDate:"2026-09-13",status:"open",source:"calendar",partnerName:"TD Synnex",customerName:null,contactEmail:"glocaspi.ctr@tenable.com",meetingOrigin:"Invite glocaspi — Power Up 2026",activityType:"prep",period:"Q3",tags:["event","partner","tdsynnex","presencial"],inherited:false,createdAt:"2026-09-11T08:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Evento presencial 16/set com TD Synnex. Confirmar até 13/set e preparar pitch para 1:1s."},
-  {id:"task-20260911-002",title:"macOS Golden Gate 27.0 — NÃO instalar (aguardar 27.1)",description:"Apple lança macOS Golden Gate (27.0) na segunda-feira 14/set. IT da Tenable (#ds-announcements) instruiu para NÃO instalar até liberação da 27.1 (testes de estabilidade e segurança pendentes). Aguardar comunicado no canal.",priority:"medium",dueDate:null,status:"open",source:"slack",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"#ds-announcements Tenable Slack",activityType:"admin",period:"Q3",tags:["internal","it","macos","admin"],inherited:false,createdAt:"2026-09-11T08:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"NÃO atualizar para macOS Golden Gate 27.0 quando sair segunda. Esperar 27.1."},
-  // ── HERDADOS DE DIAS ANTERIORES ──────────────────────────────────────────
-  {id:"task-20260909-001",title:"Renovação 18/set — acompanhar Alexandre migração licenças",description:"Renovação de cliente em 18/set. Acompanhar Alexandre (arodrigues@tenable.com) sobre migração de licenças para o parceiro correto antes da renovação. Também enviar convites de webinars, Tenable Tour e eventos em Fortaleza ao cliente.",priority:"high",dueDate:"2026-09-15",status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:"arodrigues@tenable.com",meetingOrigin:"Granola 09/set",activityType:"follow-up",period:"Q3",tags:["renewal","client","exposure-management"],inherited:true,createdAt:"2026-09-09T08:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Renovação em 7 dias. Alinhar com Alexandre — licenças migradas + convites enviados. Prazo: 15/set."},
-  {id:"task-20260910-001",title:"Confirmar Encontro Estratégico Parceiros 24/set — OVERDUE",description:"Evento presencial Villa Vérico (Vila Olímpia, SP) 24/set 10h-12h. Marco Oswaldo organiza. Confirmar presença — deadline era 10/set.",priority:"high",dueDate:"2026-09-10",status:"open",source:"gmail",partnerName:null,customerName:null,contactEmail:"glocaspi.ctr@tenable.com",meetingOrigin:"Email glocaspi 04/set",activityType:"admin",period:"Q3",tags:["event","partner","internal","overdue"],inherited:true,createdAt:"2026-09-10T07:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"VENCIDO 10/09. Confirmar presença ou comunicar ausência ao organizador."},
-  {id:"task-20260901-001",title:"Asper (Victor): enviar biblioteca de prompts de AI",description:"Comprometido em 31/ago com Victor Watanabe (Asper). Enviar biblioteca de prompts AI/ExposureAI usados na Tenable.",priority:"high",dueDate:"2026-09-01",status:"open",source:"granola",partnerName:"Asper",customerName:null,contactEmail:null,meetingOrigin:"Asper/Tenable PMR (31/ago)",activityType:"follow-up",period:"Q3",tags:["partner","asper","ai","prompts","overdue"],inherited:true,createdAt:"2026-09-01T09:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Atrasado desde 01/set. Victor aguarda materiais de prompts ExposureAI."},
-  {id:"task-20260906-001",title:"3PD Connector Survey Q4 — confirmar se foi enviado",description:"Survey de priorização de conectores de terceiros para Q4. Prazo era 09/09. Confirmar se foi enviado; se não, enviar agora.",priority:"high",dueDate:"2026-09-09",status:"open",source:"gmail",partnerName:null,customerName:null,contactEmail:"pramseier@tenable.com",meetingOrigin:"Email SE-Global 02/set",activityType:"internal",period:"Q3",tags:["internal","product","survey","overdue"],inherited:true,createdAt:"2026-09-06T09:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"VENCIDO 09/09. Confirmar envio ou enviar agora — leva 2-3 min."},
-  {id:"task-20260831-004",title:"Email para Mark Thurmond: parceiros BR sem treinamento VM/EMPS",description:"Listar 2-3 parceiros com times VM/EMPS sem treinamento formal. Mark encaminha a Keith Texter.",priority:"high",dueDate:"2026-08-20",status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Breakfast Mark Thurmond (18/ago)",activityType:"internal",period:"Q3",tags:["internal","enablement","overdue"],inherited:true,createdAt:"2026-08-18T08:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Atrasado >3 semanas. Bloqueia ação de Keith Texter."},
-  {id:"task-20260831-006",title:"Vision/Credisis: redigir explicação Oracle Linux update model",description:"Modelo in-place sem mudança de versão, apenas reboot. Gean (Vision) repassa ao cliente. Reabertura de ticket necessária com contexto Oracle Linux, Red Hat e Windows.",priority:"high",dueDate:"2026-09-09",status:"open",source:"granola",partnerName:"Vision Cybersecurity",customerName:"Credisis",contactEmail:null,meetingOrigin:"Vision Apoio Credisis (20/ago)",activityType:"follow-up",period:"Q3",tags:["partner","vm","oracle-linux","overdue"],inherited:true,createdAt:"2026-08-20T08:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Vencido 09/09. Explicação técnica Oracle Linux para Vision/Credisis — pendente."},
-  {id:"task-20260831-007",title:"Investigar limite export VM (50 colunas)",description:"Limite inesperado de 50 colunas no export VM. Investigar via Slack com time Tenable — quando foi introduzido e por quê.",priority:"high",dueDate:"2026-08-28",status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Vision Apoio Credisis (20/ago)",activityType:"internal",period:"Q3",tags:["tenable-vm","product","export","overdue"],inherited:true,createdAt:"2026-08-20T08:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Atrasado. Cap de 50 colunas afeta exportações de parceiros — investigar internamente."},
-  {id:"task-20260910-004",title:"Gerar relatório de certificações com Cláudio para Vision",description:"Criar relatório de progresso das certificações EM Cert para apresentar à Vision. Cláudio co-responsável. Impacta tier do parceiro.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Vision Cybersecurity",customerName:null,contactEmail:null,meetingOrigin:"Granola reuniões recentes",activityType:"enablement",period:"Q3",tags:["partner","vision","certification","enablement"],inherited:true,createdAt:"2026-09-10T07:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Relatório EM Cert para Vision com Cláudio — impacta tier e incentivos do parceiro."},
-  {id:"task-20260910-005",title:"Preparar demo Exposure Management/Exposure View para cliente",description:"Sessão técnica agendada com cliente. Preparar demo de Exposure Management e Exposure View focada no contexto de negócio do cliente.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Granola reuniões recentes",activityType:"prep",period:"Q3",tags:["demo","exposure-management","exposure-view"],inherited:true,createdAt:"2026-09-10T07:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Preparar demo EM/Exposure View para próxima sessão com cliente."},
-  {id:"task-20260910-007",title:"BlueDiamond: acompanhar teste API key CS + URL tenant Google CSPM",description:"João Victor (BlueDiamond) deve testar API key gerada no Tenable Cloud Security. Gustavo precisa compartilhar URL do tenant Google CSPM. Escalar ao suporte se integração CSPM continuar falhando.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"BlueDiamond",customerName:null,contactEmail:null,meetingOrigin:"Granola reuniões recentes",activityType:"follow-up",period:"Q3",tags:["partner","bluediamond","cloud-security","cspm"],inherited:true,createdAt:"2026-09-10T07:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Verificar se teste CS/CSPM avançou com BlueDiamond. Escalar suporte se falhar."},
-  {id:"task-20260910-006",title:"Asper/Renata: solicitar lista de integrações de terceiros",description:"Renata (Asper) deve enviar lista das integrações de terceiros do cliente. Marcelo mapeará conectores disponíveis ou customizados.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Asper",customerName:null,contactEmail:null,meetingOrigin:"Granola reuniões recentes",activityType:"follow-up",period:"Q3",tags:["partner","asper","integration"],inherited:true,createdAt:"2026-09-10T07:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Cobrar Renata (Asper) pela lista de integrações — base para mapear conectores."},
-  {id:"task-20260901-006",title:"Asper: agendar visita presencial com Denis (BDM)",description:"Comprometido em reunião 31/ago. Definir data para visita presencial com novo time Asper. Coordenar com Denis (BDM).",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Asper",customerName:null,contactEmail:null,meetingOrigin:"Asper/Tenable PMR (31/ago)",activityType:"follow-up",period:"Q3",tags:["partner","asper","visit"],inherited:true,createdAt:"2026-09-01T09:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Visita presencial à Asper — coordenar com Denis (BDM)."},
-  {id:"task-20260831-002",title:"Kryptus (Sabino): responder sobre acesso OT/SC Silver",description:"Sabino aguarda há semanas sobre elegibilidade OT/SC para tier Silver.",priority:"medium",dueDate:"2026-08-17",status:"open",source:"gmail",partnerName:"Kryptus",customerName:null,contactEmail:null,meetingOrigin:"Thread email: Atualização treinamentos",activityType:"follow-up",period:"Q3",tags:["partner","training","kryptus","overdue"],inherited:true,createdAt:"2026-08-17T08:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Retorno pendente há mais de 3 semanas. Sabino aguarda resposta."},
-  {id:"task-20260901-003",title:"Kyndryl: compartilhar deck PowerPoint + link Tenable Exchange",description:"Prometido em 21/jul. Incluir cases LATAM com ROI.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Kyndryl",customerName:null,contactEmail:null,meetingOrigin:"Kyndryl (21/jul)",activityType:"follow-up",period:"Q3",tags:["partner","kyndryl","enablement"],inherited:true,createdAt:"2026-07-21T08:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Atrasado desde julho. Deck + Tenable Exchange link para Kyndryl."},
-  {id:"task-20260831-014",title:"PagueMenos: enviar prompts ExposureAI + troubleshooting agentes",description:"Arquivo de prompts ExposureAI e comandos de troubleshooting de agentes offline para PagueMenos. Habilitar também trial Tenable Identity.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"PagueMenos",contactEmail:null,meetingOrigin:"Tenable Day PagueMenos (5/ago)",activityType:"follow-up",period:"Q3",tags:["customer","enablement","exposureai"],inherited:true,createdAt:"2026-08-05T08:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Comprometido desde 5/ago. Enviar prompts + considerar trial Identity."},
-  {id:"task-20260910-002",title:"PGDAS: verificar vencimento e pagar se necessário",description:"Novo documento PGDAS (DAS Simples Nacional) disponível para MARCELO F DELLA ROVERE. Verificar data de vencimento no sistema Nibo e providenciar pagamento.",priority:"low",dueDate:null,status:"open",source:"gmail",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:null,activityType:"admin",period:"Q3",tags:["personal","admin","fiscal","cnpj"],inherited:true,createdAt:"2026-09-10T07:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Documento fiscal novo disponível. Verificar prazo de vencimento e pagar."},
-  {id:"task-20260909-002",title:"Contabilidade: avisar CNPJ com movimentação ativa",description:"Avisar a contabilidade quando o CNPJ voltar a ter movimentação para ativar suporte de NF, extratos e contabilização mensal.",priority:"low",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:null,activityType:"admin",period:"Q3",tags:["personal","admin","contabil"],inherited:true,createdAt:"2026-09-09T08:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Ação pessoal/contábil — avisar quando CNPJ estiver ativo novamente."},
-  {id:"task-20260831-005",title:"Compilar 4-5 casos suporte (ping-pong) para call com liderança",description:"Tickets com ping-pong entre times — argumento para call com Nathan, Terry e Francisco.",priority:"low",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Breakfast Mark Thurmond (18/ago)",activityType:"internal",period:"Q3",tags:["internal","support"],inherited:true,createdAt:"2026-08-18T08:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Compilar cases de suporte para reunião com liderança Tenable."},
-  {id:"task-20260831-009",title:"TDEC: acompanhar contas com visitas agendadas (Thuany/Diogo)",description:"Verificar andamento das contas TDEC. Treinamentos pendentes: 551, 561, 420/560.",priority:"low",dueDate:null,status:"open",source:"gmail",partnerName:"TDEC",customerName:null,contactEmail:"moswaldo@tenable.com",meetingOrigin:"Email thread TDEC 31/ago",activityType:"follow-up",period:"Q3",tags:["partner","tdec","pipeline"],inherited:true,createdAt:"2026-08-31T09:00:00-03:00",updatedAt:"2026-09-11T08:00:00-03:00",summary:"Alinhar com Thuany/Diogo sobre contas TDEC."},
+  // ── HERDADOS DE 11/09 (HIGH) ─────────────────────────────────────────────
+  {id:"task-20260911-001",title:"Power Up 2026 TD Synnex (16/set) — confirmar presença e prep materiais",description:"Evento presencial em Tokio Marine Hall, São Paulo. 16/set das 08:30 às 20:00. Cota Ruby: 2 convites, acesso ao Lounge coletivo, 2 reuniões 1:1, 1 entrevista. Organizado por Gabriela Locaspi. Fpeake declinou. Confirmar presença e preparar materiais/pitch para as reuniões 1:1.",priority:"high",dueDate:"2026-09-13",status:"open",source:"calendar",partnerName:"TD Synnex",customerName:null,contactEmail:"glocaspi.ctr@tenable.com",meetingOrigin:"Invite glocaspi — Power Up 2026",activityType:"prep",period:"Q3",tags:["event","partner","tdsynnex","presencial"],inherited:true,createdAt:"2026-09-11T08:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Evento presencial 16/set com TD Synnex. Confirmar até 13/set (AMANHÃ) e preparar pitch para 1:1s."},
+  {id:"task-20260911-002",title:"macOS Golden Gate 27.0 — NÃO instalar (aguardar 27.1)",description:"Apple lança macOS Golden Gate (27.0) na segunda-feira 14/set. IT da Tenable (#ds-announcements) instruiu para NÃO instalar até liberação da 27.1 (testes de estabilidade e segurança pendentes). Aguardar comunicado no canal.",priority:"medium",dueDate:null,status:"open",source:"slack",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"#ds-announcements Tenable Slack",activityType:"admin",period:"Q3",tags:["internal","it","macos","admin"],inherited:true,createdAt:"2026-09-11T08:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"NÃO atualizar para macOS Golden Gate 27.0 quando sair segunda. Esperar 27.1."},
+  {id:"task-20260909-001",title:"Renovação 18/set — acompanhar Alexandre migração licenças",description:"Renovação de cliente em 18/set. Acompanhar Alexandre (arodrigues@tenable.com) sobre migração de licenças para o parceiro correto antes da renovação. Também enviar convites de webinars, Tenable Tour e eventos em Fortaleza ao cliente.",priority:"high",dueDate:"2026-09-15",status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:"arodrigues@tenable.com",meetingOrigin:"Granola 09/set",activityType:"follow-up",period:"Q3",tags:["renewal","client","exposure-management"],inherited:true,createdAt:"2026-09-09T08:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Renovação em 6 dias (18/set). Alinhar com Alexandre — licenças migradas + convites enviados. Prazo: 15/set."},
+  {id:"task-20260910-001",title:"Confirmar Encontro Estratégico Parceiros 24/set — OVERDUE",description:"Evento presencial Villa Vérico (Vila Olímpia, SP) 24/set 10h-12h. Marco Oswaldo organiza. Confirmar presença — deadline era 10/set.",priority:"high",dueDate:"2026-09-10",status:"open",source:"gmail",partnerName:null,customerName:null,contactEmail:"glocaspi.ctr@tenable.com",meetingOrigin:"Email glocaspi 04/set",activityType:"admin",period:"Q3",tags:["event","partner","internal","overdue"],inherited:true,createdAt:"2026-09-10T07:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"VENCIDO 10/09. Confirmar presença ou comunicar ausência ao organizador."},
+  {id:"task-20260901-001",title:"Asper (Victor): enviar biblioteca de prompts de AI",description:"Comprometido em 31/ago com Victor Watanabe (Asper). Enviar biblioteca de prompts AI/ExposureAI usados na Tenable.",priority:"high",dueDate:"2026-09-01",status:"open",source:"granola",partnerName:"Asper",customerName:null,contactEmail:null,meetingOrigin:"Asper/Tenable PMR (31/ago)",activityType:"follow-up",period:"Q3",tags:["partner","asper","ai","prompts","overdue"],inherited:true,createdAt:"2026-09-01T09:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Atrasado desde 01/set. Victor aguarda materiais de prompts ExposureAI."},
+  {id:"task-20260906-001",title:"3PD Connector Survey Q4 — confirmar se foi enviado",description:"Survey de priorização de conectores de terceiros para Q4. Prazo era 09/09. Confirmar se foi enviado; se não, enviar agora.",priority:"high",dueDate:"2026-09-09",status:"open",source:"gmail",partnerName:null,customerName:null,contactEmail:"pramseier@tenable.com",meetingOrigin:"Email SE-Global 02/set",activityType:"internal",period:"Q3",tags:["internal","product","survey","overdue"],inherited:true,createdAt:"2026-09-06T09:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"VENCIDO 09/09. Confirmar envio ou enviar agora — leva 2-3 min."},
+  {id:"task-20260831-004",title:"Email para Mark Thurmond: parceiros BR sem treinamento VM/EMPS",description:"Listar 2-3 parceiros com times VM/EMPS sem treinamento formal. Mark encaminha a Keith Texter.",priority:"high",dueDate:"2026-08-20",status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Breakfast Mark Thurmond (18/ago)",activityType:"internal",period:"Q3",tags:["internal","enablement","overdue"],inherited:true,createdAt:"2026-08-18T08:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Atrasado >3 semanas. Bloqueia ação de Keith Texter."},
+  {id:"task-20260831-006",title:"Vision/Credisis: redigir explicação Oracle Linux update model",description:"Modelo in-place sem mudança de versão, apenas reboot. Gean (Vision) repassa ao cliente. Reabertura de ticket necessária com contexto Oracle Linux, Red Hat e Windows.",priority:"high",dueDate:"2026-09-09",status:"open",source:"granola",partnerName:"Vision Cybersecurity",customerName:"Credisis",contactEmail:null,meetingOrigin:"Vision Apoio Credisis (20/ago)",activityType:"follow-up",period:"Q3",tags:["partner","vm","oracle-linux","overdue"],inherited:true,createdAt:"2026-08-20T08:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Vencido 09/09. Explicação técnica Oracle Linux para Vision/Credisis — pendente."},
+  {id:"task-20260831-007",title:"Investigar limite export VM (50 colunas)",description:"Limite inesperado de 50 colunas no export VM. Investigar via Slack com time Tenable — quando foi introduzido e por quê.",priority:"high",dueDate:"2026-08-28",status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Vision Apoio Credisis (20/ago)",activityType:"internal",period:"Q3",tags:["tenable-vm","product","export","overdue"],inherited:true,createdAt:"2026-08-20T08:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Atrasado. Cap de 50 colunas afeta exportações de parceiros — investigar internamente."},
+  // ── HERDADOS (MEDIUM) ────────────────────────────────────────────────────
+  {id:"task-20260910-004",title:"Gerar relatório de certificações com Cláudio para Vision",description:"Criar relatório de progresso das certificações EM Cert para apresentar à Vision. Cláudio co-responsável. Impacta tier do parceiro.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Vision Cybersecurity",customerName:null,contactEmail:null,meetingOrigin:"Granola reuniões recentes",activityType:"enablement",period:"Q3",tags:["partner","vision","certification","enablement"],inherited:true,createdAt:"2026-09-10T07:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Relatório EM Cert para Vision com Cláudio — impacta tier e incentivos do parceiro."},
+  {id:"task-20260910-005",title:"Preparar demo Exposure Management/Exposure View para cliente",description:"Sessão técnica agendada com cliente. Preparar demo de Exposure Management e Exposure View focada no contexto de negócio do cliente.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Granola reuniões recentes",activityType:"prep",period:"Q3",tags:["demo","exposure-management","exposure-view"],inherited:true,createdAt:"2026-09-10T07:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Preparar demo EM/Exposure View para próxima sessão com cliente."},
+  {id:"task-20260910-007",title:"BlueDiamond: acompanhar teste API key CS + URL tenant Google CSPM",description:"João Victor (BlueDiamond) deve testar API key gerada no Tenable Cloud Security. Gustavo precisa compartilhar URL do tenant Google CSPM. Escalar ao suporte se integração CSPM continuar falhando.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"BlueDiamond",customerName:null,contactEmail:null,meetingOrigin:"Granola reuniões recentes",activityType:"follow-up",period:"Q3",tags:["partner","bluediamond","cloud-security","cspm"],inherited:true,createdAt:"2026-09-10T07:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Verificar se teste CS/CSPM avançou com BlueDiamond. Escalar suporte se falhar."},
+  {id:"task-20260910-006",title:"Asper/Renata: solicitar lista de integrações de terceiros",description:"Renata (Asper) deve enviar lista das integrações de terceiros do cliente. Marcelo mapeará conectores disponíveis ou customizados.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Asper",customerName:null,contactEmail:null,meetingOrigin:"Granola reuniões recentes",activityType:"follow-up",period:"Q3",tags:["partner","asper","integration"],inherited:true,createdAt:"2026-09-10T07:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Cobrar Renata (Asper) pela lista de integrações — base para mapear conectores."},
+  {id:"task-20260901-006",title:"Asper: agendar visita presencial com Denis (BDM)",description:"Comprometido em reunião 31/ago. Definir data para visita presencial com novo time Asper. Coordenar com Denis (BDM).",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Asper",customerName:null,contactEmail:null,meetingOrigin:"Asper/Tenable PMR (31/ago)",activityType:"follow-up",period:"Q3",tags:["partner","asper","visit"],inherited:true,createdAt:"2026-09-01T09:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Visita presencial à Asper — coordenar com Denis (BDM)."},
+  {id:"task-20260831-002",title:"Kryptus (Sabino): responder sobre acesso OT/SC Silver",description:"Sabino aguarda há semanas sobre elegibilidade OT/SC para tier Silver.",priority:"medium",dueDate:"2026-08-17",status:"open",source:"gmail",partnerName:"Kryptus",customerName:null,contactEmail:null,meetingOrigin:"Thread email: Atualização treinamentos",activityType:"follow-up",period:"Q3",tags:["partner","training","kryptus","overdue"],inherited:true,createdAt:"2026-08-17T08:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Retorno pendente há mais de 3 semanas. Sabino aguarda resposta."},
+  {id:"task-20260901-003",title:"Kyndryl: compartilhar deck PowerPoint + link Tenable Exchange",description:"Prometido em 21/jul. Incluir cases LATAM com ROI.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:"Kyndryl",customerName:null,contactEmail:null,meetingOrigin:"Kyndryl (21/jul)",activityType:"follow-up",period:"Q3",tags:["partner","kyndryl","enablement"],inherited:true,createdAt:"2026-07-21T08:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Atrasado desde julho. Deck + Tenable Exchange link para Kyndryl."},
+  {id:"task-20260831-014",title:"PagueMenos: enviar prompts ExposureAI + troubleshooting agentes",description:"Arquivo de prompts ExposureAI e comandos de troubleshooting de agentes offline para PagueMenos. Habilitar também trial Tenable Identity.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:"PagueMenos",contactEmail:null,meetingOrigin:"Tenable Day PagueMenos (5/ago)",activityType:"follow-up",period:"Q3",tags:["customer","enablement","exposureai"],inherited:true,createdAt:"2026-08-05T08:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Comprometido desde 5/ago. Enviar prompts + considerar trial Identity."},
+  // ── HERDADOS (LOW) ───────────────────────────────────────────────────────
+  {id:"task-20260910-002",title:"PGDAS: verificar vencimento e pagar se necessário",description:"Novo documento PGDAS (DAS Simples Nacional) disponível para MARCELO F DELLA ROVERE. Verificar data de vencimento no sistema Nibo e providenciar pagamento.",priority:"low",dueDate:null,status:"open",source:"gmail",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:null,activityType:"admin",period:"Q3",tags:["personal","admin","fiscal","cnpj"],inherited:true,createdAt:"2026-09-10T07:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Documento fiscal novo disponível. Verificar prazo de vencimento e pagar."},
+  {id:"task-20260909-002",title:"Contabilidade: avisar CNPJ com movimentação ativa",description:"Avisar a contabilidade quando o CNPJ voltar a ter movimentação para ativar suporte de NF, extratos e contabilização mensal.",priority:"low",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:null,activityType:"admin",period:"Q3",tags:["personal","admin","contabil"],inherited:true,createdAt:"2026-09-09T08:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Ação pessoal/contábil — avisar quando CNPJ estiver ativo novamente."},
+  {id:"task-20260831-005",title:"Compilar 4-5 casos suporte (ping-pong) para call com liderança",description:"Tickets com ping-pong entre times — argumento para call com Nathan, Terry e Francisco.",priority:"low",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Breakfast Mark Thurmond (18/ago)",activityType:"internal",period:"Q3",tags:["internal","support"],inherited:true,createdAt:"2026-08-18T08:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Compilar cases de suporte para reunião com liderança Tenable."},
+  {id:"task-20260831-009",title:"TDEC: acompanhar contas com visitas agendadas (Thuany/Diogo)",description:"Verificar andamento das contas TDEC. Treinamentos pendentes: 551, 561, 420/560.",priority:"low",dueDate:null,status:"open",source:"gmail",partnerName:"TDEC",customerName:null,contactEmail:"moswaldo@tenable.com",meetingOrigin:"Email thread TDEC 31/ago",activityType:"follow-up",period:"Q3",tags:["partner","tdec","pipeline"],inherited:true,createdAt:"2026-08-31T09:00:00-03:00",updatedAt:"2026-09-12T08:00:00-03:00",summary:"Alinhar com Thuany/Diogo sobre contas TDEC."},
 ];
 
 const slackItems = [];
@@ -335,16 +339,16 @@ function renderStats(){
   const inherited = actionItems.filter(a=>a.inherited&&a.status==='open').length;
   const high = actionItems.filter(a=>a.priority==='high'&&a.status==='open').length;
   document.getElementById('stats').innerHTML = `
-    <div class="scard"><span class="sicon">&#128197;</span><div><div class="sval">${agendaItems.length}</div><div class="slbl">Hoje</div><div class="sdelta">só pessoal</div></div></div>
-    <div class="scard"><span class="sicon">&#128236;</span><div><div class="sval">${emailItems.length}</div><div class="slbl">E-mails</div><div class="sdelta">20 não lidos</div></div></div>
+    <div class="scard"><span class="sicon">&#128197;</span><div><div class="sval">${agendaItems.length}</div><div class="slbl">Hoje</div><div class="sdelta">sábado — sem dados</div></div></div>
+    <div class="scard"><span class="sicon">&#128236;</span><div><div class="sval">${emailItems.length}</div><div class="slbl">E-mails</div><div class="sdelta">último: 11/09</div></div></div>
     <div class="scard"><span class="sicon">&#9889;</span><div><div class="sval">${high}</div><div class="slbl">High Priority</div><div class="sdelta">${open} abertos total</div></div></div>
-    <div class="scard"><span class="sicon">&#128203;</span><div><div class="sval">${inherited}</div><div class="slbl">Herdados</div><div class="sdelta">de dias anteriores</div></div></div>
-    <div class="scard"><span class="sicon">&#128172;</span><div><div class="sval">${slackItems.length}</div><div class="slbl">Slack</div><div class="sdelta">sem menções</div></div></div>
+    <div class="scard"><span class="sicon">&#128203;</span><div><div class="sval">${inherited}</div><div class="slbl">Herdados</div><div class="sdelta">todos de dias anteriores</div></div></div>
+    <div class="scard"><span class="sicon">&#128172;</span><div><div class="sval">${slackItems.length}</div><div class="slbl">Slack</div><div class="sdelta">sem dados frescos</div></div></div>
   `;
 }
 
 function renderMotive(){
-  document.getElementById('motive').innerHTML = `<strong>Sex, 11/set:</strong> Sexta livre de reuniões de trabalho — use o dia para atacar a lista de herdados críticos antes da semana pesada que vem: <strong>renovação 18/set</strong> exige ação hoje com Alexandre, <strong>Power Up 2026 TD Synnex</strong> requer confirmação até 13/set, e segunda está cheia com 4 reuniões (atenção ao conflito 11h/11:30h).`;
+  document.getElementById('motive').innerHTML = `<strong>Sáb, 12/set:</strong> Final de semana com semana pesada à frente — <strong>Renovação 18/set</strong> em 6 dias exige ação de Alexandre antes de sex, <strong>Power Up TD Synnex</strong> na qua 16/set requer confirmação até amanhã (13/set), e segunda abre com 4 reuniões + conflito 11h/11:30h. Use o fim de semana para atacar os overdue críticos.`;
 }
 
 function renderAgenda(){
@@ -352,7 +356,7 @@ function renderAgenda(){
   const body = document.getElementById('agBody');
   cnt.textContent = agendaItems.length;
   if(agendaItems.length===0){
-    body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--tm);font-size:12px">Sem eventos.</div>';
+    body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--tm);font-size:12px">Sábado — sem dados de calendário disponíveis.<br><span style="font-size:10px;margin-top:4px;display:block">Calendar MCP indisponível nesta execução.</span></div>';
     return;
   }
   body.innerHTML = agendaItems.map(a=>`
@@ -379,7 +383,7 @@ function toggleHist(){showHist=!showHist;renderEmails();}
 function renderEmails(){
   const items = emailItems;
   document.getElementById('emCnt').textContent = items.length;
-  document.getElementById('emBody').innerHTML = items.map(e=>`
+  document.getElementById('emBody').innerHTML = `<div style="font-size:10px;color:var(--tm);margin-bottom:8px;padding:4px 6px;background:var(--surface);border-radius:4px">⚠️ Dados do Gmail de 11/09 — sem atualização nesta execução.</div>`+items.map(e=>`
     <div class="ei">
       <div class="edot ${e.priority==='high'?'dh':e.priority==='medium'?'dm':'dl'}"></div>
       <div style="flex:1">
@@ -396,10 +400,8 @@ function renderWeek(){
   const grid = document.getElementById('wkGrid');
   document.getElementById('wkCnt').textContent = weekData.reduce((s,d)=>s+d.events.length,0);
   grid.innerHTML = weekData.map(d=>{
-    const isPast = d.isPast;
-    const isToday = d.isToday;
     return `<div class="dcol">
-      <div class="dhdr ${isToday?'today':isPast?'past':''}">
+      <div class="dhdr ${d.isToday?'today':d.isPast?'past':d.isCritical?'critical':''}">
         <div class="dname">${d.day}</div>
         <div class="ddate">${d.date}</div>
       </div>
@@ -471,7 +473,7 @@ function renderSlack(){
   const body = document.getElementById('slBody');
   cnt.textContent = slackItems.length;
   if(!slackItems.length){
-    body.innerHTML='<div style="text-align:center;padding:20px;color:var(--tm);font-size:12px">✅ Sem menções pendentes no Slack.</div><div style="text-align:center;padding:4px 12px 12px;color:var(--tm);font-size:11px">⚠️ Alerta IT: macOS Golden Gate 27.0 lança seg 14/set — <strong>NÃO INSTALAR</strong> até versão 27.1.</div>';
+    body.innerHTML='<div style="text-align:center;padding:20px;color:var(--tm);font-size:12px">✅ Sem menções pendentes no Slack.</div><div style="text-align:center;padding:4px 12px 12px;color:var(--tm);font-size:11px">⚠️ Alerta IT: macOS Golden Gate 27.0 lança seg 14/set — <strong>NÃO INSTALAR</strong> até versão 27.1.<br><span style="font-size:10px;margin-top:4px;display:block">Slack MCP indisponível nesta execução — dados de 11/09.</span></div>';
     return;
   }
   body.innerHTML = slackItems.map(s=>`
