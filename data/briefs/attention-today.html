@@ -201,7 +201,7 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
   <div class="grid-week">
     <div class="sc">
       <div class="sh">
-        <div class="shl"><span style="font-size:15px">&#128197;</span><span class="st">Semana — 19 a 25/set</span><span class="scnt" id="wkCnt">0</span></div>
+        <div class="shl"><span style="font-size:15px">&#128197;</span><span class="st">Semana — 21 a 25/set</span><span class="scnt" id="wkCnt">0</span></div>
         <button class="srfr" onclick="renderWeek()">&#8635; Ao vivo</button>
       </div>
       <div class="sb"><div class="wgrid" id="wkGrid"></div></div>
@@ -234,21 +234,28 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
 </div>
 
 <script>
-// DATA — Morning Brief 20/09/2026 (Domingo) — BRT
-// Execução automática: Calendar ✓ | Gmail ✓ | Granola ✗ (timeout) | Slack ✓
-// 0 eventos hoje (domingo) | 5 e-mails prioritários | 5 tasks novas | 32 herdadas
-// CRÍTICO: Pagamentos R$3.431,90 vencem HOJE (20/set)
-// CRÍTICO: Senha Tenable expira qua 23/set — trocar HOJE (fim de semana)
-// INFO: Seg-feira tem 7 eventos (09:30–19:00). Visita TEDec quarta 23/09 (all-day).
+// DATA — Morning Brief 21/09/2026 (Segunda-feira) — BRT
+// Execução automática: Calendar ✓ | Gmail ✓ | Granola ✓ | Slack (sem menções)
+// 7 eventos hoje | 2 e-mails não lidos | 3 tasks novas | 32 herdadas
+// ATENÇÃO: 🟡 Back-to-back 09:30–10:00 → 10:00–11:00 (zero intervalo)
+// INFO: Treinamento Akamai/Trust Control qui 24/set (presencial Fortaleza + remoto). Evento Villa Vérico qui 24/set.
 
 const TODAY = new Date();
 document.getElementById('topDate').textContent = TODAY.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
-const agendaItems = [];
+const agendaItems = [
+  {time:"09:30",title:"Brazil SE's — Semanal",flags:["back"],link:"https://tenable.zoom.us/j/91348942627",attendees:"peurico, lismael, rpioker, rmello (Marcelo: opcional)",prep:"Sync semanal SEs Brasil. Presença opcional."},
+  {time:"10:00",title:"Brazil Weekly Call",flags:["back"],link:"https://tenable.zoom.us/j/94068261600",attendees:"Time Brasil Tenable",prep:"🟡 Back-to-back sem intervalo com a anterior."},
+  {time:"11:30",title:"Sync Semanal Bra Canais & Mkt",flags:[],link:"https://tenable.zoom.us/j/9699963728",attendees:"fpeake, glocaspi.ctr, moswaldo",prep:"Pautas: evento canais (meta 60 inscritos), webinars, novidades Mkt."},
+  {time:"13:00",title:"1:1 com Rob Karnbach",flags:["prep"],link:"https://tenable.zoom.us/j/98227037860",attendees:"rkarnbach@tenable.com",prep:"📋 PREP NEEDED: pipeline parceiros, updates PPSD, DNV Guardian, pendências Granola."},
+  {time:"14:00",title:"Tenable Cloud Security Office Hours",flags:[],link:"https://zoom.us/w/97904667344",attendees:"Webinar CS (clientes/parceiros)",prep:"Office Hours CS — observar dúvidas do campo para enablement."},
+  {time:"16:00",title:"Aula de Espanhol",flags:[],link:"https://us06web.zoom.us/j/81043324094",attendees:"(pessoal)",prep:""},
+  {time:"18:00",title:"Aula Zuma",flags:[],link:"",attendees:"(pessoal)",prep:""},
+];
 
 const weekData = [
-  {day:"Dom",date:"20/09",isToday:true,isPast:false,isCritical:false,events:[]},
-  {day:"Seg",date:"21/09",isToday:false,isPast:false,isCritical:false,events:[
+  {day:"Dom",date:"20/09",isToday:false,isPast:true,isCritical:false,events:[]},
+  {day:"Seg",date:"21/09",isToday:true,isPast:false,isCritical:false,events:[
     {t:"09:30",n:"Brazil SE's Semanal",type:"i"},
     {t:"10:00",n:"Brazil Weekly Call",type:"i"},
     {t:"11:30",n:"Sync Bra Canais & Mkt",type:"i"},
@@ -274,15 +281,16 @@ const weekData = [
 ];
 
 const emailItems = [
-  {priority:"high",from:"noreply@tenable.com",subject:"Your Tenable Domain password expires in 3 days",summary:"Senha expira em 3 dias (qua 23/set). Após expirar, perde acesso a todos os serviços Tenable. Trocar via one.tenable.com AGORA enquanto é fim de semana.",history:"Aviso automático do sistema. Senha expira 23/09/2026.",action:"r"},
-  {priority:"medium",from:"ddimarino@tenable.com",subject:"Weekly AI Conversation Starters — Sept 18",summary:"OpenAI agents lançaram ataque cibernético contra plataforma de desenvolvedor. Talking points para conversas com parceiros sobre AI + security.",history:"Newsletter interna Tenable — série semanal de Dan DiMarino.",action:"a"},
-  {priority:"low",from:"ppsd / HWG Sababa (Marco Micheletto)",subject:"Re: Request Partner Tenable One Demo",summary:"Marco concluiu curso Introduction SE. Rob K submeteu pedido de acesso ao demo. Welcome email em 24-48h. Sem ação necessária.",history:"Thread desde 06/set. Certificação como pré-requisito. Resolvido por Rob K.",action:"a"},
-  {priority:"low",from:"ppsd / Exclusive Networks (Michel TU)",subject:"Re: reuse expired Nessus sensor for TenableOne PoV",summary:"Michel perguntou sobre reaproveitamento de sensor Nessus expirado. Rob K orientou: reinstalar escolhendo 'managed by TONE'. Thread encerrada.",history:"Cliente iniciará PoV Tenable One VM. Sensor legacy reinstalado como managed.",action:"a"},
-  {priority:"low",from:"noreply@wework.com",subject:"[EXTERNAL] Nações Unidas 12901: Julia Carneiro publicou anúncio",summary:"Notificação da comunidade WeWork do escritório Nações Unidas. Informativo.",history:null,action:"a"},
+  {priority:"high",from:"ppsd@tenable.com (CC: Bia.Targett@dnv.com, wrevell@tenable.com)",subject:"[EXTERNAL] Tenable Guardian - Requirement 2026-2027",summary:"DNV Cyber/Security solicita ser 'Tenable Guardian' para 2026-2027. Envolve wrevell@tenable.com e msuarez@tenable.com. Verificar se Marcelo deve se envolver como Channel SE para posicionar valor junto ao parceiro.",history:"E-mail chegou hoje 08:10 BRT. CC inclui Bia Targett (DNV) e Will Revell (Tenable). Thread nova.",action:"r"},
+  {priority:"low",from:"no-reply@firehydrant.io",subject:"[EXTERNAL] 🔥 Last week in incident response on FireHydrant",summary:"Resumo semanal de atividades do FireHydrant. Newsletter automatizada. Sem ação necessária.",history:null,action:"a"},
 ];
 
 let actionItems = [
-  // ── NOVOS 20/09 ──────────────────────────────────────────────────────────
+  // ── NOVOS 21/09 ──────────────────────────────────────────────────────────
+  {id:"task-20260921-001",title:"DNV Guardian — verificar envolvimento como Channel SE",description:"ppsd@tenable.com recebeu e-mail de Bia Targett (DNV Cyber/Security) solicitando ser Tenable Guardian 2026-2027. CC: Will Revell e msuarez. Verificar contexto e se Marcelo deve apoiar com posicionamento de canal.",priority:"high",dueDate:"2026-09-21",status:"open",source:"gmail",partnerName:null,customerName:"DNV Cyber",contactEmail:"ppsd@tenable.com",meetingOrigin:null,activityType:"follow-up",period:"Q3",tags:["customer","guardian","dnv","channel-se"],inherited:false,createdAt:"2026-09-21T06:00:00-03:00",updatedAt:"2026-09-21T06:00:00-03:00",summary:"DNV solicitou ser Tenable Guardian. Verificar se Channel SE deve se envolver para posicionar valor."},
+  {id:"task-20260921-002",title:"Preparar slides de adoção — borrar nomes de clientes",description:"Action item do Granola: preparar os slides de adoção usando o arcabouço existente e borrando/anonimizando nomes de clientes para uso em sessões de enablement.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Reuniões recentes (Granola)",activityType:"enablement",period:"Q3",tags:["enablement","slides","adoption"],inherited:false,createdAt:"2026-09-21T06:00:00-03:00",updatedAt:"2026-09-21T06:00:00-03:00",summary:"Slides de adoção prontos mas precisam ter nomes de clientes borrados para uso em demos/enablement."},
+  {id:"task-20260921-003",title:"Escalar integração Cloud Security ao suporte (se teste chave única falhar)",description:"Se o teste de chave única do módulo Cloud Security falhar, escalar o caso de integração para o suporte Tenable. Acompanhar BlueDiamond/parceiro no teste.",priority:"low",dueDate:null,status:"open",source:"granola",partnerName:"BlueDiamond",customerName:null,contactEmail:null,meetingOrigin:"Reuniões recentes (Granola)",activityType:"follow-up",period:"Q3",tags:["cloud-security","support","bluediamond"],inherited:false,createdAt:"2026-09-21T06:00:00-03:00",updatedAt:"2026-09-21T06:00:00-03:00",summary:"Se teste de chave única CS falhar → escalar ao suporte Tenable. Acompanhar resultado."},
+  // ── HERDADOS 20/09 ──────────────────────────────────────────────────────
   {id:"task-20260920-001",title:"🔴 Pagamentos pessoais vencem HOJE (20/09) — R$3.431,90",description:"Lembrete automático via Slack: R$3.431,90 em pagamentos vencem hoje (20/09/2026). Verificar quais contas e efetuar pagamentos.",priority:"high",dueDate:"2026-09-20",status:"open",source:"slack",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"DM Slack 19/set",activityType:"admin",period:"Q3",tags:["personal","finance","urgent"],inherited:false,createdAt:"2026-09-20T06:00:00-03:00",updatedAt:"2026-09-20T06:00:00-03:00",summary:"Pagamentos de R$3.431,90 vencem hoje. Verificar e pagar antes do fim do dia."},
   {id:"task-20260920-002",title:"🔴 Trocar senha Tenable AGORA — expira qua 23/set",description:"E-mail oficial: senha expira em 3 dias (23/set). Trocar via one.tenable.com hoje enquanto é fim de semana para não arriscar bloqueio na semana.",priority:"high",dueDate:"2026-09-20",status:"open",source:"gmail",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:null,activityType:"admin",period:"Q3",tags:["admin","password","urgent"],inherited:false,createdAt:"2026-09-20T06:00:00-03:00",updatedAt:"2026-09-20T06:00:00-03:00",summary:"Senha expira qua. Trocar hoje via one.tenable.com para evitar bloqueio na semana."},
   {id:"task-20260920-003",title:"Prep 1:1 com Rob Karnbach — amanhã 13:00",description:"1:1 semanal com Rob Karnbach (manager) amanhã segunda 13:00 BRT. Preparar: status de oportunidades pipeline, updates de parceiros, pendências PPSD, itens para alinhar.",priority:"high",dueDate:"2026-09-20",status:"open",source:"calendar",partnerName:null,customerName:null,contactEmail:"rkarnbach@tenable.com",meetingOrigin:"Calendar 21/09 13:00",activityType:"prep",period:"Q3",tags:["internal","1on1","manager"],inherited:false,createdAt:"2026-09-20T06:00:00-03:00",updatedAt:"2026-09-20T06:00:00-03:00",summary:"Preparar pauta para 1:1 com Rob amanhã: pipeline, parceiros, PPSD, pendências."},
@@ -354,8 +362,8 @@ function renderStats(){
   const inherited = actionItems.filter(a=>a.inherited&&a.status==='open').length;
   const high = actionItems.filter(a=>a.priority==='high'&&a.status==='open').length;
   document.getElementById('stats').innerHTML = `
-    <div class="scard"><span class="sicon">&#128197;</span><div><div class="sval">${agendaItems.length}</div><div class="slbl">Eventos hoje</div><div class="sdelta">sáb 19/set — descanso</div></div></div>
-    <div class="scard"><span class="sicon">&#128236;</span><div><div class="sval">${emailItems.length}</div><div class="slbl">E-mails prioritários</div><div class="sdelta">15 não lidos no total</div></div></div>
+    <div class="scard"><span class="sicon">&#128197;</span><div><div class="sval">${agendaItems.length}</div><div class="slbl">Eventos hoje</div><div class="sdelta">seg 21/set — 🟡 back-to-back</div></div></div>
+    <div class="scard"><span class="sicon">&#128236;</span><div><div class="sval">${emailItems.length}</div><div class="slbl">E-mails prioritários</div><div class="sdelta">2 não lidos hoje</div></div></div>
     <div class="scard"><span class="sicon">&#9889;</span><div><div class="sval">${high}</div><div class="slbl">High Priority</div><div class="sdelta">${open} abertos total</div></div></div>
     <div class="scard"><span class="sicon">&#128203;</span><div><div class="sval">${inherited}</div><div class="slbl">Herdados</div><div class="sdelta">3 novos hoje</div></div></div>
     <div class="scard"><span class="sicon">&#128172;</span><div><div class="sval">${slackItems.length}</div><div class="slbl">Slack</div><div class="sdelta">sem menções diretas</div></div></div>
@@ -363,7 +371,7 @@ function renderStats(){
 }
 
 function renderMotive(){
-  document.getElementById('motive').innerHTML = `<strong>Sáb 19/set:</strong> 🚨 Confirmar panelista LATAM MSSPs (prazo: HOJE). Verificar renovação Alelo com Alexandre (era ontem). <strong>Trocar senha Tenable antes de seg-feira</strong> — expira qua 23/set. Segunda-feira: 7 eventos (09:30–19:00).`;
+  document.getElementById('motive').innerHTML = `<strong>Seg 21/set:</strong> 7 eventos, 🟡 back-to-back logo às 09:30. E-mail DNV Guardian merece atenção antes do 1:1 com Rob (13h). 📋 PREP 1:1: pipeline, PPSD, evento canais (meta 60), ações Granola. Qui 24/set: <strong>Treinamento Akamai/Trust Control + Evento Villa Vérico</strong> — semana intensa.`;
 }
 
 function renderAgenda(){
@@ -371,7 +379,7 @@ function renderAgenda(){
   const body = document.getElementById('agBody');
   cnt.textContent = agendaItems.length;
   if(agendaItems.length===0){
-    body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--tm);font-size:12px">🌅 Sem eventos hoje (sábado). Aproveite para revisar pendências e preparar a semana.</div>';
+    body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--tm);font-size:12px">🌅 Sem eventos hoje.</div>';
     return;
   }
   body.innerHTML = agendaItems.map(a=>`
