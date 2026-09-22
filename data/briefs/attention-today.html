@@ -201,7 +201,7 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
   <div class="grid-week">
     <div class="sc">
       <div class="sh">
-        <div class="shl"><span style="font-size:15px">&#128197;</span><span class="st">Semana — 21 a 25/set</span><span class="scnt" id="wkCnt">0</span></div>
+        <div class="shl"><span style="font-size:15px">&#128197;</span><span class="st">Semana — 22 a 26/set</span><span class="scnt" id="wkCnt">0</span></div>
         <button class="srfr" onclick="renderWeek()">&#8635; Ao vivo</button>
       </div>
       <div class="sb"><div class="wgrid" id="wkGrid"></div></div>
@@ -234,59 +234,71 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size
 </div>
 
 <script>
-// DATA — Morning Brief 21/09/2026 (Segunda-feira) — BRT
-// Execução automática: Calendar ✓ | Gmail ✓ | Granola ✓ | Slack (sem menções)
-// 7 eventos hoje | 2 e-mails não lidos | 3 tasks novas | 32 herdadas
-// ATENÇÃO: 🟡 Back-to-back 09:30–10:00 → 10:00–11:00 (zero intervalo)
-// INFO: Treinamento Akamai/Trust Control qui 24/set (presencial Fortaleza + remoto). Evento Villa Vérico qui 24/set.
+// DATA — Morning Brief 22/09/2026 (Terça-feira) — BRT
+// Execução automática: Calendar ✓ | Gmail ✓ | Granola ✓ | Slack (sem menções diretas recentes)
+// 5 eventos hoje | 3 e-mails prioritários | 2 tasks novas | 35 herdadas
+// ATENÇÃO: 🔴 Conflito 11:00 All Hands vs LatAm SEs | 🟡 Back-to-back 15:00→16:00→17:00
+// INFO: Retirada de RO Uninter/Ibliss — situação delicada, Marcelo em cópia com Marco Oswaldo.
 
 const TODAY = new Date();
 document.getElementById('topDate').textContent = TODAY.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
 const agendaItems = [
-  {time:"09:30",title:"Brazil SE's — Semanal",flags:["back"],link:"https://tenable.zoom.us/j/91348942627",attendees:"peurico, lismael, rpioker, rmello (Marcelo: opcional)",prep:"Sync semanal SEs Brasil. Presença opcional."},
-  {time:"10:00",title:"Brazil Weekly Call",flags:["back"],link:"https://tenable.zoom.us/j/94068261600",attendees:"Time Brasil Tenable",prep:"🟡 Back-to-back sem intervalo com a anterior."},
-  {time:"11:30",title:"Sync Semanal Bra Canais & Mkt",flags:[],link:"https://tenable.zoom.us/j/9699963728",attendees:"fpeake, glocaspi.ctr, moswaldo",prep:"Pautas: evento canais (meta 60 inscritos), webinars, novidades Mkt."},
-  {time:"13:00",title:"1:1 com Rob Karnbach",flags:["prep"],link:"https://tenable.zoom.us/j/98227037860",attendees:"rkarnbach@tenable.com",prep:"📋 PREP NEEDED: pipeline parceiros, updates PPSD, DNV Guardian, pendências Granola."},
-  {time:"14:00",title:"Tenable Cloud Security Office Hours",flags:[],link:"https://zoom.us/w/97904667344",attendees:"Webinar CS (clientes/parceiros)",prep:"Office Hours CS — observar dúvidas do campo para enablement."},
-  {time:"16:00",title:"Aula de Espanhol",flags:[],link:"https://us06web.zoom.us/j/81043324094",attendees:"(pessoal)",prep:""},
-  {time:"18:00",title:"Aula Zuma",flags:[],link:"",attendees:"(pessoal)",prep:""},
+  {time:"11:00",title:"September Company All Hands",flags:["conflict","urgent"],link:"https://tenable.zoom.us/j/92896467699?pwd=ZmJoZR3FLnyvJOSkWcrItcT4SUIlbc.1",attendees:"Sean Carnell (CEO) — toda a empresa",prep:"🔴 CONFLITO com LatAm SEs às 11:00. Priorizar All Hands (CEO). Passcode: Z!4ehA"},
+  {time:"11:45",title:"LatAm SEs — Bi-Weekly Call",flags:["back"],link:"https://tenable.zoom.us/j/2833289929?omn=94710403003",attendees:"fsoto, mfuentes, peurico, lismael, rpioker, egalvez, rmello, gvalle, gortiz, adutto (org)",prep:"🟡 Back-to-back logo após All Hands. Passcode: 3j@VPK"},
+  {time:"15:00",title:"Channel Team Meeting",flags:[],link:"https://tenable.zoom.us/j/2833289929",attendees:"fxavier (org), fsoto, moswaldo, egalvez, gchovet, asellini, ljuarez, fpeake",prep:"Sync mensal Channel Team. Pautas: pipeline, evento 24/set, parceiros."},
+  {time:"16:00",title:"Channel & SP-PR Teams",flags:["back"],link:"",attendees:"moswaldo (org), lsawada, driera",prep:"🟡 Back-to-back após Channel Team Meeting."},
+  {time:"17:00",title:"Canais Brasil Sync Meeting",flags:[],link:"https://tenable.zoom.us/j/93443839493?pwd=bVVHR2o3TWZFZnAzZURGMGtqWFdyUT09",attendees:"moswaldo (org), mrovere",prep:"Sync semanal com Marco Oswaldo. Pauta: RO Uninter/Ibliss, status canais, evento 24/set."},
 ];
 
+
 const weekData = [
-  {day:"Dom",date:"20/09",isToday:false,isPast:true,isCritical:false,events:[]},
-  {day:"Seg",date:"21/09",isToday:true,isPast:false,isCritical:false,events:[
+  {day:"Seg",date:"21/09",isToday:false,isPast:true,isCritical:false,events:[
     {t:"09:30",n:"Brazil SE's Semanal",type:"i"},
     {t:"10:00",n:"Brazil Weekly Call",type:"i"},
     {t:"11:30",n:"Sync Bra Canais & Mkt",type:"i"},
-    {t:"13:00",n:"1:1 Marcelo / Rob K",type:"i"},
+    {t:"13:00",n:"1:1 Marcelo/Rob K",type:"i"},
     {t:"14:00",n:"CS Office Hours",type:"i"},
     {t:"16:00",n:"Aula espanhol",type:"p"},
-    {t:"18:00",n:"Aula Zuma",type:"p"},
   ]},
-  {day:"Ter",date:"22/09",isToday:false,isPast:false,isCritical:false,events:[
-    {t:"11:00",n:"⚠️ Company All Hands (CONFLITO: LatAm SEs)",type:"u"},
+  {day:"Ter",date:"22/09",isToday:true,isPast:false,isCritical:false,events:[
+    {t:"11:00",n:"⚠️ All Hands (CONFLITO LatAm SEs)",type:"u"},
+    {t:"11:45",n:"LatAm SEs Bi-Weekly",type:"i"},
     {t:"15:00",n:"Channel Team Meeting",type:"i"},
     {t:"16:00",n:"Channel & SP-PR Teams",type:"i"},
     {t:"17:00",n:"Canais Brasil Sync",type:"i"},
   ]},
-  {day:"Qua",date:"23/09",isToday:false,isPast:false,isCritical:true,events:[
-    {t:"all-day",n:"Visita TEDec (in-loco)",type:"e"},
+  {day:"Qua",date:"23/09",isToday:false,isPast:false,isCritical:false,events:[
+    {t:"all-day",n:"Visita TDEC (in-loco)",type:"e"},
     {t:"10:45",n:"Webinar What's New — Lucas",type:"i"},
-    {t:"🔴",n:"SENHA TENABLE EXPIRA",type:"u"},
+    {t:"12:00",n:"SE T1 Enablement Call",type:"i"},
+    {t:"16:00",n:"Identity Exposure OH",type:"i"},
   ]},
-  {day:"Qui",date:"24/09",isToday:false,isPast:false,isCritical:false,events:[
-    {t:"10:00",n:"Evento Estratégico Parceiros (Villa Vérico, SP)",type:"e"},
+  {day:"Qui",date:"24/09",isToday:false,isPast:false,isCritical:true,events:[
+    {t:"09:00",n:"Treinamento Akamai — Trust Control",type:"e"},
+    {t:"10:00",n:"ToT Exposure Edition (Villa Vérico SP)",type:"e"},
+    {t:"17:00",n:"CCR — Align. Técnico OT (semanal)",type:"i"},
+  ]},
+  {day:"Sex",date:"25/09",isToday:false,isPast:false,isCritical:false,events:[
+    {t:"08:00",n:"Aula",type:"p"},
+    {t:"10:30",n:"Sync ISH | Tenable Delivery",type:"i"},
+    {t:"14:00",n:"Aula Espanhol",type:"p"},
   ]},
 ];
+
 
 const emailItems = [
-  {priority:"high",from:"ppsd@tenable.com (CC: Bia.Targett@dnv.com, wrevell@tenable.com)",subject:"[EXTERNAL] Tenable Guardian - Requirement 2026-2027",summary:"DNV Cyber/Security solicita ser 'Tenable Guardian' para 2026-2027. Envolve wrevell@tenable.com e msuarez@tenable.com. Verificar se Marcelo deve se envolver como Channel SE para posicionar valor junto ao parceiro.",history:"E-mail chegou hoje 08:10 BRT. CC inclui Bia Targett (DNV) e Will Revell (Tenable). Thread nova.",action:"r"},
-  {priority:"low",from:"no-reply@firehydrant.io",subject:"[EXTERNAL] 🔥 Last week in incident response on FireHydrant",summary:"Resumo semanal de atividades do FireHydrant. Newsletter automatizada. Sem ação necessária.",history:null,action:"a"},
+  {priority:"high",from:"moswaldo@tenable.com (CC: driera, tsantos, acapella, mcosta, mrovere)",subject:"Re: [EXTERNAL] Retirada de RO — Uninter/Ibliss",summary:"Cliente Uninter (Isis Marcelino, Diretora de TI) pediu retirada do RO da Ibliss por insatisfação com a implantação. Marcelo foi incluído em cópia. Marco Oswaldo definiu: CSM comunica ao canal (prazo 1 sem), canais diagnosticam lacunas. Acompanhar processo ativo.",history:"Thread iniciada por Diogo Riera encaminhando e-mail de Isis Marcelino. Situação sensível — críticas à área técnica e tratativas desleais com gestor anterior da Ibliss.",action:"w"},
+  {priority:"medium",from:"glocaspi.ctr@tenable.com",subject:"Tenable no Security Leaders Nacional | 21 e 22 de Outubro no WTC",summary:"Tenable patrocinadora Prata no Security Leaders Nacional 21-22/out (WTC). Precisa definir: representantes Tenable (considerando agenda ToT2026 em SP/Fortaleza/POA), tema da apresentação e cliente para Case de Sucesso, escala do staff para 2 dias.",history:"Primeira comunicação — Gabriela Lo Caspi. Próxima ação: ela agendará reunião de alinhamento após ToT2026 em SP.",action:"w"},
+  {priority:"low",from:"leonardo.oliveira@xsite.com.br",subject:"[EXTERNAL] RE: E aí, Leonardo! Estará em SP dia 24?",summary:"Leonardo da Xsite confirmou que NÃO poderá comparecer ao ToT Exposure Edition em SP no dia 24/09. Sem ação necessária — atualizar lista de confirmados.",history:"Marcelo enviou convite em 18/09. Resposta recebida hoje às 09:24 BRT.",action:"a"},
 ];
 
+
 let actionItems = [
-  // ── NOVOS 21/09 ──────────────────────────────────────────────────────────
+  // ── NOVOS 22/09 ──────────────────────────────────────────────────────────
+  {id:"task-20260922-001",title:"Retirada de RO Uninter/Ibliss — acompanhar processo",description:"Isis Marcelino (Diretora TI Uninter) pediu retirada de RO da Ibliss por insatisfação com implantação. Marcelo está em cópia. Marco Oswaldo definiu: CSM comunica ao parceiro (prazo 1 semana), time canais atua junto ao parceiro para diagnosticar lacunas. Acompanhar e atualizar Marco Oswaldo se necessário.",priority:"high",dueDate:"2026-09-22",status:"open",source:"gmail",partnerName:"Ibliss",customerName:"Uninter",contactEmail:"moswaldo@tenable.com",meetingOrigin:null,activityType:"follow-up",period:"Q3",tags:["ro","partner","customer","urgent","uninter","ibliss"],inherited:false,createdAt:"2026-09-22T09:30:00-03:00",updatedAt:"2026-09-22T09:30:00-03:00",summary:"Uninter pediu retirada de RO da Ibliss. Marcelo em cópia. Acompanhar junto a Marco Oswaldo."},
+  {id:"task-20260922-002",title:"Security Leaders Nacional — definir representantes e escala Tenable",description:"Tenable patrocinadora Prata no Security Leaders Nacional 21-22/out no WTC. Gabriela Lo Caspi precisa definir: representantes Tenable (considerar agenda ToT2026 SP/Fortaleza/POA), tema da apresentação e cliente para Case de Sucesso, e escala do staff para os 2 dias. Curadoria do tema na semana que vem.",priority:"medium",dueDate:"2026-09-29",status:"open",source:"gmail",partnerName:null,customerName:null,contactEmail:"glocaspi.ctr@tenable.com",meetingOrigin:null,activityType:"internal",period:"Q4",tags:["event","security-leaders","wtc","outubro","staff"],inherited:false,createdAt:"2026-09-22T09:30:00-03:00",updatedAt:"2026-09-22T09:30:00-03:00",summary:"Evento patrocinado 21-22/out WTC — definir representantes, tema e escala após ToT SP."},
+  // ── HERDADOS 21/09 ──────────────────────────────────────────────────────
   {id:"task-20260921-001",title:"DNV Guardian — verificar envolvimento como Channel SE",description:"ppsd@tenable.com recebeu e-mail de Bia Targett (DNV Cyber/Security) solicitando ser Tenable Guardian 2026-2027. CC: Will Revell e msuarez. Verificar contexto e se Marcelo deve apoiar com posicionamento de canal.",priority:"high",dueDate:"2026-09-21",status:"open",source:"gmail",partnerName:null,customerName:"DNV Cyber",contactEmail:"ppsd@tenable.com",meetingOrigin:null,activityType:"follow-up",period:"Q3",tags:["customer","guardian","dnv","channel-se"],inherited:false,createdAt:"2026-09-21T06:00:00-03:00",updatedAt:"2026-09-21T06:00:00-03:00",summary:"DNV solicitou ser Tenable Guardian. Verificar se Channel SE deve se envolver para posicionar valor."},
   {id:"task-20260921-002",title:"Preparar slides de adoção — borrar nomes de clientes",description:"Action item do Granola: preparar os slides de adoção usando o arcabouço existente e borrando/anonimizando nomes de clientes para uso em sessões de enablement.",priority:"medium",dueDate:null,status:"open",source:"granola",partnerName:null,customerName:null,contactEmail:null,meetingOrigin:"Reuniões recentes (Granola)",activityType:"enablement",period:"Q3",tags:["enablement","slides","adoption"],inherited:false,createdAt:"2026-09-21T06:00:00-03:00",updatedAt:"2026-09-21T06:00:00-03:00",summary:"Slides de adoção prontos mas precisam ter nomes de clientes borrados para uso em demos/enablement."},
   {id:"task-20260921-003",title:"Escalar integração Cloud Security ao suporte (se teste chave única falhar)",description:"Se o teste de chave única do módulo Cloud Security falhar, escalar o caso de integração para o suporte Tenable. Acompanhar BlueDiamond/parceiro no teste.",priority:"low",dueDate:null,status:"open",source:"granola",partnerName:"BlueDiamond",customerName:null,contactEmail:null,meetingOrigin:"Reuniões recentes (Granola)",activityType:"follow-up",period:"Q3",tags:["cloud-security","support","bluediamond"],inherited:false,createdAt:"2026-09-21T06:00:00-03:00",updatedAt:"2026-09-21T06:00:00-03:00",summary:"Se teste de chave única CS falhar → escalar ao suporte Tenable. Acompanhar resultado."},
@@ -371,7 +383,7 @@ function renderStats(){
 }
 
 function renderMotive(){
-  document.getElementById('motive').innerHTML = `<strong>Seg 21/set:</strong> 7 eventos, 🟡 back-to-back logo às 09:30. E-mail DNV Guardian merece atenção antes do 1:1 com Rob (13h). 📋 PREP 1:1: pipeline, PPSD, evento canais (meta 60), ações Granola. Qui 24/set: <strong>Treinamento Akamai/Trust Control + Evento Villa Vérico</strong> — semana intensa.`;
+  document.getElementById('motive').innerHTML = `<strong>Ter 22/set:</strong> 5 eventos, 🔴 conflito às 11h (All Hands vs LatAm SEs — priorize All Hands). 🚨 RO Uninter/Ibliss: situação delicada, Marcelo em cópia, acompanhar ativamente. Semana intensa: <strong>Treinamento Akamai + ToT Exposure Edition (SP) na quinta 24/set.</strong>`;
 }
 
 function renderAgenda(){
